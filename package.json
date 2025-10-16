@@ -1,0 +1,8 @@
+{
+  "name": "netlify-finance-functions",
+  "version": "1.0.0",
+  "description": "Dependencies for Netlify Functions",
+  "dependencies": {
+    "pg": "^8.11.3" 
+  }
+}
