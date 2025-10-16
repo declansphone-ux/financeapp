@@ -1202,6 +1202,31 @@
             'Income': ['Salary', 'Freelance', 'Gifts', 'Refund', 'Interest', 'Other']
         };
 
+        function showMessage(message, type) {
+            const container = document.getElementById('message-container');
+            
+            // Fallback to console if the UI element is missing
+            if (!container) {
+                if (type === 'error') {
+                    console.error(`[Message: ${type.toUpperCase()}] ${message}`);
+                } else {
+                    console.log(`[Message: ${type.toUpperCase()}] ${message}`);
+                }
+                return;
+            }
+        
+            // Standard UI implementation (using a timeout for display)
+            container.textContent = message;
+            container.className = `p-2 my-2 text-sm rounded-lg text-center bg-${type}-100 text-${type}-700`;
+            container.style.display = 'block';
+        
+            setTimeout(() => {
+                container.style.display = 'none';
+                container.textContent = '';
+            }, 5000);
+        }
+
+        
         // DELETE the old loadSubcategories() and replace it with this:
         function loadSubcategories() {
             // This function is now mainly used to ensure the subcategories are available
