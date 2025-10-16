@@ -2321,6 +2321,38 @@
                 if (evt.target && evt.target.matches('[data-delete-expense]')) deleteExpense(evt.target.dataset.deleteExpense);
             });
         });
+
+        // --- NEW FUNCTION TO SAVE DATA TO NETLIFY API ---
+        async function saveAllDataToDatabase() {
+            // 1. Get the current data array from the global state
+            const periodsData = getPeriods(); 
+        
+            try {
+                const response = await fetch(API_SAVE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // Send the entire periods array as the body
+                    body: JSON.stringify(periodsData)
+                });
+        
+                const result = await response.json();
+        
+                if (!response.ok) {
+                    // Throw the error message from the function body
+                    throw new Error(result.error || `HTTP error! Status: ${response.status}`);
+                }
+        
+                console.log('Data successfully saved to the cloud! 🎉');
+        
+            } catch (error) {
+                console.error("Error saving data to API:", error);
+                alert('⚠️ Failed to save data. Please try again. See console for details.');
+            }
+        }
+        // --- END NEW FUNCTION ---
+        
     </script>
 </body>
 </html>
