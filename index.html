@@ -1,11 +1,2312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Budget Tracker - Enhanced</title>
+    <style>
+        /* ============================================
+           ENHANCED STYLES & CSS VARIABLES
+           ============================================ */
+        :root {
+            --primary-blue: #3B82F6;
+            --light-blue: #DBEAFE;
+            --dark-blue: #1E40AF;
+            --accent-blue: #60A5FA;
+            --white: #FFFFFF;
+            --light-gray: #F9FAFB;
+            --medium-gray: #E5E7EB;
+            --dark-gray: #6B7280;
+            --text-dark: #111827;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 30px rgba(0,0,0,0.12);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 50%, #FFFFFF 100%);
+            min-height:100vh; 
+            color:var(--text-dark); 
+            line-height:1.6;
+        }
+        
+        .container { 
+            max-width:1280px; 
+            margin:0 auto; 
+            padding:var(--spacing-lg);
+        }
+        
+        header { 
+            background:var(--white); 
+            padding:var(--spacing-lg); 
+            border-radius:var(--radius-lg); 
+            box-shadow:var(--shadow-md); 
+            margin-bottom:var(--spacing-lg); 
+            text-align:center;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        h1 { 
+            color:var(--primary-blue); 
+            font-size:2.75rem; 
+            margin-bottom:var(--spacing-xs);
+            font-weight:700;
+            letter-spacing:-0.025em;
+        }
+        
+        .subtitle { 
+            color:var(--dark-gray); 
+            font-size:1.125rem;
+            font-weight:400;
+        }
+
+        .nav-tabs { 
+            display:flex; 
+            gap:var(--spacing-sm); 
+            margin-bottom:var(--spacing-lg); 
+            background:var(--white); 
+            padding:var(--spacing-sm); 
+            border-radius:var(--radius-lg); 
+            box-shadow:var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+            flex-wrap:wrap;
+        }
+        
+        .nav-tab { 
+            padding:var(--spacing-sm) var(--spacing-md); 
+            background:var(--light-gray); 
+            border:none; 
+            border-radius:var(--radius-md); 
+            cursor:pointer; 
+            font-size:1rem; 
+            font-weight:600; 
+            color:var(--text-dark); 
+            transition:all .25s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-tab:hover { 
+            background:var(--light-blue); 
+            transform:translateY(-1px);
+            border-color: var(--accent-blue);
+        }
+        
+        .nav-tab.active { 
+            background:var(--primary-blue); 
+            color:var(--white); 
+            box-shadow:var(--shadow-sm);
+            border-color: var(--dark-blue);
+        }
+
+        .content-section { 
+            display:none; 
+            background:var(--white); 
+            padding:var(--spacing-xl); 
+            border-radius:var(--radius-lg); 
+            box-shadow:var(--shadow-md);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .content-section.active { display:block; }
+
+        .btn { 
+            padding:var(--spacing-sm) var(--spacing-md); 
+            border:none; 
+            border-radius:var(--radius-md); 
+            cursor:pointer; 
+            font-size:1rem; 
+            font-weight:600; 
+            transition:all .25s ease;
+            box-shadow:var(--shadow-xs);
+        }
+        
+        .btn:hover { 
+            transform:translateY(-2px); 
+            box-shadow:var(--shadow-md);
+        }
+        
+        .btn:active {
+            transform:translateY(0);
+        }
+        
+        .btn-primary { 
+            background:var(--primary-blue); 
+            color:var(--white);
+        }
+        
+        .btn-primary:hover { 
+            background:var(--dark-blue);
+        }
+        
+        .btn-success { 
+            background:var(--success); 
+            color:var(--white);
+        }
+        
+        .btn-success:hover {
+            background:#059669;
+        }
+        
+        .btn-danger { 
+            background:var(--danger); 
+            color:var(--white);
+        }
+        
+        .btn-danger:hover {
+            background:#DC2626;
+        }
+        
+        .btn-secondary { 
+            background:var(--medium-gray); 
+            color:var(--text-dark);
+        }
+        
+        .btn-secondary:hover {
+            background:var(--dark-gray);
+            color:var(--white);
+        }
+        
+        .btn-sm { 
+            padding:.5rem .875rem; 
+            font-size:.875rem;
+        }
+
+        /* Summary Cards */
+        .summary-row {
+            display:grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Net Worth Row */
+        .networth-row {
+            display:grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            color: var(--white);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .summary-card.networth-card {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        }
+        
+        .summary-card h3 { 
+            font-size:.95rem; 
+            font-weight:600; 
+            opacity:.95; 
+            margin-bottom:var(--spacing-xs);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            color: var(--white);
+        }
+        
+        .summary-card .value { 
+            font-size:1.875rem; 
+            font-weight:700;
+            margin-bottom:var(--spacing-xs);
+        }
+
+        /* Wide Cards */
+        .wide-row { 
+            display:block; 
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .wide-card {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: var(--white);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .balances-grid { 
+            display:flex; 
+            gap:var(--spacing-md); 
+            flex-wrap:wrap; 
+            margin-top:var(--spacing-md);
+        }
+        
+        .balance-item { 
+            background: rgba(255,255,255,0.12); 
+            padding:var(--spacing-md); 
+            border-radius:var(--radius-md); 
+            min-width:180px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all .25s ease;
+        }
+        
+        .balance-item:hover {
+            background: rgba(255,255,255,0.18);
+            transform: translateY(-2px);
+        }
+
+        /* Owed Card */
+        .owed-card { 
+            background:var(--white); 
+            padding:var(--spacing-lg); 
+            border-radius:var(--radius-lg); 
+            box-shadow:var(--shadow-md); 
+            margin-top:var(--spacing-lg);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .owed-card-header { 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            margin-bottom:var(--spacing-md);
+            padding-bottom:var(--spacing-md);
+            border-bottom: 2px solid var(--medium-gray);
+        }
+        
+        .owed-list { 
+            max-height:320px; 
+            overflow:auto;
+        }
+        
+        .owed-row { 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            padding:var(--spacing-md); 
+            border-bottom:1px solid var(--medium-gray); 
+            gap:var(--spacing-sm);
+            transition: background .2s ease;
+            border-radius: var(--radius-sm);
+        }
+        
+        .owed-row:hover {
+            background: var(--light-gray);
+        }
+        
+        .owed-row .name { 
+            font-weight:700;
+            color: var(--primary-blue);
+        }
+        
+        .owed-actions { 
+            display:flex; 
+            gap:.5rem;
+        }
+
+        /* Filter & Table */
+        .filter-row { 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            gap: var(--spacing-sm); 
+            margin-top:var(--spacing-lg); 
+            margin-bottom:var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--light-gray);
+            border-radius: var(--radius-md);
+        }
+        
+        .filter-row .left { 
+            display:flex; 
+            gap:var(--spacing-sm); 
+            align-items:center;
+        }
+        
+        .table-container { 
+            overflow-x:auto;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        table { 
+            width:100%; 
+            border-collapse:collapse; 
+            background:var(--white);
+        }
+        
+        thead { 
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+            color:var(--white);
+        }
+        
+        th { 
+            padding:var(--spacing-md); 
+            text-align:left;
+            font-weight:700;
+            text-transform:uppercase;
+            font-size:0.875rem;
+            letter-spacing:0.05em;
+        }
+        
+        td { 
+            padding:var(--spacing-md); 
+            border-bottom:1px solid var(--medium-gray);
+        }
+        
+        tbody tr {
+            transition: background .2s ease;
+        }
+        
+        tbody tr:hover { 
+            background:var(--light-blue);
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Shared Table */
+        .shared-table { 
+            width:100%; 
+            border-collapse:collapse; 
+            margin-top:var(--spacing-sm);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .shared-table th { 
+            padding:var(--spacing-sm); 
+            border-bottom:2px solid var(--medium-gray); 
+            text-align:left;
+            background: var(--light-gray);
+            font-weight:600;
+            color: var(--text-dark);
+        }
+        
+        .shared-table td { 
+            padding:var(--spacing-sm); 
+            border-bottom:1px solid var(--medium-gray);
+        }
+        
+        .shared-table input[type="number"] { 
+            width:110px; 
+            padding:0.5rem; 
+            border:2px solid var(--medium-gray); 
+            border-radius:var(--radius-sm);
+            transition: border-color .2s ease;
+        }
+        
+        .shared-table input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        /* Forms */
+        .form-group { 
+            margin-bottom:var(--spacing-md);
+        }
+        
+        .form-group label { 
+            display:block; 
+            margin-bottom:var(--spacing-xs); 
+            font-weight:600; 
+            color:var(--dark-blue);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea { 
+            width:100%; 
+            padding:var(--spacing-sm); 
+            border:2px solid var(--medium-gray); 
+            border-radius:var(--radius-md); 
+            font-size:1rem; 
+            transition:border-color .2s ease, box-shadow .2s ease;
+            background: var(--white);
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-row { 
+            display:grid; 
+            grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); 
+            gap:var(--spacing-md);
+        }
+        
+        /* Modal */
+        .modal { 
+            display:none; 
+            position:fixed; 
+            top:0; 
+            left:0; 
+            width:100%; 
+            height:100%; 
+            background:rgba(0,0,0,0.6); 
+            z-index:1000; 
+            align-items:center; 
+            justify-content:center;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active { 
+            display:flex;
+        }
+        
+        .modal-content { 
+            background:var(--white); 
+            padding:var(--spacing-xl); 
+            border-radius:var(--radius-lg); 
+            box-shadow:var(--shadow-xl); 
+            max-width:900px; 
+            width:94%; 
+            max-height:90vh; 
+            overflow-y:auto;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .modal-header { 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            margin-bottom:var(--spacing-md); 
+            padding-bottom:var(--spacing-md); 
+            border-bottom:2px solid var(--medium-gray);
+        }
+        
+        .modal-header h2 {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+        
+        .close-modal { 
+            background:none; 
+            border:none; 
+            font-size:2rem; 
+            cursor:pointer; 
+            color:var(--dark-gray); 
+            line-height:1;
+            transition: color .2s ease, transform .2s ease;
+            padding: 0.25rem;
+            border-radius: var(--radius-sm);
+        }
+        
+        .close-modal:hover { 
+            color:var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .small-muted { 
+            font-size:.9rem; 
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .small-muted-dark {
+            font-size:.9rem;
+            color: var(--dark-gray);
+        }
+
+        .inline-input { 
+            display:flex; 
+            gap:.5rem; 
+            align-items:center;
+        }
+        
+        .hidden { 
+            display:none;
+        }
+        
+        .collapsible-toggle { 
+            cursor:pointer; 
+            background:none; 
+            border:none; 
+            font-weight:700; 
+            color:var(--dark-blue);
+        }
+
+        /* Period Cards */
+        .period-card {
+            background:var(--white); 
+            padding:var(--spacing-lg); 
+            border-radius:var(--radius-lg); 
+            box-shadow:var(--shadow-sm); 
+            cursor:pointer;
+            transition: all .25s ease;
+            border: 2px solid var(--medium-gray);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .period-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
+        }
+        
+        .period-card h3 {
+            color:var(--primary-blue); 
+            margin-bottom:var(--spacing-sm);
+            font-weight:700;
+            font-size: 1.25rem;
+        }
+        
+        .period-card small {
+            color: var(--dark-gray);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        h2 {
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+        }
+
+        h3 {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        /* Settings page styling */
+        .settings-card {
+            background:var(--light-gray); 
+            padding:var(--spacing-lg); 
+            border-radius:var(--radius-lg);
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Budget Progress Bars */
+        .progress-item {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .progress-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .progress-label {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+        
+        .progress-values {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 28px;
+            background: var(--light-gray);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 0.5s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        
+        .progress-bar-fill.under-50 {
+            background: linear-gradient(90deg, var(--success) 0%, #34D399 100%);
+        }
+        
+        .progress-bar-fill.under-80 {
+            background: linear-gradient(90deg, #34D399 0%, var(--warning) 100%);
+        }
+        
+        .progress-bar-fill.under-100 {
+            background: linear-gradient(90deg, var(--warning) 0%, #FB923C 100%);
+        }
+        
+        .progress-bar-fill.over-100 {
+            background: linear-gradient(90deg, var(--danger) 0%, #DC2626 100%);
+        }
+
+        /* Text colors */
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+
+        /* Subcategory Management */
+        .subcategory-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subcategory-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            background: var(--light-blue);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        .subcategory-chip button {
+            margin-left: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 0.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .networth-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .summary-row { 
+                grid-template-columns: repeat(2,1fr);
+            }
+            
+            .networth-row {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .summary-row { 
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: var(--spacing-sm);
+            }
+            
+            .content-section {
+                padding: var(--spacing-md);
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Smooth scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--medium-gray);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gray);
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <div class="container">
+        <header>
+            <h1>💰 Budget Tracker</h1>
+            <p class="subtitle">Manage your finances with ease</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" id="tab-home">🏠 Home</button>
+            <button class="nav-tab" id="tab-summary">📊 Full Summary</button>
+            <button class="nav-tab" id="tab-settings">⚙️ Settings</button>
+        </nav>
+
+        <section id="home" class="content-section active">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-lg);">
+                <h2>Budget Periods</h2>
+                <button class="btn btn-primary" id="btn-new-period">➕ New Period</button>
+            </div>
+            <div id="periods-container" class="periods-grid"></div>
+        </section>
+
+        <section id="period-detail" class="content-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-lg); flex-wrap:wrap; gap:var(--spacing-sm);">
+                <div style="display:flex; align-items:center; gap:var(--spacing-sm);">
+                    <button class="btn btn-secondary" id="btn-back-home">← Back</button>
+                    <h2 style="margin:0;" id="period-title"></h2>
+                </div>
+                <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+                    <button class="btn btn-primary" id="btn-add-expense">➕ Add Expense</button>
+                    <button class="btn btn-secondary" id="btn-edit-balances">💳 Edit Balances</button>
+                    <button class="btn btn-success" id="btn-export-csv">📥 Export CSV</button>
+                </div>
+            </div>
+
+            <!-- NET WORTH ROW -->
+            <div class="networth-row" id="networth-cards">
+                <!-- filled dynamically -->
+            </div>
+
+            <!-- TOP ROW: 5 summary cards -->
+            <div class="summary-row" id="period-summary-cards">
+                <!-- filled dynamically -->
+            </div>
+
+            <!-- BUDGET PROGRESS BARS -->
+            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Budget Progress</h3>
+                <div id="budget-progress-bars">
+                    <!-- filled dynamically -->
+                </div>
+            </div>
+
+            <!-- SECOND ROW: balances & debts wide card -->
+            <div class="wide-row">
+                <div class="wide-card" id="balances-card">
+                    <!-- filled dynamically -->
+                </div>
+            </div>
+
+            <!-- THIRD ROW: Money Owed to Me -->
+            <div id="owed-wrapper">
+                <div class="owed-card" id="owed-card">
+                    <div class="owed-card-header">
+                        <div>
+                            <h3 style="margin:0; color:var(--dark-blue);">💵 Money Owed to Me</h3>
+                            <div class="small-muted-dark" id="owed-subtext">Manage who owes you — add, edit or remove directly.</div>
+                            <div style="font-weight:700; font-size:1.1rem; color:var(--primary-blue); margin-top:0.25rem;" id="owed-total">Total: £0.00</div>
+                        </div>
+                        <div style="display:flex; gap:.5rem; align-items:center;">
+                            <button class="btn btn-sm btn-secondary" id="toggle-owed">▲ Hide</button>
+                            <button class="btn btn-sm btn-primary" id="btn-add-owed-inline">➕ Add New</button>
+                        </div>
+                    </div>
+
+                    <div id="owed-add-area" class="hidden" style="margin-bottom:var(--spacing-md);">
+                        <div style="display:flex; gap:var(--spacing-sm);">
+                            <input type="text" id="new-owed-name" placeholder="Person's name" />
+                            <input type="number" id="new-owed-amount" placeholder="Amount" step="0.01" />
+                            <button class="btn btn-primary" id="save-owed-new">Save</button>
+                            <button class="btn btn-secondary" id="cancel-owed-new">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div id="owed-list" class="owed-list">
+                        <!-- rows dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRANSACTIONS FILTER + TABLE -->
+            <div class="filter-row">
+                <div class="left">
+                    <label for="filter-category" style="font-weight:600;color:var(--dark-blue);">🔍 Filter:</label>
+                    <select id="filter-category">
+                        <option value="All">All</option>
+                        <option value="Bills/Subscriptions">Bills/Subscriptions</option>
+                        <option value="One-off Needs">One-off Needs</option>
+                        <option value="Wants">Wants</option>
+                        <option value="Food">Food</option>
+                        <option value="Unexpected">Unexpected</option>
+                        <option value="Income">Income</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="text" id="filter-text" placeholder="🔎 Search description..." />
+                </div>
+            </div>
+
+            <div style="margin-top:var(--spacing-lg);">
+                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📋 Transactions</h3>
+                <div class="table-container">
+                    <table id="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="summary" class="content-section">
+            <h2 style="margin-bottom:var(--spacing-lg);">📊 Full Summary - All Periods</h2>
+            <div id="full-summary-content"></div>
+        </section>
+
+        <section id="settings" class="content-section">
+            <h2 style="margin-bottom:var(--spacing-lg);">⚙️ Settings</h2>
+            <div style="display:grid; gap:var(--spacing-lg);">
+                <div class="settings-card">
+                    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💾 Data Management</h3>
+                    <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+                        <button class="btn btn-success" id="btn-export-all">📤 Export All Data</button>
+                        <button class="btn btn-primary" id="btn-import-trigger">📥 Import Data</button>
+                        <input type="file" id="import-file" accept=".json" style="display:none;">
+                        <button class="btn btn-danger" id="btn-clear-all">🗑️ Clear All Data</button>
+                    </div>
+                    <p style="margin-top:var(--spacing-md); color:var(--dark-gray); font-size:0.95rem;">
+                        💡 <strong>Tip:</strong> Export your data regularly as a backup!
+                    </p>
+                </div>
+
+                <div class="settings-card">
+                    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏷️ Subcategory Management</h3>
+                    <p style="color:var(--dark-gray); margin-bottom:var(--spacing-md);">
+                        Customize subcategories for each category. These will appear in the dropdown when adding expenses.
+                    </p>
+                    <div id="subcategory-management">
+                        <!-- filled dynamically -->
+                    </div>
+                </div>
+
+                <div class="settings-card" style="background:var(--light-blue);">
+                    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">ℹ️ About</h3>
+                    <p style="color:var(--text-dark); line-height:1.8;">
+                        This budget tracker stores all data in your browser's LocalStorage.
+                        Your data is private and never leaves your device. 🔒
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- New Period Modal -->
+    <div id="new-period-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Period</h2>
+                <button class="close-modal" id="close-new-period">&times;</button>
+            </div>
+            <form id="new-period-form">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" id="period-start-date" required readonly>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" id="period-end-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Monthly Salary</label>
+                    <input type="number" id="period-salary" step="0.01" required>
+                </div>
+
+                <h3 style="color:var(--dark-blue); margin:var(--spacing-md) 0;">Starting Balances</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Starling Current</label>
+                        <input type="number" id="starling-current" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Starling Saver</label>
+                        <input type="number" id="starling-saver" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lloyds Credit</label>
+                        <input type="number" id="lloyds-credit" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Natwest Credit</label>
+                        <input type="number" id="natwest-credit" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Virgin Credit</label>
+                        <input type="number" id="virgin-credit" step="0.01" required>
+                    </div>
+                </div>
+
+                <h3 style="color:var(--dark-blue); margin:var(--spacing-md) 0;">Budget Targets</h3>
+                <p style="color:var(--dark-gray); margin-bottom:var(--spacing-sm);">
+                    Set budgets as amounts or percentage of salary
+                </p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bills Budget</label>
+                        <div style="display:flex; gap:var(--spacing-xs);">
+                            <input type="number" id="budget-bills-amount" step="0.01" placeholder="Amount">
+                            <input type="number" id="budget-bills-percent" step="0.1" placeholder="Percent">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Food Budget</label>
+                        <div style="display:flex; gap:var(--spacing-xs);">
+                            <input type="number" id="budget-food-amount" step="0.01" placeholder="Amount">
+                            <input type="number" id="budget-food-percent" step="0.1" placeholder="Percent">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Wants Budget</label>
+                        <div style="display:flex; gap:var(--spacing-xs);">
+                            <input type="number" id="budget-wants-amount" step="0.01" placeholder="Amount">
+                            <input type="number" id="budget-wants-percent" step="0.1" placeholder="Percent">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
+                    <button type="submit" class="btn btn-primary">Create Period</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-new-period">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="expense-modal-title">Add Expense</h2>
+                <button class="close-modal" id="close-expense">&times;</button>
+            </div>
+            <form id="expense-form">
+                <input type="hidden" id="expense-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="expense-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="expense-amount" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="expense-description" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="expense-category" required>
+                            <option value="">Select Category</option>
+                            <option value="Bills/Subscriptions">Bills/Subscriptions</option>
+                            <option value="One-off Needs">One-off Needs</option>
+                            <option value="Wants">Wants (Treats)</option>
+                            <option value="Food">Food</option>
+                            <option value="Unexpected">Unexpected</option>
+                            <option value="Income">Income</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subcategory</label>
+                        <select id="expense-subcategory" required>
+                            <option value="">Select Subcategory</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select id="expense-payment" required>
+                            <option value="">Select Payment Method</option>
+                            <option value="Starling Current">Starling Current</option>
+                            <option value="Starling Saver">Starling Saver</option>
+                            <option value="Lloyds Credit">Lloyds Credit</option>
+                            <option value="Natwest Credit">Natwest Credit</option>
+                            <option value="Virgin Credit">Virgin Credit</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="visibility:hidden;">
+                        <label style="opacity:0;">placeholder</label>
+                        <input style="opacity:0; height:1px;">
+                    </div>
+                </div>
+
+                <!-- SHARED CONTROLS -->
+                <div class="form-group" id="shared-controls">
+                    <label>Shared With (who owes the rest)</label>
+                    <table class="shared-table" id="expense-shared-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40%;">Name</th>
+                                <th style="width:25%;">Currently Owes</th>
+                                <th style="width:35%;">Owes From This Expense</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-shared-body">
+                            <!-- populated dynamically -->
+                        </tbody>
+                    </table>
+
+                    <div class="inline-input" style="margin-top:var(--spacing-sm);">
+                        <input type="text" id="expense-add-person" placeholder="Add new person (name)">
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-add-person">Add</button>
+                    </div>
+                </div>
+
+                <div class="form-row" id="income-controls" style="display:none;">
+                    <div class="form-group">
+                        <label>Received From (if income & reduces someone's debt)</label>
+                        <select id="expense-received-from">
+                            <option value="">Select person</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Apply Amount To Debt (optional)</label>
+                        <input type="number" id="expense-apply-debt" step="0.01" placeholder="Leave blank to treat as general income">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="expense-notes" rows="3"></textarea>
+                </div>
+
+                <div style="display:flex; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
+                    <button type="submit" class="btn btn-primary">Save Expense</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-expense">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Balances Modal -->
+    <div id="edit-balances-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Account Balances</h2>
+                <button class="close-modal" id="close-edit-balances">&times;</button>
+            </div>
+            <form id="edit-balances-form">
+                <p style="color:var(--dark-gray); margin-bottom:var(--spacing-md);">
+                    💡 Use this to transfer money between accounts or correct balances
+                </p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Starling Current</label>
+                        <input type="number" id="edit-starling-current" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Starling Saver</label>
+                        <input type="number" id="edit-starling-saver" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lloyds Credit</label>
+                        <input type="number" id="edit-lloyds-credit" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Natwest Credit</label>
+                        <input type="number" id="edit-natwest-credit" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Virgin Credit</label>
+                        <input type="number" id="edit-virgin-credit" step="0.01" required>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-edit-balances">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+        let currentPeriodId = null;
+        let editingExpenseId = null;
+
+        // ============================================
+        // SUBCATEGORIES MAPPING (now stored/loaded from localStorage)
+        // ============================================
+        let subcategories = {
+            'Bills/Subscriptions': ['Utilities', 'Software', 'Entertainment', 'Transport', 'Communication', 'Health', 'Debt Payment', 'Rent'],
+            'One-off Needs': ['Transport', 'Household', 'Health', 'Clothing'],
+            'Wants': ['Entertainment', 'Shopping', 'Gifts', 'Gaming', 'Clothing', 'Charity', 'Gambling', 'Collectibles', 'Drinks', 'App', 'Loan'],
+            'Food': ['Groceries', 'Takeaway', 'Restaurant', 'Fast Food', 'Treats', 'Snacks', 'Drinks'],
+            'Unexpected': ['Transport', 'Medical', 'Repairs', 'Fines', 'Gifts/Annual', 'Insurance'],
+            'Income': ['Salary', 'Freelance', 'Gifts', 'Refund', 'Interest', 'Other']
+        };
+
+        // Load custom subcategories if they exist
+        function loadSubcategories() {
+            const saved = localStorage.getItem('budgetSubcategories');
+            if (saved) {
+                subcategories = JSON.parse(saved);
+            }
+        }
+
+        function saveSubcategories() {
+            localStorage.setItem('budgetSubcategories', JSON.stringify(subcategories));
+        }
+
+        // ============================================
+        // LOCALSTORAGE HELPERS (periods)
+        // ============================================
+        function getPeriods() {
+            const p = localStorage.getItem('budgetPeriods');
+            return p ? JSON.parse(p) : [];
+        }
+        function savePeriods(periods) {
+            localStorage.setItem('budgetPeriods', JSON.stringify(periods));
+        }
+        function getPeriod(periodId) {
+            const periods = getPeriods();
+            return periods.find(p => p.id === periodId) || null;
+        }
+        function updatePeriod(periodId, updatedPeriod) {
+            const periods = getPeriods();
+            const i = periods.findIndex(p => p.id === periodId);
+            if (i !== -1) { periods[i] = updatedPeriod; savePeriods(periods); }
+        }
+
+        // ============================================
+        // NAV & MODALS
+        // ============================================
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'home') document.getElementById('tab-home').classList.add('active');
+            if (sectionId === 'summary') { document.getElementById('tab-summary').classList.add('active'); loadFullSummary(); }
+            if (sectionId === 'settings') { 
+                document.getElementById('tab-settings').classList.add('active');
+                renderSubcategoryManagement();
+            }
+        }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // ============================================
+        // PERIOD UI & MANAGEMENT
+        // ============================================
+        function loadPeriods() {
+            const periods = getPeriods();
+            const container = document.getElementById('periods-container');
+            if (periods.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No periods yet. Create your first one! 🚀</p>';
+                return;
+            }
+            periods.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+            container.innerHTML = periods.map(period => {
+                const stats = calculatePeriodStats(period);
+                return `
+                    <div class="period-card" data-period-id="${period.id}">
+                        <h3>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</h3>
+                        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; color:var(--dark-gray); margin-top:var(--spacing-sm);">
+                            <div style="min-width:140px;"><small>Spent</small><div style="font-weight:700;font-size:1.25rem;color:var(--text-dark);">£${stats.totalSpent.toFixed(2)}</div></div>
+                            <div style="min-width:140px;"><small>Budget</small><div style="font-weight:700;font-size:1.25rem;color:var(--text-dark);">£${(period.budgets.total||0).toFixed(2)}</div></div>
+                            <div style="min-width:140px;"><small>Status</small><div style="font-weight:700;font-size:1.25rem;color:${stats.budgetStatus === 'over' ? 'var(--danger)' : 'var(--success)'};">${stats.budgetStatus === 'over' ? '⚠️ Over' : '✅ On Track'}</div></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.querySelectorAll('.period-card').forEach(card => {
+                card.addEventListener('click', function(){ viewPeriod(this.dataset.periodId); });
+            });
+        }
+
+        function openNewPeriodModal() {
+            const periods = getPeriods();
+            document.getElementById('new-period-form').reset();
+            const startDateInput = document.getElementById('period-start-date');
+            if (periods.length > 0) {
+                const lastPeriod = periods.sort((a,b) => new Date(b.endDate) - new Date(a.endDate))[0];
+                const nextDay = new Date(lastPeriod.endDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                startDateInput.value = formatDateForInput(nextDay);
+            } else {
+                startDateInput.value = formatDateForInput(new Date());
+            }
+            openModal('new-period-modal');
+        }
+
+        function createNewPeriod(e) {
+            e.preventDefault();
+            const salary = parseFloat(document.getElementById('period-salary').value || 0);
+            const billsBudget = document.getElementById('budget-bills-amount').value ?
+                parseFloat(document.getElementById('budget-bills-amount').value) :
+                (parseFloat(document.getElementById('budget-bills-percent').value || 0) / 100) * salary;
+            const foodBudget = document.getElementById('budget-food-amount').value ?
+                parseFloat(document.getElementById('budget-food-amount').value) :
+                (parseFloat(document.getElementById('budget-food-percent').value || 0) / 100) * salary;
+            const wantsBudget = document.getElementById('budget-wants-amount').value ?
+                parseFloat(document.getElementById('budget-wants-amount').value) :
+                (parseFloat(document.getElementById('budget-wants-percent').value || 0) / 100) * salary;
+
+            const newPeriod = {
+                id: 'period_' + Date.now(),
+                startDate: document.getElementById('period-start-date').value,
+                endDate: document.getElementById('period-end-date').value,
+                salary: salary,
+                budgets: {
+                    bills: billsBudget,
+                    food: foodBudget,
+                    wants: wantsBudget,
+                    total: (billsBudget || 0) + (foodBudget || 0) + (wantsBudget || 0)
+                },
+                startingBalances: {
+                    starlingCurrent: parseFloat(document.getElementById('starling-current').value || 0),
+                    starlingSaver: parseFloat(document.getElementById('starling-saver').value || 0),
+                    lloydsCredit: parseFloat(document.getElementById('lloyds-credit').value || 0),
+                    natwestCredit: parseFloat(document.getElementById('natwest-credit').value || 0),
+                    virginCredit: parseFloat(document.getElementById('virgin-credit').value || 0)
+                },
+                expenses: [],
+                owedPeople: []
+            };
+            const periods = getPeriods();
+            periods.push(newPeriod);
+            savePeriods(periods);
+            closeModal('new-period-modal');
+            loadPeriods();
+            alert('Period created successfully! ✅');
+        }
+
+        function viewPeriod(periodId) {
+            currentPeriodId = periodId;
+            const period = getPeriod(periodId);
+            if (!period) { alert('Period not found'); return; }
+            document.getElementById('period-title').textContent = `${formatDate(period.startDate)} - ${formatDate(period.endDate)}`;
+            renderNetWorthCards(period);
+            renderPeriodSummary(period);
+            renderBalancesCard(period);
+            renderOwedList(period);
+            renderTransactions(period);
+            document.getElementById('filter-category').value = 'All';
+            document.getElementById('filter-text').value = '';
+            showSection('period-detail');
+        }
+
+        // ============================================
+        // RENDER: Net Worth Cards (NEW)
+        // ============================================
+        function renderNetWorthCards(period) {
+            const sb = period.startingBalances || {};
+            const currentMoney = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
+            const currentDebts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+            const netWorth = currentMoney - currentDebts;
+            
+            // Calculate total owed to me
+            const totalOwed = (period.owedPeople || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+            const netWorthOncePaid = netWorth + totalOwed;
+
+            const container = document.getElementById('networth-cards');
+            container.innerHTML = `
+                <div class="summary-card networth-card">
+                    <h3>💰 Current Money</h3>
+                    <div class="value">£${currentMoney.toFixed(2)}</div>
+                    <div class="small-muted">Starling accounts</div>
+                </div>
+                <div class="summary-card networth-card">
+                    <h3>💳 Current Debts</h3>
+                    <div class="value">£${currentDebts.toFixed(2)}</div>
+                    <div class="small-muted">Credit cards</div>
+                </div>
+                <div class="summary-card networth-card">
+                    <h3>📊 Net Worth</h3>
+                    <div class="value ${netWorth < 0 ? 'text-danger' : ''}">£${netWorth.toFixed(2)}</div>
+                    <div class="small-muted">Money - Debts</div>
+                </div>
+                <div class="summary-card networth-card">
+                    <h3>🎯 Net Worth Once Paid</h3>
+                    <div class="value">£${netWorthOncePaid.toFixed(2)}</div>
+                    <div class="small-muted">Including owed to me</div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // RENDER: Top summary row (5 cards)
+        // ============================================
+        function renderPeriodSummary(period) {
+            const stats = calculatePeriodStats(period);
+            const container = document.getElementById('period-summary-cards');
+            const remaining = (period.salary || 0) - stats.totalSpent;
+
+            container.innerHTML = `
+                <div class="summary-card">
+                    <h3>Total Spent</h3>
+                    <div class="value">£${stats.totalSpent.toFixed(2)}</div>
+                    <div class="small-muted">of £${(period.salary||0).toFixed(2)} salary</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Remaining</h3>
+                    <div class="value">£${remaining.toFixed(2)}</div>
+                    <div class="small-muted">${stats.savingsRate.toFixed(1)}% savings rate</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Budget Status</h3>
+                    <div class="value">${stats.budgetStatus === 'over' ? '⚠️ Over' : '✅ On Track'}</div>
+                    <div class="small-muted">${stats.overUnder >= 0 ? '+' : ''}£${stats.overUnder.toFixed(2)}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Unexpected</h3>
+                    <div class="value">£${(stats.categorySpending.unexpected || 0).toFixed(2)}</div>
+                    <div class="small-muted">Running total</div>
+                </div>
+                <div class="summary-card">
+                    <h3>One-off Needs</h3>
+                    <div class="value">£${(stats.categorySpending.oneOff || 0).toFixed(2)}</div>
+                    <div class="small-muted">Running total</div>
+                </div>
+            `;
+
+            // Render budget progress bars
+            renderBudgetProgressBars(period, stats);
+        }
+
+        function renderBudgetProgressBars(period, stats) {
+            const container = document.getElementById('budget-progress-bars');
+            
+            const budgets = [
+                { 
+                    name: 'Bills & Subscriptions', 
+                    spent: stats.categorySpending.bills, 
+                    budget: period.budgets.bills || 0,
+                    emoji: '📄'
+                },
+                { 
+                    name: 'Food', 
+                    spent: stats.categorySpending.food, 
+                    budget: period.budgets.food || 0,
+                    emoji: '🍔'
+                },
+                { 
+                    name: 'Wants (Treats)', 
+                    spent: stats.categorySpending.wants, 
+                    budget: period.budgets.wants || 0,
+                    emoji: '🎁'
+                }
+            ];
+
+            container.innerHTML = budgets.map(item => {
+                const percentage = item.budget > 0 ? (item.spent / item.budget) * 100 : 0;
+                const displayPercentage = Math.min(percentage, 100);
+                const remaining = Math.max(item.budget - item.spent, 0);
+                
+                let colorClass = 'under-50';
+                if (percentage >= 100) colorClass = 'over-100';
+                else if (percentage >= 80) colorClass = 'under-100';
+                else if (percentage >= 50) colorClass = 'under-80';
+
+                return `
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">${item.emoji} ${item.name}</span>
+                            <span class="progress-values">£${item.spent.toFixed(2)} / £${item.budget.toFixed(2)} ${percentage >= 100 ? '⚠️' : ''}</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill ${colorClass}" style="width: ${displayPercentage}%">
+                                ${percentage >= 10 ? percentage.toFixed(0) + '%' : ''}
+                            </div>
+                        </div>
+                        <div style="text-align:right; margin-top:0.25rem; font-size:0.85rem; color:${percentage >= 100 ? 'var(--danger)' : 'var(--dark-gray)'}; font-weight:600;">
+                            ${percentage >= 100 ? 'Over by £' + (item.spent - item.budget).toFixed(2) : '£' + remaining.toFixed(2) + ' remaining'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // Balances card (wide)
+        // ============================================
+        function renderBalancesCard(period) {
+            const sb = period.startingBalances || {};
+            const totalSavings = (sb.starlingCurrent||0) + (sb.starlingSaver||0);
+            const totalDebt = (sb.lloydsCredit||0) + (sb.natwestCredit||0) + (sb.virginCredit||0);
+
+            const el = document.getElementById('balances-card');
+            el.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-md);">
+                    <div>
+                        <h3 style="margin:0;color:var(--white);font-size:1.5rem;">💳 Balances & Debts</h3>
+                        <div class="small-muted" style="color:rgba(255,255,255,0.9)">All accounts shown (positive = balance, credit card = owed)</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:700;font-size:1.3rem">💰 Savings: £${totalSavings.toFixed(2)}</div>
+                        <div style="font-weight:700;font-size:1.3rem">💳 Debt: £${totalDebt.toFixed(2)}</div>
+                    </div>
+                </div>
+                <div class="balances-grid">
+                    <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingCurrent||0).toFixed(2)}</div></div>
+                    <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingSaver||0).toFixed(2)}</div></div>
+                    <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.lloydsCredit||0).toFixed(2)}</div></div>
+                    <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.natwestCredit||0).toFixed(2)}</div></div>
+                    <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.virginCredit||0).toFixed(2)}</div></div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // Money Owed to Me
+        // ============================================
+        function renderOwedList(period) {
+            period.owedPeople = period.owedPeople || [];
+            updatePeriodInStorage(period);
+
+            // Calculate and display total
+            const totalOwed = period.owedPeople.reduce((sum, p) => sum + (p.amount || 0), 0);
+            document.getElementById('owed-total').textContent = `Total: £${totalOwed.toFixed(2)}`;
+
+            const listEl = document.getElementById('owed-list');
+            if (!period.owedPeople || period.owedPeople.length === 0) {
+                listEl.innerHTML = '<p style="color:var(--dark-gray);padding:var(--spacing-md);">No one owes you money yet. 💸</p>';
+            } else {
+                listEl.innerHTML = period.owedPeople.map((p, idx) => `
+                    <div class="owed-row" data-idx="${idx}">
+                        <div style="display:flex;gap:1.5rem;align-items:center;flex:1;">
+                            <div style="min-width:180px;">
+                                <div class="name">${escapeHtml(p.name)}</div>
+                                <div class="small-muted-dark">Editable directly</div>
+                            </div>
+                            <div>
+                                <input type="number" step="0.01" class="owed-amount-input" value="${(p.amount || 0).toFixed(2)}" style="width:130px;padding:.5rem;border:2px solid var(--medium-gray);border-radius:var(--radius-sm);font-size:1rem;" />
+                            </div>
+                        </div>
+                        <div class="owed-actions">
+                            <button class="btn btn-sm btn-primary" data-save-owed="${idx}">💾 Save</button>
+                            <button class="btn btn-sm btn-secondary" data-edit-name="${idx}">✏️ Edit</button>
+                            <button class="btn btn-sm btn-danger" data-delete-owed="${idx}">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('toggle-owed').textContent = '▲ Hide';
+            document.getElementById('owed-add-area').classList.add('hidden');
+
+            listEl.querySelectorAll('[data-save-owed]').forEach(btn => {
+                btn.addEventListener('click', function(){
+                    const idx = parseInt(this.dataset.saveOwed,10);
+                    const row = this.closest('.owed-row');
+                    const input = row.querySelector('.owed-amount-input');
+                    const val = parseFloat(input.value || 0);
+                    if (isNaN(val)) { alert('Enter a valid amount'); return; }
+                    period.owedPeople[idx].amount = parseFloat(val.toFixed(2));
+                    updatePeriodInStorage(period);
+                    renderOwedList(period);
+                    renderNetWorthCards(period);
+                    renderPeriodSummary(period);
+                });
+            });
+            listEl.querySelectorAll('[data-edit-name]').forEach(btn => {
+                btn.addEventListener('click', function(){
+                    const idx = parseInt(this.dataset.editName,10);
+                    const newName = prompt('Edit name', period.owedPeople[idx].name);
+                    if (newName && newName.trim()) {
+                        period.owedPeople[idx].name = newName.trim();
+                        updatePeriodInStorage(period);
+                        renderOwedList(period);
+                        renderPeriodSummary(period);
+                    }
+                });
+            });
+            listEl.querySelectorAll('[data-delete-owed]').forEach(btn => {
+                btn.addEventListener('click', function(){
+                    const idx = parseInt(this.dataset.deleteOwed,10);
+                    if (!confirm('Remove this person and their owed amount?')) return;
+                    period.owedPeople.splice(idx,1);
+                    updatePeriodInStorage(period);
+                    renderOwedList(period);
+                    renderNetWorthCards(period);
+                    renderPeriodSummary(period);
+                });
+            });
+        }
+
+        document.getElementById('toggle-owed').addEventListener('click', function(){
+            const list = document.getElementById('owed-list');
+            const addArea = document.getElementById('owed-add-area');
+            if (list.style.display === 'none' || list.classList.contains('hidden')) {
+                list.classList.remove('hidden');
+                addArea.classList.add('hidden');
+                this.textContent = '▲ Hide';
+            } else {
+                list.classList.add('hidden');
+                addArea.classList.add('hidden');
+                this.textContent = '▼ Show';
+            }
+        });
+
+        document.getElementById('btn-add-owed-inline').addEventListener('click', function(){
+            document.getElementById('owed-add-area').classList.toggle('hidden');
+            document.getElementById('new-owed-name').focus();
+        });
+        document.getElementById('cancel-owed-new').addEventListener('click', function(){
+            document.getElementById('owed-add-area').classList.add('hidden');
+            document.getElementById('new-owed-name').value = '';
+            document.getElementById('new-owed-amount').value = '';
+        });
+        document.getElementById('save-owed-new').addEventListener('click', function(){
+            const name = document.getElementById('new-owed-name').value.trim();
+            const amt = parseFloat(document.getElementById('new-owed-amount').value || 0);
+            if (!name) { alert('Enter a name'); return; }
+            if (isNaN(amt)) { alert('Enter a valid amount'); return; }
+            const period = getPeriod(currentPeriodId);
+            period.owedPeople = period.owedPeople || [];
+            period.owedPeople.push({ name: name, amount: parseFloat(amt.toFixed(2)) });
+            updatePeriodInStorage(period);
+            document.getElementById('new-owed-name').value = '';
+            document.getElementById('new-owed-amount').value = '';
+            document.getElementById('owed-add-area').classList.add('hidden');
+            renderOwedList(period);
+            renderNetWorthCards(period);
+            renderPeriodSummary(period);
+        });
+
+        // ============================================
+        // TRANSACTIONS
+        // ============================================
+        function renderTransactions(period) {
+            const tbody = document.getElementById('transactions-tbody');
+            const filterCat = document.getElementById('filter-category').value || 'All';
+            const filterText = (document.getElementById('filter-text').value || '').toLowerCase().trim();
+
+            let expenses = (period.expenses || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+            if (filterCat !== 'All') expenses = expenses.filter(e => e.category === filterCat);
+            if (filterText) expenses = expenses.filter(e => (e.description || '').toLowerCase().includes(filterText) || (e.notes || '').toLowerCase().includes(filterText));
+
+            if (!expenses || expenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--dark-gray);padding:var(--spacing-lg);">No transactions match your filter 🔍</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = expenses.map(expense => {
+                const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
+                const isIncome = expense.category === 'Income';
+                const amountClass = isIncome ? 'text-success' : 'text-danger';
+                const amountSign = isIncome ? '+' : '-';
+                return `
+                    <tr>
+                        <td><strong>${formatDate(expense.date)}</strong></td>
+                        <td>
+                            <strong>${escapeHtml(expense.description)}</strong>
+                            ${expense.notes ? `<br><small style="color:var(--dark-gray);">${escapeHtml(expense.notes)}</small>` : ''}
+                        </td>
+                        <td>
+                            <span style="display:inline-block;padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--light-blue);font-weight:700;color:var(--primary-blue);">${expense.category}</span>
+                            <br><small style="color:var(--dark-gray);font-weight:500;">${expense.subcategory || ''}</small>
+                        </td>
+                        <td class="${amountClass}">
+                            <strong style="font-size:1.1rem;">${amountSign}£${amount.toFixed(2)}</strong>
+                            ${(expense.sharedAllocations && expense.sharedAllocations.length>0) ? `<br><small style="color:var(--dark-gray);">📊 Split</small>` : ''}
+                        </td>
+                        <td><span style="font-weight:600;">${expense.paymentMethod}</span></td>
+                        <td>
+                            <div style="display:flex;gap:.5rem">
+                                <button class="btn btn-sm btn-secondary" data-edit-expense="${expense.id}">✏️ Edit</button>
+                                <button class="btn btn-sm btn-danger" data-delete-expense="${expense.id}">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.querySelectorAll('[data-edit-expense]').forEach(btn => btn.addEventListener('click', function(){ editExpense(this.dataset.editExpense); }));
+            tbody.querySelectorAll('[data-delete-expense]').forEach(btn => btn.addEventListener('click', function(){ deleteExpense(this.dataset.deleteExpense); }));
+        }
+
+        document.getElementById('filter-category').addEventListener('change', function(){
+            const period = getPeriod(currentPeriodId);
+            if (period) renderTransactions(period);
+        });
+        document.getElementById('filter-text').addEventListener('input', function(){
+            const period = getPeriod(currentPeriodId);
+            if (period) renderTransactions(period);
+        });
+
+        // ============================================
+        // SHARED CONTROLS RENDERING
+        // ============================================
+        function renderSharedControls(period, expense) {
+            period.owedPeople = period.owedPeople || [];
+            const tbody = document.getElementById('expense-shared-body');
+            if (!period.owedPeople || period.owedPeople.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="color:var(--dark-gray);padding:var(--spacing-md);">No people added yet. Use "Add new person" to create. 👥</td></tr>';
+                return;
+            }
+            const allocations = {};
+            if (expense && Array.isArray(expense.sharedAllocations)) {
+                expense.sharedAllocations.forEach(a => {
+                    if (a && (a.idx !== undefined)) allocations[a.idx] = a.amount;
+                });
+            }
+
+            tbody.innerHTML = period.owedPeople.map((p, idx) => {
+                const currentOwes = (p.amount || 0).toFixed(2);
+                const prefill = allocations[idx] !== undefined ? parseFloat(allocations[idx]).toFixed(2) : '';
+                return `
+                    <tr data-shared-idx="${idx}">
+                        <td><strong>${escapeHtml(p.name)}</strong></td>
+                        <td><strong style="color:var(--primary-blue);">£${currentOwes}</strong></td>
+                        <td><input type="number" step="0.01" id="shared-owed-${idx}" placeholder="0.00" value="${prefill}"></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // EXPENSE MANAGEMENT
+        // ============================================
+        function openAddExpenseModal() {
+            editingExpenseId = null;
+            document.getElementById('expense-modal-title').textContent = 'Add Expense';
+            document.getElementById('expense-form').reset();
+            document.getElementById('expense-id').value = '';
+            document.getElementById('expense-date').value = formatDateForInput(new Date());
+            document.getElementById('income-controls').style.display = 'none';
+            populatePeopleAndSharedForPeriod();
+            openModal('expense-modal');
+        }
+
+        function editExpense(expenseId) {
+            const period = getPeriod(currentPeriodId);
+            const expense = period.expenses.find(e => e.id === expenseId);
+            if (!expense) { alert('Expense not found!'); return; }
+            editingExpenseId = expenseId;
+            document.getElementById('expense-modal-title').textContent = 'Edit Expense';
+            document.getElementById('expense-id').value = expense.id;
+            document.getElementById('expense-date').value = expense.date;
+            document.getElementById('expense-amount').value = expense.amount;
+            document.getElementById('expense-description').value = expense.description;
+            document.getElementById('expense-category').value = expense.category;
+            updateSubcategories();
+            document.getElementById('expense-subcategory').value = expense.subcategory;
+            document.getElementById('expense-payment').value = expense.paymentMethod;
+            document.getElementById('expense-notes').value = expense.notes || '';
+            populatePeopleAndSharedForPeriod(expense);
+            if (expense.category === 'Income') {
+                document.getElementById('income-controls').style.display = 'flex';
+                if (expense.receivedFromIdx !== undefined) document.getElementById('expense-received-from').value = expense.receivedFromIdx;
+                if (expense.applyToDebt) document.getElementById('expense-apply-debt').value = expense.applyToDebt;
+            } else document.getElementById('income-controls').style.display = 'none';
+            openModal('expense-modal');
+        }
+
+        function saveExpense(e) {
+            e.preventDefault();
+            const period = getPeriod(currentPeriodId);
+            if (!period) { alert('No period selected'); return; }
+
+            const expenseId = editingExpenseId || 'expense_' + Date.now();
+            const amount = parseFloat(document.getElementById('expense-amount').value || 0);
+            const category = document.getElementById('expense-category').value;
+            const paymentMethod = document.getElementById('expense-payment').value;
+
+            const expense = {
+                id: expenseId,
+                date: document.getElementById('expense-date').value,
+                amount: amount,
+                description: document.getElementById('expense-description').value,
+                category: category,
+                subcategory: document.getElementById('expense-subcategory').value,
+                paymentMethod: paymentMethod,
+                notes: document.getElementById('expense-notes').value,
+                sharedAllocations: []
+            };
+
+            // Handle shared expenses (people who owe you money)
+            period.owedPeople = period.owedPeople || [];
+            let totalOwedFromInputs = 0;
+            const allocations = [];
+            for (let i = 0; i < period.owedPeople.length; i++) {
+                const input = document.getElementById(`shared-owed-${i}`);
+                if (!input) continue;
+                const v = input.value;
+                const val = v === '' ? 0 : parseFloat(v || 0);
+                if (isNaN(val)) { alert('One of the shared amounts is not valid'); return; }
+                if (val > 0) {
+                    period.owedPeople[i].amount = parseFloat(((period.owedPeople[i].amount || 0) + val).toFixed(2));
+                    allocations.push({ idx: i, name: period.owedPeople[i].name, amount: parseFloat(val.toFixed(2)) });
+                    totalOwedFromInputs += val;
+                }
+            }
+
+            expense.sharedAllocations = allocations;
+            const myShare = parseFloat((amount - totalOwedFromInputs).toFixed(2));
+            expense.myShare = isNaN(myShare) ? amount : myShare;
+
+            // Handle income that reduces debt
+            if (category === 'Income') {
+                const recIdx = document.getElementById('expense-received-from').value;
+                const applyVal = document.getElementById('expense-apply-debt').value;
+                const applyAmount = applyVal ? parseFloat(applyVal) : null;
+                period.owedPeople = period.owedPeople || [];
+                if (recIdx) {
+                    const idx = parseInt(recIdx,10);
+                    const reduceBy = applyAmount || amount;
+                    if (period.owedPeople[idx]) {
+                        period.owedPeople[idx].amount = parseFloat(((period.owedPeople[idx].amount || 0) - reduceBy).toFixed(2));
+                        if (period.owedPeople[idx].amount <= 0) {
+                            period.owedPeople.splice(idx,1);
+                        }
+                        expense.receivedFromIdx = idx;
+                    }
+                }
+                if (applyAmount) expense.applyToDebt = applyAmount;
+            }
+
+            // Update bank balances - use myShare (what you actually paid) not total amount
+            const sb = period.startingBalances || {};
+            function adjustAccount(method, delta) {
+                if (!sb) return;
+                if (method === 'Starling Current') sb.starlingCurrent = parseFloat(((sb.starlingCurrent || 0) + delta).toFixed(2));
+                else if (method === 'Starling Saver') sb.starlingSaver = parseFloat(((sb.starlingSaver || 0) + delta).toFixed(2));
+                else if (method === 'Lloyds Credit') sb.lloydsCredit = parseFloat(((sb.lloydsCredit || 0) + delta).toFixed(2));
+                else if (method === 'Natwest Credit') sb.natwestCredit = parseFloat(((sb.natwestCredit || 0) + delta).toFixed(2));
+                else if (method === 'Virgin Credit') sb.virginCredit = parseFloat(((sb.virginCredit || 0) + delta).toFixed(2));
+                else {}
+            }
+
+            if (category === 'Income') {
+                // Income increases account balance (add full amount)
+                adjustAccount(paymentMethod, amount);
+            } else {
+                // Expense decreases balance - use FULL amount (not myShare) because you paid the full amount
+                if (paymentMethod === 'Lloyds Credit' || paymentMethod === 'Natwest Credit' || paymentMethod === 'Virgin Credit') {
+                    // Credit cards: increase debt by full amount
+                    adjustAccount(paymentMethod, amount);
+                } else {
+                    // Debit/cash: reduce balance by full amount
+                    adjustAccount(paymentMethod, -amount);
+                }
+            }
+
+            // Save the expense to the period
+            const periodObj = getPeriod(currentPeriodId);
+            if (!periodObj) { alert('Current period missing'); return; }
+            
+            // Copy updated balances back to period
+            periodObj.startingBalances = sb;
+            periodObj.owedPeople = period.owedPeople;
+            
+            if (editingExpenseId) {
+                const idx = periodObj.expenses.findIndex(x => x.id === expenseId);
+                if (idx !== -1) periodObj.expenses[idx] = expense;
+            } else {
+                periodObj.expenses.push(expense);
+            }
+
+            updatePeriodInStorage(periodObj);
+            closeModal('expense-modal');
+            viewPeriod(currentPeriodId);
+        }
+
+        function openEditBalancesModal() {
+            const period = getPeriod(currentPeriodId);
+            if (!period) { alert('No period selected'); return; }
+            
+            const sb = period.startingBalances || {};
+            document.getElementById('edit-starling-current').value = (sb.starlingCurrent || 0).toFixed(2);
+            document.getElementById('edit-starling-saver').value = (sb.starlingSaver || 0).toFixed(2);
+            document.getElementById('edit-lloyds-credit').value = (sb.lloydsCredit || 0).toFixed(2);
+            document.getElementById('edit-natwest-credit').value = (sb.natwestCredit || 0).toFixed(2);
+            document.getElementById('edit-virgin-credit').value = (sb.virginCredit || 0).toFixed(2);
+            
+            openModal('edit-balances-modal');
+        }
+
+        function saveBalanceEdits(e) {
+            e.preventDefault();
+            const period = getPeriod(currentPeriodId);
+            if (!period) { alert('No period selected'); return; }
+            
+            period.startingBalances = {
+                starlingCurrent: parseFloat(document.getElementById('edit-starling-current').value || 0),
+                starlingSaver: parseFloat(document.getElementById('edit-starling-saver').value || 0),
+                lloydsCredit: parseFloat(document.getElementById('edit-lloyds-credit').value || 0),
+                natwestCredit: parseFloat(document.getElementById('edit-natwest-credit').value || 0),
+                virginCredit: parseFloat(document.getElementById('edit-virgin-credit').value || 0)
+            };
+            
+            updatePeriodInStorage(period);
+            closeModal('edit-balances-modal');
+            viewPeriod(currentPeriodId);
+            alert('Balances updated successfully! ✅');
+        }
+
+        function deleteExpense(expenseId) {
+            if (!confirm('Are you sure you want to delete this expense?')) return;
+            const period = getPeriod(currentPeriodId);
+            const expense = period.expenses.find(e => e.id === expenseId);
+            if (!expense) return;
+
+            // Reverse the shared allocations (reduce what people owe you)
+            if (expense.sharedAllocations && expense.sharedAllocations.length > 0) {
+                period.owedPeople = period.owedPeople || [];
+                expense.sharedAllocations.forEach(alloc => {
+                    if (period.owedPeople[alloc.idx]) {
+                        period.owedPeople[alloc.idx].amount = parseFloat(((period.owedPeople[alloc.idx].amount || 0) - alloc.amount).toFixed(2));
+                        // Remove if they now owe nothing or negative
+                        if (period.owedPeople[alloc.idx].amount <= 0) {
+                            period.owedPeople.splice(alloc.idx, 1);
+                        }
+                    }
+                });
+            }
+
+            // Reverse the balance changes
+            const sb = period.startingBalances || {};
+            function adjustAccount(method, delta) {
+                if (!sb) return;
+                if (method === 'Starling Current') sb.starlingCurrent = parseFloat(((sb.starlingCurrent || 0) + delta).toFixed(2));
+                else if (method === 'Starling Saver') sb.starlingSaver = parseFloat(((sb.starlingSaver || 0) + delta).toFixed(2));
+                else if (method === 'Lloyds Credit') sb.lloydsCredit = parseFloat(((sb.lloydsCredit || 0) + delta).toFixed(2));
+                else if (method === 'Natwest Credit') sb.natwestCredit = parseFloat(((sb.natwestCredit || 0) + delta).toFixed(2));
+                else if (method === 'Virgin Credit') sb.virginCredit = parseFloat(((sb.virginCredit || 0) + delta).toFixed(2));
+            }
+
+            const amount = expense.amount;
+            const category = expense.category;
+            const paymentMethod = expense.paymentMethod;
+
+            if (category === 'Income') {
+                // Reverse income: subtract from account
+                adjustAccount(paymentMethod, -amount);
+                // If it was applied to someone's debt, add it back
+                if (expense.receivedFromIdx !== undefined) {
+                    const idx = expense.receivedFromIdx;
+                    const reduceBy = expense.applyToDebt || amount;
+                    if (period.owedPeople[idx]) {
+                        period.owedPeople[idx].amount = parseFloat(((period.owedPeople[idx].amount || 0) + reduceBy).toFixed(2));
+                    }
+                }
+            } else {
+                // Reverse expense
+                if (paymentMethod === 'Lloyds Credit' || paymentMethod === 'Natwest Credit' || paymentMethod === 'Virgin Credit') {
+                    // Credit cards: decrease debt
+                    adjustAccount(paymentMethod, -amount);
+                } else {
+                    // Debit/cash: add balance back
+                    adjustAccount(paymentMethod, amount);
+                }
+            }
+
+            period.startingBalances = sb;
+            period.expenses = period.expenses.filter(e => e.id !== expenseId);
+            updatePeriodInStorage(period);
+            viewPeriod(currentPeriodId);
+        }
+
+        function updateSubcategories() {
+            const category = document.getElementById('expense-category').value;
+            const subcategorySelect = document.getElementById('expense-subcategory');
+            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+            if (category && subcategories[category]) {
+                subcategories[category].forEach(sub => {
+                    const opt = document.createElement('option'); opt.value = sub; opt.textContent = sub; subcategorySelect.appendChild(opt);
+                });
+            }
+            if (category === 'Income') document.getElementById('income-controls').style.display = 'flex';
+            else document.getElementById('income-controls').style.display = 'none';
+        }
+
+        document.getElementById('btn-add-person').addEventListener('click', function(){
+            const name = document.getElementById('expense-add-person').value.trim();
+            if (!name) { alert('Enter a name to add'); return; }
+            const period = getPeriod(currentPeriodId);
+            period.owedPeople = period.owedPeople || [];
+            period.owedPeople.push({ name: name, amount: 0 });
+            updatePeriodInStorage(period);
+            populatePeopleAndSharedForPeriod();
+            document.getElementById('expense-add-person').value = '';
+        });
+
+        function populatePeopleAndSharedForPeriod(expense) {
+            const period = getPeriod(currentPeriodId);
+            if (!period) return;
+            renderSharedControls(period, expense);
+            const received = document.getElementById('expense-received-from');
+            if (received) {
+                received.innerHTML = '<option value="">Select person</option>';
+                (period.owedPeople || []).forEach((p, idx) => {
+                    const o = document.createElement('option');
+                    o.value = idx;
+                    o.textContent = `${p.name} (£${(p.amount||0).toFixed(2)})`;
+                    received.appendChild(o);
+                });
+            }
+        }
+
+        // ============================================
+        // CALCULATIONS
+        // ============================================
+        function calculatePeriodStats(period) {
+            const categorySpending = { bills:0, food:0, wants:0, oneOff:0, unexpected:0 };
+            let totalIncome = 0;
+            (period.expenses || []).forEach(expense => {
+                const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
+                if (expense.category === 'Income') totalIncome += amount;
+                else if (expense.category === 'Bills/Subscriptions') categorySpending.bills += amount;
+                else if (expense.category === 'Food') categorySpending.food += amount;
+                else if (expense.category === 'Wants') categorySpending.wants += amount;
+                else if (expense.category === 'One-off Needs') categorySpending.oneOff += amount;
+                else if (expense.category === 'Unexpected') categorySpending.unexpected += amount;
+            });
+            const totalSpent = categorySpending.bills + categorySpending.food + categorySpending.wants + categorySpending.oneOff + categorySpending.unexpected;
+            const totalBudget = period.budgets.total || 0;
+            const overUnder = totalBudget - (categorySpending.bills + categorySpending.food + categorySpending.wants);
+            let budgetStatus = 'good';
+            if (overUnder < 0) budgetStatus = 'over';
+            else if (overUnder < totalBudget * 0.1) budgetStatus = 'warning';
+            const savingsRate = period.salary ? ((period.salary - totalSpent) / period.salary) * 100 : 0;
+            return {
+                categorySpending,
+                totalSpent,
+                totalBudget,
+                overUnder,
+                budgetStatus,
+                savingsRate,
+                totalIncome
+            };
+        }
+
+        // ============================================
+        // FULL SUMMARY
+        // ============================================
+        function loadFullSummary() {
+            const periods = getPeriods();
+            const container = document.getElementById('full-summary-content');
+            if (periods.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No periods to summarize yet. 📊</p>';
+                return;
+            }
+            let totalSpent = 0, totalBudget = 0, totalSalary = 0;
+            const periodStats = periods.map(period => {
+                const stats = calculatePeriodStats(period);
+                totalSpent += stats.totalSpent;
+                totalBudget += period.budgets.total;
+                totalSalary += period.salary;
+                
+                // Calculate net worth data for the period
+                const sb = period.startingBalances || {};
+                const currentMoney = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
+                const currentDebts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+                const netWorth = currentMoney - currentDebts;
+                const totalOwed = (period.owedPeople || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+                const netWorthOncePaid = netWorth + totalOwed;
+                
+                return { period, stats, currentMoney, currentDebts, netWorth, netWorthOncePaid };
+            }).sort((a,b) => new Date(b.period.startDate) - new Date(a.period.startDate));
+            const overallSavingsRate = totalSalary ? ((totalSalary - totalSpent) / totalSalary) * 100 : 0;
+            container.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+                    <div class="summary-card"><h3 style="color:var(--white);">Total Salary</h3><div class="value">£${totalSalary.toFixed(2)}</div></div>
+                    <div class="summary-card"><h3 style="color:var(--white);">Total Spent</h3><div class="value">£${totalSpent.toFixed(2)}</div></div>
+                    <div class="summary-card"><h3 style="color:var(--white);">Savings Rate</h3><div class="value">${overallSavingsRate.toFixed(1)}%</div></div>
+                    <div class="summary-card"><h3 style="color:var(--white);">Budget Status</h3><div class="value">${totalSpent > totalBudget ? '⚠️ Over' : '✅ Under'}</div></div>
+                </div>
+                <h3 style="color:var(--dark-blue); margin:var(--spacing-lg) 0 var(--spacing-md) 0;">📈 Period Breakdown</h3>
+                <div class="table-container">
+                    <table style="font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Salary</th>
+                                <th>Spent</th>
+                                <th>Budget</th>
+                                <th>Savings</th>
+                                <th>Money</th>
+                                <th>Debts</th>
+                                <th>Net Worth</th>
+                                <th>NW + Owed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
+                                return `<tr>
+                                    <td><strong>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</strong></td>
+                                    <td><strong>£${period.salary.toFixed(2)}</strong></td>
+                                    <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
+                                    <td><strong>£${(period.budgets.total||0).toFixed(2)}</strong></td>
+                                    <td><strong style="color:var(--primary-blue);">${stats.savingsRate.toFixed(1)}%</strong></td>
+                                    <td><strong style="color:var(--success);">£${currentMoney.toFixed(2)}</strong></td>
+                                    <td><strong style="color:var(--danger);">£${currentDebts.toFixed(2)}</strong></td>
+                                    <td><strong style="color:${netWorth < 0 ? 'var(--danger)' : 'var(--success)'};">£${netWorth.toFixed(2)}</strong></td>
+                                    <td><strong style="color:var(--primary-blue);">£${netWorthOncePaid.toFixed(2)}</strong></td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // SUBCATEGORY MANAGEMENT
+        // ============================================
+        function renderSubcategoryManagement() {
+            const container = document.getElementById('subcategory-management');
+            const categories = Object.keys(subcategories);
+            
+            container.innerHTML = categories.map(category => `
+                <div style="margin-bottom:var(--spacing-lg);">
+                    <h4 style="color:var(--primary-blue);margin-bottom:var(--spacing-sm);">${category}</h4>
+                    <div class="subcategory-list" id="subcats-${category.replace(/[^a-zA-Z]/g, '')}">
+                        ${subcategories[category].map((sub, idx) => `
+                            <span class="subcategory-chip">
+                                ${escapeHtml(sub)}
+                                <button onclick="removeSubcategory('${category}', ${idx})">×</button>
+                            </span>
+                        `).join('')}
+                    </div>
+                    <div class="inline-input">
+                        <input type="text" id="new-subcat-${category.replace(/[^a-zA-Z]/g, '')}" placeholder="Add subcategory">
+                        <button class="btn btn-sm btn-primary" onclick="addSubcategory('${category}')">Add</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addSubcategory(category) {
+            const inputId = 'new-subcat-' + category.replace(/[^a-zA-Z]/g, '');
+            const input = document.getElementById(inputId);
+            const value = input.value.trim();
+            
+            if (!value) {
+                alert('Please enter a subcategory name');
+                return;
+            }
+            
+            if (!subcategories[category]) {
+                subcategories[category] = [];
+            }
+            
+            if (subcategories[category].includes(value)) {
+                alert('This subcategory already exists');
+                return;
+            }
+            
+            subcategories[category].push(value);
+            saveSubcategories();
+            input.value = '';
+            renderSubcategoryManagement();
+        }
+
+        function removeSubcategory(category, index) {
+            if (!confirm('Remove this subcategory?')) return;
+            subcategories[category].splice(index, 1);
+            saveSubcategories();
+            renderSubcategoryManagement();
+        }
+
+        // Make functions globally accessible
+        window.addSubcategory = addSubcategory;
+        window.removeSubcategory = removeSubcategory;
+
+        // ============================================
+        // EXPORT / IMPORT
+        // ============================================
+        function exportAllData() {
+            const periods = getPeriods();
+            const exportData = {
+                periods: periods,
+                subcategories: subcategories
+            };
+            const str = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([str], { type:'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `budget-tracker-backup-${formatDateForInput(new Date())}.json`;
+            link.click();
+        }
+
+        function exportPeriodCSV() {
+            const period = getPeriod(currentPeriodId);
+            if (!period) { alert('Period not found!'); return; }
+            let csv = 'Date,Description,Category,Subcategory,Amount,My Share,Payment Method,Notes\n';
+            (period.expenses || []).forEach(expense => {
+                csv += expense.date + ',';
+                csv += '"' + (expense.description || '') + '",';
+                csv += expense.category + ',';
+                csv += (expense.subcategory || '') + ',';
+                csv += expense.amount + ',';
+                csv += (expense.myShare || '') + ',';
+                csv += (expense.paymentMethod || '') + ',';
+                csv += '"' + (expense.notes || '') + '"\n';
+            });
+            const blob = new Blob([csv], { type:'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `period-${formatDate(period.startDate)}-${formatDate(period.endDate)}.csv`;
+            link.click();
+        }
+
+        function importAllData(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const imported = JSON.parse(evt.target.result);
+                    if (!confirm('This will replace all existing data. Are you sure?')) return;
+                    
+                    // Handle different import formats
+                    if (imported.periods) {
+                        savePeriods(imported.periods);
+                        if (imported.subcategories) {
+                            subcategories = imported.subcategories;
+                            saveSubcategories();
+                        }
+                    } else if (Array.isArray(imported)) {
+                        // Old format - just periods array
+                        savePeriods(imported);
+                    } else {
+                        alert('Unexpected JSON format');
+                        return;
+                    }
+                    
+                    loadPeriods();
+                    alert('Data imported successfully! ✅');
+                } catch (err) { alert('Error importing data: ' + err.message); }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (!confirm('This will delete ALL data permanently. Are you sure?')) return;
+            if (!confirm('This cannot be undone! Really delete everything?')) return;
+            localStorage.removeItem('budgetPeriods');
+            localStorage.removeItem('budgetSubcategories');
+            loadPeriods();
+            alert('All data cleared! 🗑️');
+        }
+
+        // ============================================
+        // UTILITY
+        // ============================================
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        function formatDateForInput(date) { return date.toISOString().split('T')[0]; }
+        function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); }); }
+
+        function updatePeriodInStorage(period) {
+            const periods = getPeriods();
+            const idx = periods.findIndex(p => p.id === period.id);
+            if (idx !== -1) { periods[idx] = period; savePeriods(periods); } else {
+                periods.push(period); savePeriods(periods);
+            }
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function(){
+            loadSubcategories(); // Load custom subcategories on startup
+            
+            document.getElementById('tab-home').addEventListener('click', () => showSection('home'));
+            document.getElementById('tab-summary').addEventListener('click', () => showSection('summary'));
+            document.getElementById('tab-settings').addEventListener('click', () => showSection('settings'));
+
+            document.getElementById('btn-new-period').addEventListener('click', openNewPeriodModal);
+            document.getElementById('btn-back-home').addEventListener('click', () => showSection('home'));
+            document.getElementById('btn-add-expense').addEventListener('click', openAddExpenseModal);
+            document.getElementById('btn-edit-balances').addEventListener('click', openEditBalancesModal);
+            document.getElementById('btn-export-csv').addEventListener('click', exportPeriodCSV);
+
+            document.getElementById('close-new-period').addEventListener('click', () => closeModal('new-period-modal'));
+            document.getElementById('cancel-new-period').addEventListener('click', () => closeModal('new-period-modal'));
+            document.getElementById('close-expense').addEventListener('click', () => closeModal('expense-modal'));
+            document.getElementById('cancel-expense').addEventListener('click', () => closeModal('expense-modal'));
+            document.getElementById('close-edit-balances').addEventListener('click', () => closeModal('edit-balances-modal'));
+            document.getElementById('cancel-edit-balances').addEventListener('click', () => closeModal('edit-balances-modal'));
+
+            document.getElementById('new-period-form').addEventListener('submit', createNewPeriod);
+            document.getElementById('expense-form').addEventListener('submit', saveExpense);
+            document.getElementById('edit-balances-form').addEventListener('submit', saveBalanceEdits);
+            document.getElementById('expense-category').addEventListener('change', function(){
+                updateSubcategories();
+                const category = document.getElementById('expense-category').value;
+                if (category === 'Income') document.getElementById('income-controls').style.display = 'flex';
+                else document.getElementById('income-controls').style.display = 'none';
+                populatePeopleAndSharedForPeriod();
+            });
+
+            document.getElementById('btn-export-all').addEventListener('click', exportAllData);
+            document.getElementById('btn-import-trigger').addEventListener('click', () => document.getElementById('import-file').click());
+            document.getElementById('import-file').addEventListener('change', importAllData);
+            document.getElementById('btn-clear-all').addEventListener('click', clearAllData);
+
+            loadPeriods();
+
+            const periods = getPeriods();
+            if (periods.length === 1) viewPeriod(periods[0].id);
+
+            document.addEventListener('click', function(evt){
+                if (evt.target && evt.target.matches('[data-edit-expense]')) editExpense(evt.target.dataset.editExpense);
+                if (evt.target && evt.target.matches('[data-delete-expense]')) deleteExpense(evt.target.dataset.deleteExpense);
+            });
+        });
+    </script>
 </body>
 </html>
