@@ -30,9 +30,15 @@ exports.handler = async (event, context) => {
     await client.connect();
 
     // 1. Get Periods Data (Array of period objects)
-    // 🚨 USING COLUMN NAME 'period' in table 'finance_data'
-    const periodsResult = await client.query('SELECT periods FROM "finance_data" ORDER BY periods->>\'startDate\' DESC');
-    const periodsArray = periodsResult.rows.map(row => row.period); // Changed from row.period_data
+    // 🚨 NOW USING THE CORRECT COLUMN NAME: 'periods'
+    const periodsResult = await client.query('SELECT periods FROM "finance_data" ORDER BY periods->>0->>\'startDate\' DESC');
+
+    // Map the periods JSON object, filter out any rows where the column is NULL.
+    // The periods column holds an ARRAY of period objects, so we need to map the first element.
+    const periodsArray = periodsResult.rows
+        .map(row => row.periods)
+        .filter(periods => periods !== null)
+        .flat(); // Flatten the result if the query returns an array of arrays of periods
 
     // 2. Get Subcategories Data (Single config object from subcategories_data table)
     const subcategoriesResult = await client.query('SELECT app_config FROM subcategories_data WHERE id = 1');
