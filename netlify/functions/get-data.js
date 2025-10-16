@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
 
     // 1. Get Periods Data (Array of period objects)
     // 🚨 USING COLUMN NAME 'period' in table 'finance_data'
-    const periodsResult = await client.query('SELECT period FROM "finance_data" ORDER BY period->>\'startDate\' DESC');
+    const periodsResult = await client.query('SELECT periods FROM "finance_data" ORDER BY period->>\'startDate\' DESC');
     const periodsArray = periodsResult.rows.map(row => row.period); // Changed from row.period_data
 
     // 2. Get Subcategories Data (Single config object from subcategories_data table)
