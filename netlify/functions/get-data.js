@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
   // 2. Get the connection string from Netlify's environment variable
   // The Neon Netlify extension typically sets this as DATABASE_URL.
   // If you manually set it as NEON_DATABASE_URL, change the variable name below.
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = process.env.NETLIFY_DATABASE_URL;
 
   // Handle the case where the variable isn't set (safety check)
   if (!connectionString) {
