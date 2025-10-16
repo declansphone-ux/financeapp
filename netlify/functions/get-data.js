@@ -15,9 +15,8 @@ exports.handler = async (event, context) => {
     await client.connect();
 
     // 1. Get Periods Data (from finance_data table)
-    // The 'periods' column holds a single JSONB array of all period objects.
-    // We order by the 'startDate' of the FIRST element in that JSONB array.
-    const periodsResult = await client.query('SELECT periods FROM "finance_data" ORDER BY periods->>0->>\'startDate\' DESC');
+    // Removed complex ORDER BY clause to avoid SQL operator errors.
+    const periodsResult = await client.query('SELECT periods FROM "finance_data"');
     
     let periodsArray = [];
     if (periodsResult.rows.length > 0) {
@@ -26,7 +25,15 @@ exports.handler = async (event, context) => {
         periodsArray = periodsResult.rows
             .map(row => row.periods)
             .filter(periods => periods !== null)
-            .flat(); // Use .flat() to ensure we return a single array if the DB returns multiple arrays
+            .flat(); // Flatten the result (e.g., if DB returns [[period1, period2], [period3]])
+
+        // *** SORTING NOW DONE IN JAVASCRIPT ***
+        // Sorts periods by the 'startDate' of the first element in the array, descending.
+        periodsArray.sort((a, b) => {
+            const dateA = a[0] ? new Date(a[0].startDate) : 0;
+            const dateB = b[0] ? new Date(b[0].startDate) : 0;
+            return dateB - dateA; // Descending order
+        });
     }
 
     // 2. Get Subcategories Data (from subcategories_data table)
