@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
     await client.connect();
 
     // 4. Run the query to get all your finance data
-    const result = await client.query('SELECT * FROM finance_data ORDER BY date DESC');
+    const result = await client.query('SELECT * FROM finance_data');
 
     // 5. Return the data rows as JSON
     return {
