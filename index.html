@@ -1182,6 +1182,14 @@
         let currentPeriodId = null;
         let editingExpenseId = null;
 
+                // Global in-memory storage for the periods data
+        let periods = []; 
+        
+        // API Endpoints for the Netlify Functions
+        // 🚨 IMPORTANT: Replace YOUR_SITE_URL with your actual Netlify domain!
+        const API_GET_URL = "https://declanfinanceapp.netlify.app/.netlify/functions/get-data";
+        const API_SAVE_URL = "https://declanfinanceapp.netlify.app/.netlify/functions/save-data";
+
         // ============================================
         // SUBCATEGORIES MAPPING (now stored/loaded from localStorage)
         // ============================================
