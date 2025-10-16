@@ -1220,8 +1220,15 @@
         function getPeriods() {
             return periods; // Returns the global in-memory array
         }
-        function savePeriods(periods) {
-            localStorage.setItem('budgetPeriods', JSON.stringify(periods));
+        async function savePeriods(newPeriods) {
+            // 1. Update the global in-memory array (assumes you declared 'let periods = [];' in Step 34)
+            periods = newPeriods; 
+        
+            // 2. Refresh the UI immediately
+            loadPeriods();      
+        
+            // 3. Trigger the database save immediately
+            await saveAllDataToDatabase(); 
         }
         function getPeriod(periodId) {
             const periods = getPeriods();
