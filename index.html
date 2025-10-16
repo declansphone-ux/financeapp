@@ -1202,16 +1202,22 @@
             'Income': ['Salary', 'Freelance', 'Gifts', 'Refund', 'Interest', 'Other']
         };
 
-        // Load custom subcategories if they exist
+        // DELETE the old loadSubcategories() and replace it with this:
         function loadSubcategories() {
-            const saved = localStorage.getItem('budgetSubcategories');
-            if (saved) {
-                subcategories = JSON.parse(saved);
+            // This function is now mainly used to ensure the subcategories are available
+            // in memory, which they will be after the database fetch.
+            // If your app has specific UI refresh logic tied to this, it stays here.
+            // For now, it simply ensures the global variable is ready.
+            if (typeof subcategories === 'undefined') {
+                console.warn("Subcategories global variable is missing.");
             }
         }
 
-        function saveSubcategories() {
-            localStorage.setItem('budgetSubcategories', JSON.stringify(subcategories));
+        // DELETE the old saveSubcategories() and replace it with this:
+        async function saveSubcategories() {
+            // Since subcategories are part of the full application state, 
+            // saving them triggers a full save to the database.
+            await saveAllDataToDatabase(); 
         }
 
         // ============================================
@@ -1240,6 +1246,56 @@
             if (i !== -1) { periods[i] = updatedPeriod; savePeriods(periods); }
         }
 
+        async function initializeDataFromDatabase() {
+            console.log("Attempting to load data from Netlify API...");
+            try {
+                const response = await fetch(API_GET_URL);
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+        
+                // Expecting the combined object: { periods: [...], subcategories: {...} }
+                const fullDataObject = await response.json();
+                
+                // 1. SET the global 'periods' array
+                periods = fullDataObject.periods || []; 
+                
+                // 2. SET the global 'subcategories' object
+                // We ensure the initial categories object is overwritten by the saved version
+                subcategories = fullDataObject.subcategories || subcategories; // Use existing default if DB returns empty
+                
+                // 3. Refresh the UI using the now populated global data
+                loadPeriods(); 
+                
+                console.log('Data successfully loaded from Neon DB via Netlify API. ✅');
+        
+            } catch (error) {
+                console.error("Error loading initial finance data from API:", error);
+                // Display an error message
+                alert('Failed to load data from database. Check console for details.');
+                
+                // Ensure UI is cleared or shows an error if loading fails
+                const container = document.getElementById('periods-container');
+                if (container) {
+                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">⚠️ Failed to load data from database. See console for details.</p>';
+                } else {
+                    // Fallback if container is not ready
+                    console.log('Periods container element not found.');
+                }
+            }
+        }
+        
+        
+        // ============================================
+        // APP STARTUP (STEP 44)
+        // ============================================
+        
+        // Replace the old loadPeriods() call with the new database initializer
+        initializeDataFromDatabase();
+
+
+        
         // ============================================
         // NAV & MODALS
         // ============================================
@@ -2322,10 +2378,13 @@
             });
         });
 
-        // --- NEW FUNCTION TO SAVE DATA TO NETLIFY API ---
+                // --- NEW FUNCTION TO SAVE ALL DATA TO NETLIFY API ---
         async function saveAllDataToDatabase() {
-            // 1. Get the current data array from the global state
-            const periodsData = getPeriods(); 
+            // 1. Compile the full state object from global variables
+            const fullDataObject = {
+                periods: periods, // Global 'periods' array
+                subcategories: subcategories // Global 'subcategories' object
+            };
         
             try {
                 const response = await fetch(API_SAVE_URL, {
@@ -2333,14 +2392,13 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    // Send the entire periods array as the body
-                    body: JSON.stringify(periodsData)
+                    // Send the entire combined object as the body
+                    body: JSON.stringify(fullDataObject)
                 });
         
                 const result = await response.json();
         
                 if (!response.ok) {
-                    // Throw the error message from the function body
                     throw new Error(result.error || `HTTP error! Status: ${response.status}`);
                 }
         
