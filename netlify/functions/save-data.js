@@ -29,11 +29,11 @@ exports.handler = async (event, context) => {
     // Clear old data and insert new periods
     await client.query('TRUNCATE TABLE "finance_data" RESTART IDENTITY');
 
-    const insertPromises = fullDataObject.periods.map(period => {
+    const insertPromises = fullDataObject.periods.map(periods => {
       // 🚨 USING COLUMN NAME 'period' in table 'finance_data'
       return client.query(
-        `INSERT INTO "finance_data" (period) VALUES ($1)`, 
-        [JSON.stringify(period)]
+        `INSERT INTO "finance_data" (periods) VALUES ($1)`, 
+        [JSON.stringify(periods)]
       );
     });
     await Promise.all(insertPromises);
