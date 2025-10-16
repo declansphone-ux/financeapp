@@ -1218,8 +1218,7 @@
         // LOCALSTORAGE HELPERS (periods)
         // ============================================
         function getPeriods() {
-            const p = localStorage.getItem('budgetPeriods');
-            return p ? JSON.parse(p) : [];
+            return periods; // Returns the global in-memory array
         }
         function savePeriods(periods) {
             localStorage.setItem('budgetPeriods', JSON.stringify(periods));
