@@ -2331,6 +2331,38 @@
             }
         }
 
+                // --- NEW FUNCTION TO SAVE ALL DATA TO NETLIFY API ---
+        async function saveAllDataToDatabase() {
+            // 1. Compile the full state object from global variables
+            const fullDataObject = {
+                periods: periods, // Global 'periods' array
+                subcategories: subcategories // Global 'subcategories' object
+            };
+        
+            try {
+                const response = await fetch(API_SAVE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // Send the entire combined object as the body
+                    body: JSON.stringify(fullDataObject)
+                });
+        
+                const result = await response.json();
+        
+                if (!response.ok) {
+                    throw new Error(result.error || `HTTP error! Status: ${response.status}`);
+                }
+        
+                console.log('Data successfully saved to the cloud! 🎉');
+        
+            } catch (error) {
+                console.error("Error saving data to API:", error);
+                alert('⚠️ Failed to save data. Please try again. See console for details.');
+            }
+        }
+        
         // ============================================
         // EVENT LISTENERS
         // ============================================
@@ -2391,38 +2423,7 @@
             });
         });
 
-                // --- NEW FUNCTION TO SAVE ALL DATA TO NETLIFY API ---
-        async function saveAllDataToDatabase() {
-            // 1. Compile the full state object from global variables
-            const fullDataObject = {
-                periods: periods, // Global 'periods' array
-                subcategories: subcategories // Global 'subcategories' object
-            };
-        
-            try {
-                const response = await fetch(API_SAVE_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    // Send the entire combined object as the body
-                    body: JSON.stringify(fullDataObject)
-                });
-        
-                const result = await response.json();
-        
-                if (!response.ok) {
-                    throw new Error(result.error || `HTTP error! Status: ${response.status}`);
-                }
-        
-                console.log('Data successfully saved to the cloud! 🎉');
-        
-            } catch (error) {
-                console.error("Error saving data to API:", error);
-                alert('⚠️ Failed to save data. Please try again. See console for details.');
-            }
-        }
-        // --- END NEW FUNCTION ---
+       // --- END NEW FUNCTION ---
         
     </script>
 </body>
