@@ -1189,7 +1189,7 @@
         // 🚨 IMPORTANT: Replace YOUR_SITE_URL with your actual Netlify domain!
         const API_GET_URL = "https://declanfinanceapp.netlify.app/.netlify/functions/get-data";
         const API_SAVE_URL = "https://declanfinanceapp.netlify.app/.netlify/functions/save-data";
-
+        const ACCESS_PASSWORD = '972912';
         // ============================================
         // SUBCATEGORIES MAPPING (now stored/loaded from localStorage)
         // ============================================
@@ -1275,44 +1275,56 @@
         }
 
         async function initializeDataFromDatabase() {
-            console.log("Attempting to load data from Netlify API...");
-            try {
-                const response = await fetch(API_GET_URL);
-        
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-        
-                // Expecting the combined object: { periods: [...], subcategories: {...} }
-                const fullDataObject = await response.json();
-                
-                // 1. SET the global 'periods' array
-                periods = fullDataObject.periods || []; 
-                
-                // 2. SET the global 'subcategories' object
-                // We ensure the initial categories object is overwritten by the saved version
-                subcategories = fullDataObject.subcategories || subcategories; // Use existing default if DB returns empty
-                
-                // 3. Refresh the UI using the now populated global data
-                loadPeriods(); 
-                
-                console.log('Data successfully loaded from Neon DB via Netlify API. ✅');
-        
-            } catch (error) {
-                console.error("Error loading initial finance data from API:", error);
-                // Display an error message
-                alert('Failed to load data from database. Check console for details.');
-                
-                // Ensure UI is cleared or shows an error if loading fails
-                const container = document.getElementById('periods-container');
-                if (container) {
-                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">⚠️ Failed to load data from database. See console for details.</p>';
-                } else {
-                    // Fallback if container is not ready
-                    console.log('Periods container element not found.');
-                }
-            }
+    // ----------------------------------------------------
+    // 1. PASSWORD CHECK (NEW)
+    // ----------------------------------------------------
+    const enteredPassword = prompt("Enter the access password to load data:");
+    
+    if (enteredPassword !== ACCESS_PASSWORD) {
+        showMessage('Access denied. Incorrect password.', 'error');
+        console.error("Access attempt failed.");
+        document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">🚫 Access Denied. Please refresh and enter the correct password.</p>';
+        // Exit function early if password is wrong
+        return; 
+    }
+    showMessage('Access granted. Loading data...', 'info');
+
+    // ----------------------------------------------------
+    // 2. DATA LOAD (ORIGINAL LOGIC)
+    // ----------------------------------------------------
+    console.log("Attempting to load data from Netlify API...");
+    try {
+        const response = await fetch(API_GET_URL);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        // Expecting the combined object: { periods: [...], subcategories: {...} }
+        const fullDataObject = await response.json();
+        
+        // 1. SET the global 'periods' array
+        periods = fullDataObject.periods || []; 
+        
+        // 2. SET the global 'subcategories' object
+        // Use loaded data if available, otherwise keep the default defined in the HTML
+        if (fullDataObject.subcategories && Object.keys(fullDataObject.subcategories).length > 0) {
+            subcategories = fullDataObject.subcategories;
+        } 
+        
+        // 3. Refresh the UI using the now populated global data
+        loadPeriods(); 
+        
+        showMessage('Data successfully loaded from database. ✅', 'success');
+        console.log('Data successfully loaded from Neon DB via Netlify API. ✅');
+
+    } catch (error) {
+        console.error("Error loading initial finance data from API:", error);
+        // Display an alert and a UI error message
+        showMessage('Failed to load data from database. Check console for details.', 'error');
+        document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">⚠️ Failed to load data from database. See console for details.</p>';
+    }
+}
         
         
         // ============================================
