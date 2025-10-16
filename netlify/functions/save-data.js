@@ -21,22 +21,22 @@ exports.handler = async (event, context) => {
     ssl: { rejectUnauthorized: false },
   });
 
-  try {
-    await client.connect();
-    await client.query('BEGIN'); // Start transaction
+// --- 1. Save Periods Data (Finance_data table) ---
+// Clear old data and insert new periods
+await client.query('TRUNCATE TABLE "finance_data" RESTART IDENTITY');
 
-    // --- 1. Save Periods Data (Finance_data table) ---
-    // Clear old data and insert new periods
-    await client.query('TRUNCATE TABLE "finance_data" RESTART IDENTITY');
+// The periods data should be sent as one massive array of objects, 
+// which we will insert into the single 'periods' JSONB column.
 
-    const insertPromises = fullDataObject.periods.map(periods => {
-      // 🚨 USING COLUMN NAME 'period' in table 'finance_data'
-      return client.query(
-        `INSERT INTO "finance_data" (periods) VALUES ($1)`, 
-        [JSON.stringify(periods)]
-      );
-    });
-    await Promise.all(insertPromises);
+// Note: Since the client sends the whole array, we only need one INSERT.
+const allPeriodsJsonString = JSON.stringify(fullDataObject.periods);
+
+// 🚨 USING COLUMN NAME 'periods' in table 'finance_data'
+await client.query(
+  `INSERT INTO "finance_data" (periods) VALUES ($1)`, 
+  [allPeriodsJsonString]
+);
+
 
     // --- 2. Save Subcategories Data (Subcategories_data table) ---
     // Upsert the single row in the subcategories_data table
