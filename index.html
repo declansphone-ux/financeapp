@@ -2400,7 +2400,7 @@
             document.getElementById('btn-export-all').addEventListener('click', async () => {
                 showMessage('Saving all data to database... please wait.', 'info');
                 // This is the explicit user action to commit changes
-                saveAllDataToDatabase(); 
+                await saveAllDataToDatabase(); 
                 showMessage('Data successfully saved to the cloud! ✅', 'success');
             });
 
