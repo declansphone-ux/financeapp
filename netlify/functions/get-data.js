@@ -27,28 +27,37 @@ exports.handler = async (event, context) => {
   });
 
   try {
-    // Connect to the database
     await client.connect();
 
-    // 4. Run the query to get all your finance data
-    const result = await client.query('SELECT * FROM finance_data');
+    // 1. Get Periods Data (Array of period objects)
+    // 🚨 USING COLUMN NAME 'period' in table 'finance_data'
+    const periodsResult = await client.query('SELECT period FROM "finance_data" ORDER BY period->>\'startDate\' DESC');
+    const periodsArray = periodsResult.rows.map(row => row.period); // Changed from row.period_data
 
-    // 5. Return the data rows as JSON
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(result.rows), // result.rows contains your data array
+    // 2. Get Subcategories Data (Single config object from subcategories_data table)
+    const subcategoriesResult = await client.query('SELECT app_config FROM subcategories_data WHERE id = 1');
+
+    let subcategoriesObject = {};
+    if (subcategoriesResult.rows.length > 0) {
+        // Extract the 'subcategories' object from the 'app_config' column
+        subcategoriesObject = subcategoriesResult.rows[0].app_config.subcategories; 
+    }
+
+    // 3. Combine both into a single object for the app
+    const fullDataObject = {
+        periods: periodsArray,
+        subcategories: subcategoriesObject
     };
-  } catch (error) {
-    // Log the full error to Netlify's console for debugging
-    console.error('Database Error:', error);
+
+    // 4. Return the full object
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to retrieve data from database.' }),
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fullDataObject),
     };
-  } finally {
+
+}
+ finally {
     // 6. Close the connection to avoid memory leaks (Crucial for serverless)
     await client.end();
   }
