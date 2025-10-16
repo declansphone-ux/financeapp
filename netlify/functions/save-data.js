@@ -16,40 +16,43 @@ exports.handler = async (event, context) => {
   }
 
   const connectionString = process.env.NETLIFY_DATABASE_URL;
-  const client = new Client({
-    connectionString: connectionString,
-    ssl: { rejectUnauthorized: false },
-  });
+  let client; // Declared outside try block to be accessible in finally
 
-// --- 1. Save Periods Data (Finance_data table) ---
-// Clear old data and insert new periods
-await client.query('TRUNCATE TABLE "finance_data" RESTART IDENTITY');
+  try {
+    client = new Client({
+      connectionString: connectionString,
+      ssl: { rejectUnauthorized: false },
+    });
+    
+    await client.connect();
+    await client.query('BEGIN'); // Start transaction for atomicity
 
-// The periods data should be sent as one massive array of objects, 
-// which we will insert into the single 'periods' JSONB column.
+    // --- 1. Save Periods Data (finance_data table) ---
+    // Clear old data and insert the new array into the single 'periods' column
+    await client.query('TRUNCATE TABLE "finance_data" RESTART IDENTITY');
 
-// Note: Since the client sends the whole array, we only need one INSERT.
-const allPeriodsJsonString = JSON.stringify(fullDataObject.periods);
+    // The entire periods array is stringified and saved into the single 'periods' JSONB column
+    const allPeriodsJsonString = JSON.stringify(fullDataObject.periods);
 
-// 🚨 USING COLUMN NAME 'periods' in table 'finance_data'
-await client.query(
-  `INSERT INTO "finance_data" (periods) VALUES ($1)`, 
-  [allPeriodsJsonString]
-);
+    // 🚨 USING CONFIRMED COLUMN NAME 'periods'
+    await client.query(
+      `INSERT INTO "finance_data" (periods) VALUES ($1)`, 
+      [allPeriodsJsonString]
+    );
 
-
-    // --- 2. Save Subcategories Data (Subcategories_data table) ---
-    // Upsert the single row in the subcategories_data table
+    // --- 2. Save Subcategories Data (subcategories_data table) ---
+    // Create the wrapper object for the app_config column
     const subcategoriesConfig = { subcategories: fullDataObject.subcategories };
     const configJsonString = JSON.stringify(subcategoriesConfig);
 
+    // UPSERT: Insert if not exists (id=1), otherwise update the existing row
     const upsertQuery = `
       INSERT INTO subcategories_data (id, app_config)
       VALUES (1, $1) 
       ON CONFLICT (id) DO UPDATE SET app_config = $1;
     `;
     await client.query(upsertQuery, [configJsonString]);
-
+    
     // --- 3. Commit Transaction ---
     await client.query('COMMIT');
 
@@ -59,13 +62,19 @@ await client.query(
     };
 
   } catch (error) {
-    await client.query('ROLLBACK');
+    // Ensure the transaction is rolled back on any error
+    if (client) {
+      await client.query('ROLLBACK');
+    }
     console.error('Database Save Error:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Failed to save data to database.' }),
     };
   } finally {
-    await client.end();
+    // Safely check and close the client connection
+    if (client) {
+      await client.end();
+    }
   }
 };
