@@ -2365,18 +2365,18 @@
                 populatePeopleAndSharedForPeriod();
             });
 
-                document.getElementById('btn-export-all').addEventListener('click', async () => {
-                    showMessage('Saving all data to database... please wait.', 'info');
-                    // This is the explicit user action to commit changes
-                    await saveAllDataToDatabase(); 
-                    showMessage('Data successfully saved to the cloud! ✅', 'success');
-                });
+            document.getElementById('btn-export-all').addEventListener('click', async () => {
+                showMessage('Saving all data to database... please wait.', 'info');
+                // This is the explicit user action to commit changes
+                await saveAllDataToDatabase(); 
+                showMessage('Data successfully saved to the cloud! ✅', 'success');
+            });
 
-                document.getElementById('btn-import-trigger').addEventListener('click', () => {
-                    // Re-run the initial loader to pull fresh data from the DB
-                    initializeDataFromDatabase();
-                    showMessage('Data import triggered. Reloading all data from the database.', 'info');
-                });
+            document.getElementById('btn-import-trigger').addEventListener('click', () => {
+                // Re-run the initial loader to pull fresh data from the DB
+                initializeDataFromDatabase();
+                showMessage('Data import triggered. Reloading all data from the database.', 'info');
+            });
             document.getElementById('import-file').addEventListener('change', importAllData);
             document.getElementById('btn-clear-all').addEventListener('click', clearAllData);
 
