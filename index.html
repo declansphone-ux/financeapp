@@ -2334,7 +2334,7 @@
         // ============================================
         // EVENT LISTENERS
         // ============================================
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function(){
             loadSubcategories(); // Load custom subcategories on startup
             
             document.getElementById('tab-home').addEventListener('click', () => showSection('home'));
