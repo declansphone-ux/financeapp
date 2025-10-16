@@ -1227,15 +1227,15 @@
             return periods; // Returns the global in-memory array
         }
         async function savePeriods(newPeriods) {
-            // 1. Update the global in-memory array (assumes you declared 'let periods = [];' in Step 34)
+            // 1. Update the global in-memory array
             periods = newPeriods; 
-        
+            
             // 2. Refresh the UI immediately
-            loadPeriods();      
-        
-            // 3. Trigger the database save immediately
-            await saveAllDataToDatabase(); 
+            loadPeriods(); 
+            
+            // 3. DO NOT trigger database save here. Save is now tied to the Export button.
         }
+
         function getPeriod(periodId) {
             const periods = getPeriods();
             return periods.find(p => p.id === periodId) || null;
@@ -1243,7 +1243,10 @@
         function updatePeriod(periodId, updatedPeriod) {
             const periods = getPeriods();
             const i = periods.findIndex(p => p.id === periodId);
-            if (i !== -1) { periods[i] = updatedPeriod; savePeriods(periods); }
+            if (i !== -1) { 
+                periods[i] = updatedPeriod; 
+                savePeriods(periods); // This calls the non-saving version of savePeriods
+            }
         }
 
         async function initializeDataFromDatabase() {
@@ -2362,8 +2365,18 @@
                 populatePeopleAndSharedForPeriod();
             });
 
-            document.getElementById('btn-export-all').addEventListener('click', exportAllData);
-            document.getElementById('btn-import-trigger').addEventListener('click', () => document.getElementById('import-file').click());
+                document.getElementById('btn-export-all').addEventListener('click', async () => {
+                    showMessage('Saving all data to database... please wait.', 'info');
+                    // This is the explicit user action to commit changes
+                    await saveAllDataToDatabase(); 
+                    showMessage('Data successfully saved to the cloud! ✅', 'success');
+                });
+
+                document.getElementById('btn-import-trigger').addEventListener('click', () => {
+                    // Re-run the initial loader to pull fresh data from the DB
+                    initializeDataFromDatabase();
+                    showMessage('Data import triggered. Reloading all data from the database.', 'info');
+                });
             document.getElementById('import-file').addEventListener('change', importAllData);
             document.getElementById('btn-clear-all').addEventListener('click', clearAllData);
 
