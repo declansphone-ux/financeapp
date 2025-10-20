@@ -2274,34 +2274,6 @@
             </table>
         </div>
     `;
-                    ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
-                        const savingsAmount = period.salary - stats.totalSpent;
-                        const formatShortDate = (dateStr) => {
-                            const d = new Date(dateStr);
-                            const day = String(d.getDate()).padStart(2, '0');
-                            const month = String(d.getMonth() + 1).padStart(2, '0');
-                            const year = String(d.getFullYear()).slice(-2);
-                            return `${day}/${month}/${year}`;
-                        };
-                        const wantsColor = stats.categorySpending.wants > (period.budgets.wants || 0) ? 'var(--danger)' : 'var(--success)';
-                        const foodColor = stats.categorySpending.food > (period.budgets.food || 0) ? 'var(--danger)' : 'var(--success)';
-                        return `<tr>
-                            <td><strong>${formatShortDate(period.startDate)} - ${formatShortDate(period.endDate)}</strong></td>
-                            <td><strong>£${period.salary.toFixed(2)}</strong></td>
-                            <td><strong style="color:${wantsColor};">£${stats.categorySpending.wants.toFixed(2)}</strong></td>
-                            <td><strong style="color:${foodColor};">£${stats.categorySpending.food.toFixed(2)}</strong></td>
-                            <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--primary-blue);">£${savingsAmount.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--success);">£${currentMoney.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--danger);">£${currentDebts.toFixed(2)}</strong></td>
-                            <td><strong style="color:${netWorth < 0 ? 'var(--danger)' : 'var(--success)'};">£${netWorth.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--primary-blue);">£${netWorthOncePaid.toFixed(2)}</strong></td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
     
     // Initialize the spending chart after rendering the HTML
     initializeSpendingChart();
