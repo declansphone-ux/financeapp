@@ -2537,6 +2537,7 @@ function initializeSpendingChart() {
             allExpenses = allExpenses.concat(period.expenses.map(e => ({...e})));
         }
     });
+    document.getElementById('toggle-cumulative').addEventListener('change', renderSpendingChart);
 
     if (allExpenses.length === 0) return;
 
@@ -2597,66 +2598,82 @@ function renderSpendingChart() {
     }
 
     const datasets = [];
+    const isCumulative = document.getElementById('toggle-cumulative').checked;
+    
+    // Helper function to create cumulative data
+    function makeCumulative(data) {
+        let cumSum = 0;
+        return data.map(val => {
+            cumSum += val;
+            return cumSum;
+        });
+    }
     
     if (document.getElementById('toggle-bills').checked) {
+        const billsData = labels.map(date => dailyData[date]?.bills || 0);
         datasets.push({
             label: 'Bills/Subscriptions',
-            data: labels.map(date => dailyData[date]?.bills || 0),
+            data: isCumulative ? makeCumulative(billsData) : billsData,
             borderColor: '#3B82F6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             tension: 0.4,
             fill: true
         });
     }
-
+    
     if (document.getElementById('toggle-wants').checked) {
+        const wantsData = labels.map(date => dailyData[date]?.wants || 0);
         datasets.push({
             label: 'Wants',
-            data: labels.map(date => dailyData[date]?.wants || 0),
+            data: isCumulative ? makeCumulative(wantsData) : wantsData,
             borderColor: '#8B5CF6',
             backgroundColor: 'rgba(139, 92, 246, 0.1)',
             tension: 0.4,
             fill: true
         });
     }
-
+    
     if (document.getElementById('toggle-food').checked) {
+        const foodData = labels.map(date => dailyData[date]?.food || 0);
         datasets.push({
             label: 'Food',
-            data: labels.map(date => dailyData[date]?.food || 0),
+            data: isCumulative ? makeCumulative(foodData) : foodData,
             borderColor: '#10B981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4,
             fill: true
         });
     }
-
+    
     if (document.getElementById('toggle-needs').checked) {
+        const needsData = labels.map(date => dailyData[date]?.needs || 0);
         datasets.push({
             label: 'One-off Needs',
-            data: labels.map(date => dailyData[date]?.needs || 0),
+            data: isCumulative ? makeCumulative(needsData) : needsData,
             borderColor: '#F59E0B',
             backgroundColor: 'rgba(245, 158, 11, 0.1)',
             tension: 0.4,
             fill: true
         });
     }
-
+    
     if (document.getElementById('toggle-income').checked) {
+        const incomeData = labels.map(date => dailyData[date]?.income || 0);
         datasets.push({
             label: 'Income',
-            data: labels.map(date => dailyData[date]?.income || 0),
+            data: isCumulative ? makeCumulative(incomeData) : incomeData,
             borderColor: '#059669',
             backgroundColor: 'rgba(5, 150, 105, 0.1)',
             tension: 0.4,
             fill: true
         });
     }
-
+    
     if (document.getElementById('toggle-unexpected').checked) {
+        const unexpectedData = labels.map(date => dailyData[date]?.unexpected || 0);
         datasets.push({
             label: 'Unexpected',
-            data: labels.map(date => dailyData[date]?.unexpected || 0),
+            data: isCumulative ? makeCumulative(unexpectedData) : unexpectedData,
             borderColor: '#EF4444',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             tension: 0.4,
