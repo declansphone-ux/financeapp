@@ -2180,6 +2180,7 @@
                         <thead>
                             <tr>
                                 <th>Period</th>
+                                <th>Salary</th>
                                 <th>Wants Spend</th>
                                 <th>Food Spend</th>
                                 <th>Total Spent</th>
@@ -2193,10 +2194,20 @@
                         <tbody>
                             ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
                                 const savingsAmount = period.salary - stats.totalSpent;
+                                const formatShortDate = (dateStr) => {
+                                    const d = new Date(dateStr);
+                                    const day = String(d.getDate()).padStart(2, '0');
+                                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                                    const year = String(d.getFullYear()).slice(-2);
+                                    return `${day}/${month}/${year}`;
+                                };
+                                const wantsColor = stats.categorySpending.wants > (period.budgets.wants || 0) ? 'var(--danger)' : 'var(--success)';
+                                const foodColor = stats.categorySpending.food > (period.budgets.food || 0) ? 'var(--danger)' : 'var(--success)';
                                 return `<tr>
-                                    <td><strong>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</strong></td>
-                                    <td><strong>£${stats.categorySpending.wants.toFixed(2)}</strong></td>
-                                    <td><strong>£${stats.categorySpending.food.toFixed(2)}</strong></td>
+                                    <td><strong>${formatShortDate(period.startDate)} - ${formatShortDate(period.endDate)}</strong></td>
+                                    <td><strong>£${period.salary.toFixed(2)}</strong></td>
+                                    <td><strong style="color:${wantsColor};">£${stats.categorySpending.wants.toFixed(2)}</strong></td>
+                                    <td><strong style="color:${foodColor};">£${stats.categorySpending.food.toFixed(2)}</strong></td>
                                     <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
                                     <td><strong style="color:var(--primary-blue);">£${savingsAmount.toFixed(2)}</strong></td>
                                     <td><strong style="color:var(--success);">£${currentMoney.toFixed(2)}</strong></td>
