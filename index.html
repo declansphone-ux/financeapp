@@ -2180,9 +2180,9 @@
                         <thead>
                             <tr>
                                 <th>Period</th>
-                                <th>Salary</th>
-                                <th>Spent</th>
-                                <th>Budget</th>
+                                <th>Wants Spend</th>
+                                <th>Food Spend</th>
+                                <th>Total Spent</th>
                                 <th>Savings</th>
                                 <th>Money</th>
                                 <th>Debts</th>
@@ -2192,12 +2192,13 @@
                         </thead>
                         <tbody>
                             ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
+                                const savingsAmount = period.salary - stats.totalSpent;
                                 return `<tr>
                                     <td><strong>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</strong></td>
-                                    <td><strong>£${period.salary.toFixed(2)}</strong></td>
+                                    <td><strong>£${stats.categorySpending.wants.toFixed(2)}</strong></td>
+                                    <td><strong>£${stats.categorySpending.food.toFixed(2)}</strong></td>
                                     <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
-                                    <td><strong>£${(period.budgets.total||0).toFixed(2)}</strong></td>
-                                    <td><strong style="color:var(--primary-blue);">${stats.savingsRate.toFixed(1)}%</strong></td>
+                                    <td><strong style="color:var(--primary-blue);">£${savingsAmount.toFixed(2)}</strong></td>
                                     <td><strong style="color:var(--success);">£${currentMoney.toFixed(2)}</strong></td>
                                     <td><strong style="color:var(--danger);">£${currentDebts.toFixed(2)}</strong></td>
                                     <td><strong style="color:${netWorth < 0 ? 'var(--danger)' : 'var(--success)'};">£${netWorth.toFixed(2)}</strong></td>
