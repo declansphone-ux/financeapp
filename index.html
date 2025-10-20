@@ -2187,7 +2187,11 @@
                     <input type="date" id="chart-end-date" style="padding:0.5rem; border:2px solid var(--medium-gray); border-radius:var(--radius-sm);">
                     <button class="btn btn-sm btn-primary" id="update-chart-range">Update</button>
                 </div>
-                <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap;">
+                <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; margin-right:var(--spacing-sm);">
+                        <input type="checkbox" id="toggle-cumulative"> 
+                        <span style="font-weight:600; color:var(--dark-blue);">Cumulative</span>
+                    </label>
                     <button class="btn btn-sm btn-secondary" onclick="setChartRange('week')">Last Week</button>
                     <button class="btn btn-sm btn-secondary" onclick="setChartRange('month')">Last Month</button>
                     <button class="btn btn-sm btn-secondary" onclick="setChartRange('all')">All Time</button>
@@ -2242,6 +2246,34 @@
                     </tr>
                 </thead>
                 <tbody>
+                    ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
+                        const savingsAmount = period.salary - stats.totalSpent;
+                        const formatShortDate = (dateStr) => {
+                            const d = new Date(dateStr);
+                            const day = String(d.getDate()).padStart(2, '0');
+                            const month = String(d.getMonth() + 1).padStart(2, '0');
+                            const year = String(d.getFullYear()).slice(-2);
+                            return `${day}/${month}/${year}`;
+                        };
+                        const wantsColor = stats.categorySpending.wants > (period.budgets.wants || 0) ? 'var(--danger)' : 'var(--success)';
+                        const foodColor = stats.categorySpending.food > (period.budgets.food || 0) ? 'var(--danger)' : 'var(--success)';
+                        return `<tr>
+                            <td><strong>${formatShortDate(period.startDate)} - ${formatShortDate(period.endDate)}</strong></td>
+                            <td><strong>£${period.salary.toFixed(2)}</strong></td>
+                            <td><strong style="color:${wantsColor};">£${stats.categorySpending.wants.toFixed(2)}</strong></td>
+                            <td><strong style="color:${foodColor};">£${stats.categorySpending.food.toFixed(2)}</strong></td>
+                            <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
+                            <td><strong style="color:var(--primary-blue);">£${savingsAmount.toFixed(2)}</strong></td>
+                            <td><strong style="color:var(--success);">£${currentMoney.toFixed(2)}</strong></td>
+                            <td><strong style="color:var(--danger);">£${currentDebts.toFixed(2)}</strong></td>
+                            <td><strong style="color:${netWorth < 0 ? 'var(--danger)' : 'var(--success)'};">£${netWorth.toFixed(2)}</strong></td>
+                            <td><strong style="color:var(--primary-blue);">£${netWorthOncePaid.toFixed(2)}</strong></td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
                     ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
                         const savingsAmount = period.salary - stats.totalSpent;
                         const formatShortDate = (dateStr) => {
@@ -2599,7 +2631,7 @@ function renderSpendingChart() {
 
     const datasets = [];
     const isCumulative = document.getElementById('toggle-cumulative').checked;
-    
+
     // Helper function to create cumulative data
     function makeCumulative(data) {
         let cumSum = 0;
@@ -2608,7 +2640,7 @@ function renderSpendingChart() {
             return cumSum;
         });
     }
-    
+
     if (document.getElementById('toggle-bills').checked) {
         const billsData = labels.map(date => dailyData[date]?.bills || 0);
         datasets.push({
@@ -2620,7 +2652,7 @@ function renderSpendingChart() {
             fill: true
         });
     }
-    
+
     if (document.getElementById('toggle-wants').checked) {
         const wantsData = labels.map(date => dailyData[date]?.wants || 0);
         datasets.push({
@@ -2632,7 +2664,7 @@ function renderSpendingChart() {
             fill: true
         });
     }
-    
+
     if (document.getElementById('toggle-food').checked) {
         const foodData = labels.map(date => dailyData[date]?.food || 0);
         datasets.push({
@@ -2644,7 +2676,7 @@ function renderSpendingChart() {
             fill: true
         });
     }
-    
+
     if (document.getElementById('toggle-needs').checked) {
         const needsData = labels.map(date => dailyData[date]?.needs || 0);
         datasets.push({
@@ -2656,7 +2688,7 @@ function renderSpendingChart() {
             fill: true
         });
     }
-    
+
     if (document.getElementById('toggle-income').checked) {
         const incomeData = labels.map(date => dailyData[date]?.income || 0);
         datasets.push({
@@ -2668,7 +2700,7 @@ function renderSpendingChart() {
             fill: true
         });
     }
-    
+
     if (document.getElementById('toggle-unexpected').checked) {
         const unexpectedData = labels.map(date => dailyData[date]?.unexpected || 0);
         datasets.push({
