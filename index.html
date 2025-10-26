@@ -551,28 +551,39 @@
         }
 
         /* Period Cards */
+        .periods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
         .period-card {
             background:var(--white); 
             padding:var(--spacing-lg); 
             border-radius:var(--radius-lg); 
-            box-shadow:var(--shadow-sm); 
+            box-shadow:var(--shadow-md); 
             cursor:pointer;
-            transition: all .25s ease;
+            transition: all .3s ease;
             border: 2px solid var(--medium-gray);
-            margin-bottom: var(--spacing-md);
+            position: relative;
         }
         
         .period-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
             border-color: var(--primary-blue);
         }
         
         .period-card h3 {
-            color:var(--primary-blue); 
-            margin-bottom:var(--spacing-sm);
-            font-weight:700;
+            color: var(--dark-blue);
             font-size: 1.25rem;
+            margin-bottom: var(--spacing-md);
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         
         .period-card small {
@@ -581,6 +592,153 @@
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
+        }
+
+        .period-days-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .period-days-badge.active {
+            background: linear-gradient(135deg, var(--warning) 0%, #F97316 100%);
+            color: var(--white);
+        }
+
+        .period-days-badge.complete {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: var(--white);
+        }
+
+        .period-summary-top {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .period-stat-box {
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--medium-gray);
+        }
+
+        .period-stat-label {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .period-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .period-stat-subtext {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            margin-top: 0.25rem;
+        }
+
+        /* Progress Bars in Period Cards */
+        .period-progress-section {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .period-progress-item {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .period-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.375rem;
+        }
+
+        .period-progress-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .period-progress-amount {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .period-progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: var(--light-gray);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .period-progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .period-progress-bar.bills {
+            background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
+        }
+
+        .period-progress-bar.food {
+            background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+        }
+
+        .period-progress-bar.wants {
+            background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%);
+        }
+
+        .period-progress-bar.over {
+            background: linear-gradient(90deg, #EF4444 0%, #F87171 100%);
+        }
+
+        /* Savings Indicator */
+        .period-savings-indicator {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .period-savings-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0.95;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .period-savings-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+        }
+
+        .period-savings-subtext {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
         }
 
         h2 {
@@ -1365,15 +1523,98 @@
                 return;
             }
             periods.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
             container.innerHTML = periods.map(period => {
                 const stats = calculatePeriodStats(period);
+                const savingsRate = stats.savingsRate || 0;
+                const remaining = (period.salary || 0) - stats.totalSpent;
+                
+                // Calculate days remaining
+                const endDate = new Date(period.endDate);
+                endDate.setHours(0, 0, 0, 0);
+                const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+                
+                let daysBadge = '';
+                if (daysRemaining > 0) {
+                    daysBadge = `<span class="period-days-badge active">⏰ ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} left</span>`;
+                } else {
+                    daysBadge = '<span class="period-days-badge complete">✓ Complete</span>';
+                }
+                
+                // Calculate progress percentages
+                const billsPercent = period.budgets.bills > 0 ? Math.min((stats.categorySpending.bills / period.budgets.bills) * 100, 150) : 0;
+                const foodPercent = period.budgets.food > 0 ? Math.min((stats.categorySpending.food / period.budgets.food) * 100, 150) : 0;
+                const wantsPercent = period.budgets.wants > 0 ? Math.min((stats.categorySpending.wants / period.budgets.wants) * 100, 150) : 0;
+                
+                const billsOver = billsPercent > 100;
+                const foodOver = foodPercent > 100;
+                const wantsOver = wantsPercent > 100;
+                
                 return `
                     <div class="period-card" data-period-id="${period.id}">
-                        <h3>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</h3>
-                        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; color:var(--dark-gray); margin-top:var(--spacing-sm);">
-                            <div style="min-width:140px;"><small>Spent</small><div style="font-weight:700;font-size:1.25rem;color:var(--text-dark);">£${stats.totalSpent.toFixed(2)}</div></div>
-                            <div style="min-width:140px;"><small>Budget</small><div style="font-weight:700;font-size:1.25rem;color:var(--text-dark);">£${(period.budgets.total||0).toFixed(2)}</div></div>
-                            <div style="min-width:140px;"><small>Status</small><div style="font-weight:700;font-size:1.25rem;color:${stats.budgetStatus === 'over' ? 'var(--danger)' : 'var(--success)'};">${stats.budgetStatus === 'over' ? '⚠️ Over' : '✅ On Track'}</div></div>
+                        <h3>
+                            <span>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
+                            ${daysBadge}
+                        </h3>
+                        
+                        <!-- Summary Stats -->
+                        <div class="period-summary-top">
+                            <div class="period-stat-box">
+                                <div class="period-stat-label">💰 Spent</div>
+                                <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
+                                <div class="period-stat-subtext">of £${(period.budgets.total||0).toFixed(2)} budget</div>
+                            </div>
+                            <div class="period-stat-box">
+                                <div class="period-stat-label">💵 Remaining</div>
+                                <div class="period-stat-value" style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">£${remaining.toFixed(2)}</div>
+                                <div class="period-stat-subtext">of £${(period.salary||0).toFixed(2)} salary</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bars -->
+                        <div class="period-progress-section">
+                            <!-- Bills Progress -->
+                            <div class="period-progress-item">
+                                <div class="period-progress-header">
+                                    <span class="period-progress-label">📄 Bills</span>
+                                    <span class="period-progress-amount">£${stats.categorySpending.bills.toFixed(2)} / £${(period.budgets.bills||0).toFixed(2)}</span>
+                                </div>
+                                <div class="period-progress-bar-container">
+                                    <div class="period-progress-bar ${billsOver ? 'over' : 'bills'}" style="width: ${billsPercent}%;"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Food Progress -->
+                            <div class="period-progress-item">
+                                <div class="period-progress-header">
+                                    <span class="period-progress-label">🍔 Food</span>
+                                    <span class="period-progress-amount">£${stats.categorySpending.food.toFixed(2)} / £${(period.budgets.food||0).toFixed(2)}</span>
+                                </div>
+                                <div class="period-progress-bar-container">
+                                    <div class="period-progress-bar ${foodOver ? 'over' : 'food'}" style="width: ${foodPercent}%;"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Wants Progress -->
+                            <div class="period-progress-item">
+                                <div class="period-progress-header">
+                                    <span class="period-progress-label">🎉 Wants</span>
+                                    <span class="period-progress-amount">£${stats.categorySpending.wants.toFixed(2)} / £${(period.budgets.wants||0).toFixed(2)}</span>
+                                </div>
+                                <div class="period-progress-bar-container">
+                                    <div class="period-progress-bar ${wantsOver ? 'over' : 'wants'}" style="width: ${wantsPercent}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Savings Indicator -->
+                        <div class="period-savings-indicator">
+                            <div class="period-savings-label">💎 Savings Rate</div>
+                            <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
+                            <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
                         </div>
                     </div>
                 `;
