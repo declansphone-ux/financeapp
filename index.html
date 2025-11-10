@@ -1573,179 +1573,176 @@
         // ============================================
         // PERIOD UI & MANAGEMENT
         // ============================================
-        function loadPeriods() {
-            const periods = getPeriods();
-            const container = document.getElementById('periods-container');
-            if (periods.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No periods yet. Create your first one! 🚀</p>';
-                return;
+       function loadPeriods() {
+        const periods = getPeriods();
+        const container = document.getElementById('periods-container');
+        if (periods.length === 0) {
+            container.innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No periods yet. Create your first one! 🚀</p>';
+            return;
+        }
+        periods.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Separate current and past periods
+        const currentPeriods = [];
+        const pastPeriods = [];
+        
+        periods.forEach(period => {
+            const endDate = new Date(period.endDate);
+            endDate.setHours(0, 0, 0, 0);
+            const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            
+            if (daysRemaining >= 0) {
+                currentPeriods.push({period, daysRemaining});
+            } else {
+                pastPeriods.push({period, daysRemaining});
             }
-            periods.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+        });
+        
+        // Render current period(s) first
+        let html = '';
+        currentPeriods.forEach(({period, daysRemaining}) => {
+            const stats = calculatePeriodStats(period);
+            const savingsRate = stats.savingsRate || 0;
+            const remaining = (period.salary || 0) - stats.totalSpent;
             
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            const daysBadge = `<span class="period-days-badge active">⏰ ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} left</span>`;
             
-            container.innerHTML = periods.map(period => {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                // Separate current and past periods
-                const currentPeriods = [];
-                const pastPeriods = [];
-                
-                periods.forEach(period => {
-                    const endDate = new Date(period.endDate);
-                    endDate.setHours(0, 0, 0, 0);
-                    const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            const billsPercent = period.budgets.bills > 0 ? Math.min((stats.categorySpending.bills / period.budgets.bills) * 100, 150) : 0;
+            const foodPercent = period.budgets.food > 0 ? Math.min((stats.categorySpending.food / period.budgets.food) * 100, 150) : 0;
+            const wantsPercent = period.budgets.wants > 0 ? Math.min((stats.categorySpending.wants / period.budgets.wants) * 100, 150) : 0;
+            
+            const billsOver = billsPercent > 100;
+            const foodOver = foodPercent > 100;
+            const wantsOver = wantsPercent > 100;
+        
+            // Calculate daily average spending
+            const startDate = new Date(period.startDate);
+            const daysPassed = Math.max(1, Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)));
+            const dailyAverage = stats.totalSpent / daysPassed;
+            
+            html += `
+                <div class="period-card current-period" data-period-id="${period.id}">
+                    <h3>
+                        <span>📅 ${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
+                        ${daysBadge}
+                    </h3>
                     
-                    if (daysRemaining >= 0) {
-                        currentPeriods.push({period, daysRemaining});
-                    } else {
-                        pastPeriods.push({period, daysRemaining});
-                    }
-                });
-                
-                // Render current period(s) first
-                let html = '';
-                currentPeriods.forEach(({period, daysRemaining}) => {
-                    const stats = calculatePeriodStats(period);
-                    const savingsRate = stats.savingsRate || 0;
-                    const remaining = (period.salary || 0) - stats.totalSpent;
-                    
-                    const daysBadge = `<span class="period-days-badge active">⏰ ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} left</span>`;
-                    
-                    const billsPercent = period.budgets.bills > 0 ? Math.min((stats.categorySpending.bills / period.budgets.bills) * 100, 150) : 0;
-                    const foodPercent = period.budgets.food > 0 ? Math.min((stats.categorySpending.food / period.budgets.food) * 100, 150) : 0;
-                    const wantsPercent = period.budgets.wants > 0 ? Math.min((stats.categorySpending.wants / period.budgets.wants) * 100, 150) : 0;
-                    
-                    const billsOver = billsPercent > 100;
-                    const foodOver = foodPercent > 100;
-                    const wantsOver = wantsPercent > 100;
-                
-                    // Calculate daily average spending
-                    const startDate = new Date(period.startDate);
-                    const daysPassed = Math.max(1, Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)));
-                    const dailyAverage = stats.totalSpent / daysPassed;
-                    
-                    html += `
-                        <div class="period-card current-period" data-period-id="${period.id}">
-                            <h3>
-                                <span>📅 ${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
-                                ${daysBadge}
-                            </h3>
-                            
-                            <!-- Summary Stats -->
-                            <div class="period-summary-top">
-                                <div class="period-stat-box">
-                                    <div class="period-stat-label">💰 Total Spent</div>
-                                    <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
-                                    <div class="period-stat-subtext">of £${(period.budgets.total||0).toFixed(2)} budget</div>
-                                </div>
-                                <div class="period-stat-box">
-                                    <div class="period-stat-label">💵 Remaining</div>
-                                    <div class="period-stat-value" style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">£${remaining.toFixed(2)}</div>
-                                    <div class="period-stat-subtext">of £${(period.salary||0).toFixed(2)} salary</div>
-                                </div>
+                    <!-- Summary Stats -->
+                    <div class="period-summary-top">
+                        <div class="period-stat-box">
+                            <div class="period-stat-label">💰 Total Spent</div>
+                            <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
+                            <div class="period-stat-subtext">of £${(period.budgets.total||0).toFixed(2)} budget</div>
+                        </div>
+                        <div class="period-stat-box">
+                            <div class="period-stat-label">💵 Remaining</div>
+                            <div class="period-stat-value" style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">£${remaining.toFixed(2)}</div>
+                            <div class="period-stat-subtext">of £${(period.salary||0).toFixed(2)} salary</div>
+                        </div>
+                    </div>
+        
+                    <!-- NEW: Daily spending info -->
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); margin: var(--spacing-md) 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">📊 Daily Average</div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">£${dailyAverage.toFixed(2)}/day</div>
                             </div>
-                
-                            <!-- NEW: Daily spending info -->
-                            <div style="background: rgba(59, 130, 246, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); margin: var(--spacing-md) 0;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">📊 Daily Average</div>
-                                        <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">£${dailyAverage.toFixed(2)}/day</div>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">🎯 Days Active</div>
-                                        <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">${daysPassed} days</div>
-                                    </div>
-                                </div>
-                            </div>
-                
-                            <!-- Progress Bars -->
-                            <div class="period-progress-section">
-                                <div class="period-progress-item">
-                                    <div class="period-progress-header">
-                                        <span class="period-progress-label">📄 Bills</span>
-                                        <span class="period-progress-amount">£${stats.categorySpending.bills.toFixed(2)} / £${(period.budgets.bills||0).toFixed(2)}</span>
-                                    </div>
-                                    <div class="period-progress-bar-container">
-                                        <div class="period-progress-bar ${billsOver ? 'over' : 'bills'}" style="width: ${billsPercent}%;"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="period-progress-item">
-                                    <div class="period-progress-header">
-                                        <span class="period-progress-label">🍔 Food</span>
-                                        <span class="period-progress-amount">£${stats.categorySpending.food.toFixed(2)} / £${(period.budgets.food||0).toFixed(2)}</span>
-                                    </div>
-                                    <div class="period-progress-bar-container">
-                                        <div class="period-progress-bar ${foodOver ? 'over' : 'food'}" style="width: ${foodPercent}%;"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="period-progress-item">
-                                    <div class="period-progress-header">
-                                        <span class="period-progress-label">🎉 Wants</span>
-                                        <span class="period-progress-amount">£${stats.categorySpending.wants.toFixed(2)} / £${(period.budgets.wants||0).toFixed(2)}</span>
-                                    </div>
-                                    <div class="period-progress-bar-container">
-                                        <div class="period-progress-bar ${wantsOver ? 'over' : 'wants'}" style="width: ${wantsPercent}%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                
-                            <!-- Savings Indicator -->
-                            <div class="period-savings-indicator">
-                                <div class="period-savings-label">💎 Savings Rate</div>
-                                <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
-                                <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">🎯 Days Active</div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">${daysPassed} days</div>
                             </div>
                         </div>
-                    `;
-                });
-                
-                // Add past periods section header if there are any
-                if (pastPeriods.length > 0) {
-                    html += '<h3 style="color: var(--dark-gray); margin-top: var(--spacing-xl); margin-bottom: var(--spacing-md);">📚 Past Periods</h3>';
-                    html += '<div class="past-periods-grid">';
-                    
-                    pastPeriods.forEach(({period, daysRemaining}) => {
-                        const stats = calculatePeriodStats(period);
-                        const savingsRate = stats.savingsRate || 0;
-                        const remaining = (period.salary || 0) - stats.totalSpent;
-                        
-                        html += `
-                            <div class="period-card past-period" data-period-id="${period.id}">
-                                <h3>
-                                    <span>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
-                                    <span class="period-days-badge complete">✓ Complete</span>
-                                </h3>
-                                
-                                <div class="period-summary-top">
-                                    <div class="period-stat-box">
-                                        <div class="period-stat-label">Spent</div>
-                                        <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
-                                    </div>
-                                </div>
-                
-                                <div class="period-savings-indicator" style="margin-top: var(--spacing-sm);">
-                                    <div class="period-savings-label">Savings Rate</div>
-                                    <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
-                                    <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
-                                </div>
+                    </div>
+        
+                    <!-- Progress Bars -->
+                    <div class="period-progress-section">
+                        <div class="period-progress-item">
+                            <div class="period-progress-header">
+                                <span class="period-progress-label">📄 Bills</span>
+                                <span class="period-progress-amount">£${stats.categorySpending.bills.toFixed(2)} / £${(period.budgets.bills||0).toFixed(2)}</span>
                             </div>
-                        `;
-                    });
-                    
-                    html += '</div>';
-                }
+                            <div class="period-progress-bar-container">
+                                <div class="period-progress-bar ${billsOver ? 'over' : 'bills'}" style="width: ${billsPercent}%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="period-progress-item">
+                            <div class="period-progress-header">
+                                <span class="period-progress-label">🍔 Food</span>
+                                <span class="period-progress-amount">£${stats.categorySpending.food.toFixed(2)} / £${(period.budgets.food||0).toFixed(2)}</span>
+                            </div>
+                            <div class="period-progress-bar-container">
+                                <div class="period-progress-bar ${foodOver ? 'over' : 'food'}" style="width: ${foodPercent}%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="period-progress-item">
+                            <div class="period-progress-header">
+                                <span class="period-progress-label">🎉 Wants</span>
+                                <span class="period-progress-amount">£${stats.categorySpending.wants.toFixed(2)} / £${(period.budgets.wants||0).toFixed(2)}</span>
+                            </div>
+                            <div class="period-progress-bar-container">
+                                <div class="period-progress-bar ${wantsOver ? 'over' : 'wants'}" style="width: ${wantsPercent}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Savings Indicator -->
+                    <div class="period-savings-indicator">
+                        <div class="period-savings-label">💎 Savings Rate</div>
+                        <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
+                        <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Add past periods section header if there are any
+        if (pastPeriods.length > 0) {
+            html += '<h3 style="color: var(--dark-gray); margin-top: var(--spacing-xl); margin-bottom: var(--spacing-md);">📚 Past Periods</h3>';
+            html += '<div class="past-periods-grid">';
+            
+            pastPeriods.forEach(({period, daysRemaining}) => {
+                const stats = calculatePeriodStats(period);
+                const savingsRate = stats.savingsRate || 0;
+                const remaining = (period.salary || 0) - stats.totalSpent;
                 
-                container.innerHTML = html;
-            document.querySelectorAll('.period-card').forEach(card => {
-                card.addEventListener('click', function(){ viewPeriod(this.dataset.periodId); });
+                html += `
+                    <div class="period-card past-period" data-period-id="${period.id}">
+                        <h3>
+                            <span>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
+                            <span class="period-days-badge complete">✓ Complete</span>
+                        </h3>
+                        
+                        <div class="period-summary-top">
+                            <div class="period-stat-box">
+                                <div class="period-stat-label">Spent</div>
+                                <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
+                            </div>
+                        </div>
+        
+                        <div class="period-savings-indicator" style="margin-top: var(--spacing-sm);">
+                            <div class="period-savings-label">Savings Rate</div>
+                            <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
+                            <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
+                        </div>
+                    </div>
+                `;
             });
+            
+            html += '</div>';
         }
+        
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.period-card').forEach(card => {
+            card.addEventListener('click', function(){ viewPeriod(this.dataset.periodId); });
+        });
+    }
 
         function openNewPeriodModal() {
             const periods = getPeriods();
