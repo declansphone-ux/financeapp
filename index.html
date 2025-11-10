@@ -2883,9 +2883,13 @@ function calculateNoSpendDays(periods) {
         const startDate = new Date(period.startDate);
         const endDate = new Date(period.endDate);
         
-        // Add all dates in the period range
+        // Add only dates up to today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
+        const lastDate = endDate < today ? endDate : today;
+        
+        while (currentDate <= lastDate) {
             allDates.add(formatDateForInput(currentDate));
             currentDate.setDate(currentDate.getDate() + 1);
         }
