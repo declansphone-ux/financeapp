@@ -1447,6 +1447,28 @@
             'Income': ['Salary', 'Freelance', 'Gifts', 'Refund', 'Interest', 'Other']
         };
 
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                // This is the core fix: making the modal visible
+                modal.classList.add('is-active'); 
+                // Or if you prefer inline style: modal.style.display = 'block';
+                console.log(`Modal ${modalId} opened.`);
+            } else {
+                console.error(`Error: Modal element not found with ID: ${modalId}`);
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                // This hides the modal
+                modal.classList.remove('is-active'); 
+                // Or if you prefer inline style: modal.style.display = 'none';
+                console.log(`Modal ${modalId} closed.`);
+            }
+        }
+
         function showMessage(message, type) {
             const container = document.getElementById('message-container');
             
