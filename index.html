@@ -1644,22 +1644,30 @@
                         </div>
                     </div>
         
-                    <!-- NEW: Daily spending info -->
-                    <div style="background: rgba(59, 130, 246, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); margin: var(--spacing-md) 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">📊 Daily Average</div>
-                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">£${dailyAverage.toFixed(2)}/day</div>
+                    <!-- Grid: Daily Stats + Pie Chart -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin: var(--spacing-md) 0;">
+                                <!-- Daily spending info -->
+                                <div style="background: rgba(59, 130, 246, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md);">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                        <div>
+                                            <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">📊 Daily Average</div>
+                                            <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);">£${dailyAverage.toFixed(2)}/day</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">🎯 Days Active</div>
+                                            <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);">${daysPassed} days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Spending Pie Chart -->
+                                <div style="background: var(--light-gray); padding: var(--spacing-md); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                                    <canvas id="pie-${period.id}" width="150" height="150"></canvas>
+                                </div>
                             </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 0.85rem; color: var(--dark-gray); font-weight: 600;">🎯 Days Active</div>
-                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">${daysPassed} days</div>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <!-- Progress Bars -->
-                    <div class="period-progress-section">
+                    
+                        <!-- Progress Bars (Compact) -->
+                        <div class="period-progress-section">
                         <div class="period-progress-item">
                             <div class="period-progress-header">
                                 <span class="period-progress-label">📄 Bills</span>
@@ -1718,14 +1726,47 @@
                             <span class="period-days-badge complete">✓ Complete</span>
                         </h3>
                         
-                        <div class="period-summary-top">
-                            <div class="period-stat-box">
-                                <div class="period-stat-label">Spent</div>
-                                <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
-                            </div>
-                        </div>
-        
-                        <div class="period-savings-indicator" style="margin-top: var(--spacing-sm);">
+<div class="period-summary-top">
+                <div class="period-stat-box">
+                    <div class="period-stat-label">Spent</div>
+                    <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
+                </div>
+            </div>
+
+            <!-- Progress Bars for Past Periods -->
+            <div class="period-progress-section" style="margin-bottom: var(--spacing-sm);">
+                <div class="period-progress-item">
+                    <div class="period-progress-header">
+                        <span class="period-progress-label">📄 Bills</span>
+                        <span class="period-progress-amount">£${stats.categorySpending.bills.toFixed(2)}</span>
+                    </div>
+                    <div class="period-progress-bar-container">
+                        <div class="period-progress-bar ${(period.budgets.bills > 0 && stats.categorySpending.bills > period.budgets.bills) ? 'over' : 'bills'}" style="width: ${Math.min((stats.categorySpending.bills / (period.budgets.bills || 1)) * 100, 100)}%;"></div>
+                    </div>
+                </div>
+                
+                <div class="period-progress-item">
+                    <div class="period-progress-header">
+                        <span class="period-progress-label">🍔 Food</span>
+                        <span class="period-progress-amount">£${stats.categorySpending.food.toFixed(2)}</span>
+                    </div>
+                    <div class="period-progress-bar-container">
+                        <div class="period-progress-bar ${(period.budgets.food > 0 && stats.categorySpending.food > period.budgets.food) ? 'over' : 'food'}" style="width: ${Math.min((stats.categorySpending.food / (period.budgets.food || 1)) * 100, 100)}%;"></div>
+                    </div>
+                </div>
+                
+                <div class="period-progress-item">
+                    <div class="period-progress-header">
+                        <span class="period-progress-label">🎉 Wants</span>
+                        <span class="period-progress-amount">£${stats.categorySpending.wants.toFixed(2)}</span>
+                    </div>
+                    <div class="period-progress-bar-container">
+                        <div class="period-progress-bar ${(period.budgets.wants > 0 && stats.categorySpending.wants > period.budgets.wants) ? 'over' : 'wants'}" style="width: ${Math.min((stats.categorySpending.wants / (period.budgets.wants || 1)) * 100, 100)}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="period-savings-indicator" style="margin-top: var(--spacing-sm);">
                             <div class="period-savings-label">Savings Rate</div>
                             <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
                             <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
@@ -1739,10 +1780,51 @@
         
         container.innerHTML = html;
         
-        document.querySelectorAll('.period-card').forEach(card => {
-            card.addEventListener('click', function(){ viewPeriod(this.dataset.periodId); });
-        });
-    }
+document.querySelectorAll('.period-card').forEach(card => {
+        card.addEventListener('click', function(){ viewPeriod(this.dataset.periodId); });
+    });
+    
+    // Render pie charts for current periods
+    currentPeriods.forEach(({period}) => {
+        const canvas = document.getElementById(`pie-${period.id}`);
+        if (canvas) {
+            const stats = calculatePeriodStats(period);
+            const other = stats.categorySpending.oneOff + stats.categorySpending.unexpected;
+            
+            new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bills', 'Food', 'Wants', 'Other'],
+                    datasets: [{
+                        data: [
+                            stats.categorySpending.bills,
+                            stats.categorySpending.food,
+                            stats.categorySpending.wants,
+                            other
+                        ],
+                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': £' + context.parsed.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+}
 
         function openNewPeriodModal() {
             const periods = getPeriods();
