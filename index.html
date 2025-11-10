@@ -1664,7 +1664,7 @@
                     </div>
                     
                     <!-- Right: Pie Chart -->
-                    <div style="background: var(--light-gray); padding: var(--spacing-sm); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid var(--medium-gray);">
+                    <div style="background: transparent; padding: var(--spacing-sm); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
                         <canvas id="pie-${period.id}" width="120" height="120"></canvas>
                     </div>
                 </div>
@@ -2589,133 +2589,669 @@
         container.innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No periods to summarize yet. 📊</p>';
         return;
     }
-    let totalSpent = 0, totalBudget = 0, totalSalary = 0;
-    const periodStats = periods.map(period => {
-        const stats = calculatePeriodStats(period);
-        totalSpent += stats.totalSpent;
-        totalBudget += period.budgets.total;
-        totalSalary += period.salary;
-        
-        // Calculate net worth data for the period
-        const sb = period.startingBalances || {};
-        const currentMoney = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
-        const currentDebts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
-        const netWorth = currentMoney - currentDebts;
-        const totalOwed = (period.owedPeople || []).reduce((sum, p) => sum + (p.amount || 0), 0);
-        const netWorthOncePaid = netWorth + totalOwed;
-        
-        return { period, stats, currentMoney, currentDebts, netWorth, netWorthOncePaid };
-    }).sort((a,b) => new Date(b.period.startDate) - new Date(a.period.startDate));
-    const overallSavingsRate = totalSalary ? ((totalSalary - totalSpent) / totalSalary) * 100 : 0;
+    
+    // Sort periods by date
+    periods.sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
     
     container.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
-            <div class="summary-card"><h3 style="color:var(--white);">Total Salary</h3><div class="value">£${totalSalary.toFixed(2)}</div></div>
-            <div class="summary-card"><h3 style="color:var(--white);">Total Spent</h3><div class="value">£${totalSpent.toFixed(2)}</div></div>
-            <div class="summary-card"><h3 style="color:var(--white);">Savings Rate</h3><div class="value">${overallSavingsRate.toFixed(1)}%</div></div>
-            <div class="summary-card"><h3 style="color:var(--white);">Total Saved</h3><div class="value">£${(totalSalary - totalSpent).toFixed(2)}</div></div>
+        <!-- Filter Controls -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+            <div style="display:flex; gap:var(--spacing-md); align-items:end; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px;">
+                    <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Filter by Period</label>
+                    <select id="summary-period-filter" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
+                        <option value="all">All Periods</option>
+                        ${periods.map(p => `<option value="${p.id}">${formatDate(p.startDate)} - ${formatDate(p.endDate)}</option>`).join('')}
+                    </select>
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Or Date Range</label>
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <input type="date" id="summary-start-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
+                        <span>to</span>
+                        <input type="date" id="summary-end-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="apply-summary-filter">Apply Filter</button>
+                <button class="btn btn-secondary" id="reset-summary-filter">Reset</button>
+            </div>
         </div>
         
-        <h3 style="color:var(--dark-blue); margin:var(--spacing-lg) 0 var(--spacing-md) 0;">📊 Daily Spending Chart</h3>
+        <!-- Summary Stats Cards -->
+        <div id="summary-stats-cards"></div>
+        
+        <!-- Charts Section -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(500px, 1fr)); gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
+            <!-- Category Breakdown Pie Chart -->
+            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending by Category</h3>
+                <canvas id="category-pie-chart" height="300"></canvas>
+            </div>
+            
+            <!-- Payment Method Breakdown -->
+            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💳 Spending by Payment Method</h3>
+                <canvas id="payment-pie-chart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- Net Worth Progression -->
         <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
+            <canvas id="networth-chart" height="100"></canvas>
+        </div>
+        
+        <!-- Savings Rate Over Time -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
+            <canvas id="savings-rate-chart" height="100"></canvas>
+        </div>
+        
+        <!-- Daily Spending Chart -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Daily Spending Trends</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
-                <div style="display:flex; gap:var(--spacing-sm); align-items:center; flex-wrap:wrap;">
-                    <label style="font-weight:600; color:var(--dark-blue);">Date Range:</label>
-                    <input type="date" id="chart-start-date" style="padding:0.5rem; border:2px solid var(--medium-gray); border-radius:var(--radius-sm);">
-                    <span style="color:var(--dark-gray);">to</span>
-                    <input type="date" id="chart-end-date" style="padding:0.5rem; border:2px solid var(--medium-gray); border-radius:var(--radius-sm);">
-                    <button class="btn btn-sm btn-primary" id="update-chart-range">Update</button>
-                </div>
                 <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; margin-right:var(--spacing-sm);">
-                        <input type="checkbox" id="toggle-cumulative"> 
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="toggle-cumulative-summary" checked> 
                         <span style="font-weight:600; color:var(--dark-blue);">Cumulative</span>
                     </label>
-                    <button class="btn btn-sm btn-secondary" onclick="setChartRange('week')">Last Week</button>
-                    <button class="btn btn-sm btn-secondary" onclick="setChartRange('month')">Last Month</button>
-                    <button class="btn btn-sm btn-secondary" onclick="setChartRange('all')">All Time</button>
+                </div>
+                <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="toggle-bills-summary" checked> 
+                        <span style="color:#3B82F6; font-weight:600;">📄 Bills</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="toggle-wants-summary" checked> 
+                        <span style="color:#8B5CF6; font-weight:600;">🎁 Wants</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="toggle-food-summary" checked> 
+                        <span style="color:#10B981; font-weight:600;">🍔 Food</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="toggle-needs-summary"> 
+                        <span style="color:#F59E0B; font-weight:600;">🛒 Needs</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="toggle-unexpected-summary"> 
+                        <span style="color:#EF4444; font-weight:600;">⚠️ Unexpected</span>
+                    </label>
                 </div>
             </div>
-            <div style="height:400px; position:relative;">
-                <canvas id="spending-chart"></canvas>
-            </div>
-            <div style="display:flex; gap:var(--spacing-md); margin-top:var(--spacing-md); flex-wrap:wrap; justify-content:center;">
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-bills" checked> 
-                    <span style="color:#3B82F6; font-weight:600;">📄 Bills/Subscriptions</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-wants" checked> 
-                    <span style="color:#8B5CF6; font-weight:600;">🎁 Wants</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-food" checked> 
-                    <span style="color:#10B981; font-weight:600;">🍔 Food</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-needs"> 
-                    <span style="color:#F59E0B; font-weight:600;">🛒 One-off Needs</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-income"> 
-                    <span style="color:#059669; font-weight:600;">💰 Income</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-unexpected"> 
-                    <span style="color:#EF4444; font-weight:600;">⚠️ Unexpected</span>
-                </label>
+            <canvas id="daily-spending-chart" height="80"></canvas>
+        </div>
+        
+        <!-- Top Expenses Table -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💰 Top 10 Expenses</h3>
+            <div class="table-container">
+                <table id="top-expenses-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-expenses-tbody"></tbody>
+                </table>
             </div>
         </div>
         
-        <h3 style="color:var(--dark-blue); margin:var(--spacing-lg) 0 var(--spacing-md) 0;">📈 Period Breakdown</h3>
-        <div class="table-container">
-            <table style="font-size: 0.85rem;">
-                <thead>
-                    <tr>
-                        <th>Period</th>
-                        <th>Salary</th>
-                        <th>Wants Spend</th>
-                        <th>Food Spend</th>
-                        <th>Total Spent</th>
-                        <th>Savings</th>
-                        <th>Money</th>
-                        <th>Debts</th>
-                        <th>Net Worth</th>
-                        <th>NW + Owed</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${periodStats.map(({period,stats,currentMoney,currentDebts,netWorth,netWorthOncePaid}) => {
-                        const savingsAmount = period.salary - stats.totalSpent;
-                        const formatShortDate = (dateStr) => {
-                            const d = new Date(dateStr);
-                            const day = String(d.getDate()).padStart(2, '0');
-                            const month = String(d.getMonth() + 1).padStart(2, '0');
-                            const year = String(d.getFullYear()).slice(-2);
-                            return `${day}/${month}/${year}`;
-                        };
-                        const wantsColor = stats.categorySpending.wants > (period.budgets.wants || 0) ? 'var(--danger)' : 'var(--success)';
-                        const foodColor = stats.categorySpending.food > (period.budgets.food || 0) ? 'var(--danger)' : 'var(--success)';
-                        return `<tr>
-                            <td><strong>${formatShortDate(period.startDate)} - ${formatShortDate(period.endDate)}</strong></td>
-                            <td><strong>£${period.salary.toFixed(2)}</strong></td>
-                            <td><strong style="color:${wantsColor};">£${stats.categorySpending.wants.toFixed(2)}</strong></td>
-                            <td><strong style="color:${foodColor};">£${stats.categorySpending.food.toFixed(2)}</strong></td>
-                            <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--primary-blue);">£${savingsAmount.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--success);">£${currentMoney.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--danger);">£${currentDebts.toFixed(2)}</strong></td>
-                            <td><strong style="color:${netWorth < 0 ? 'var(--danger)' : 'var(--success)'};">£${netWorth.toFixed(2)}</strong></td>
-                            <td><strong style="color:var(--primary-blue);">£${netWorthOncePaid.toFixed(2)}</strong></td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
+        <!-- Subcategory Breakdown -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏷️ Spending by Subcategory</h3>
+            <div id="subcategory-breakdown"></div>
+        </div>
+        
+        <!-- Period Comparison Table -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Period Comparison</h3>
+            <div class="table-container">
+                <table id="period-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Salary</th>
+                            <th>Spent</th>
+                            <th>Saved</th>
+                            <th>Save %</th>
+                            <th>Bills</th>
+                            <th>Food</th>
+                            <th>Wants</th>
+                            <th>Net Worth</th>
+                        </tr>
+                    </thead>
+                    <tbody id="period-comparison-tbody"></tbody>
+                </table>
+            </div>
         </div>
     `;
     
-    // Initialize the spending chart after rendering the HTML
-    initializeSpendingChart();
+    // Initialize with all data
+    renderSummaryData(periods);
+    
+    // Event listeners for filters
+    document.getElementById('apply-summary-filter').addEventListener('click', applySummaryFilter);
+    document.getElementById('reset-summary-filter').addEventListener('click', () => {
+        document.getElementById('summary-period-filter').value = 'all';
+        document.getElementById('summary-start-date').value = '';
+        document.getElementById('summary-end-date').value = '';
+        renderSummaryData(periods);
+    });
+    
+    document.getElementById('summary-period-filter').addEventListener('change', function() {
+        if (this.value !== 'all') {
+            document.getElementById('summary-start-date').value = '';
+            document.getElementById('summary-end-date').value = '';
+        }
+    });
+    
+    ['toggle-cumulative-summary', 'toggle-bills-summary', 'toggle-wants-summary', 'toggle-food-summary', 'toggle-needs-summary', 'toggle-unexpected-summary'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => renderDailySpendingChart(getFilteredPeriods()));
+    });
+}
+
+function applySummaryFilter() {
+    const periodFilter = document.getElementById('summary-period-filter').value;
+    const startDate = document.getElementById('summary-start-date').value;
+    const endDate = document.getElementById('summary-end-date').value;
+    
+    let filtered = getPeriods();
+    
+    if (periodFilter !== 'all') {
+        filtered = filtered.filter(p => p.id === periodFilter);
+    } else if (startDate && endDate) {
+        filtered = filtered.filter(p => {
+            const pStart = new Date(p.startDate);
+            const pEnd = new Date(p.endDate);
+            const fStart = new Date(startDate);
+            const fEnd = new Date(endDate);
+            return (pStart <= fEnd && pEnd >= fStart);
+        });
+    }
+    
+    renderSummaryData(filtered);
+}
+
+function getFilteredPeriods() {
+    const periodFilter = document.getElementById('summary-period-filter').value;
+    const startDate = document.getElementById('summary-start-date').value;
+    const endDate = document.getElementById('summary-end-date').value;
+    
+    let filtered = getPeriods();
+    
+    if (periodFilter !== 'all') {
+        filtered = filtered.filter(p => p.id === periodFilter);
+    } else if (startDate && endDate) {
+        filtered = filtered.filter(p => {
+            const pStart = new Date(p.startDate);
+            const pEnd = new Date(p.endDate);
+            const fStart = new Date(startDate);
+            const fEnd = new Date(endDate);
+            return (pStart <= fEnd && pEnd >= fStart);
+        });
+    }
+    
+    return filtered;
+}
+
+function renderSummaryData(periods) {
+    if (periods.length === 0) {
+        document.getElementById('summary-stats-cards').innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No data for selected filter 🔍</p>';
+        return;
+    }
+    
+    // Calculate aggregate stats
+    let totalSalary = 0, totalSpent = 0;
+    let categoryTotals = { bills: 0, food: 0, wants: 0, oneOff: 0, unexpected: 0 };
+    let paymentTotals = {};
+    let allExpenses = [];
+    let subcategoryTotals = {};
+    
+    periods.forEach(period => {
+        const stats = calculatePeriodStats(period);
+        totalSalary += period.salary || 0;
+        totalSpent += stats.totalSpent;
+        
+        categoryTotals.bills += stats.categorySpending.bills;
+        categoryTotals.food += stats.categorySpending.food;
+        categoryTotals.wants += stats.categorySpending.wants;
+        categoryTotals.oneOff += stats.categorySpending.oneOff;
+        categoryTotals.unexpected += stats.categorySpending.unexpected;
+        
+        (period.expenses || []).forEach(expense => {
+            const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
+            if (expense.category !== 'Income') {
+                allExpenses.push({...expense, amount, periodId: period.id});
+                
+                // Payment method totals
+                if (expense.paymentMethod) {
+                    paymentTotals[expense.paymentMethod] = (paymentTotals[expense.paymentMethod] || 0) + amount;
+                }
+                
+                // Subcategory totals
+                if (expense.subcategory) {
+                    const key = `${expense.category} > ${expense.subcategory}`;
+                    subcategoryTotals[key] = (subcategoryTotals[key] || 0) + amount;
+                }
+            }
+        });
+    });
+    
+    const totalSaved = totalSalary - totalSpent;
+    const savingsRate = totalSalary > 0 ? (totalSaved / totalSalary) * 100 : 0;
+    const avgDailySpend = allExpenses.length > 0 ? totalSpent / periods.length / 30 : 0;
+    
+    // Render summary cards
+    document.getElementById('summary-stats-cards').innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+            <div class="summary-card"><h3 style="color:var(--white);">💰 Total Salary</h3><div class="value">£${totalSalary.toFixed(2)}</div></div>
+            <div class="summary-card"><h3 style="color:var(--white);">📊 Total Spent</h3><div class="value">£${totalSpent.toFixed(2)}</div></div>
+            <div class="summary-card"><h3 style="color:var(--white);">💎 Total Saved</h3><div class="value">£${totalSaved.toFixed(2)}</div></div>
+            <div class="summary-card"><h3 style="color:var(--white);">📈 Savings Rate</h3><div class="value">${savingsRate.toFixed(1)}%</div></div>
+            <div class="summary-card"><h3 style="color:var(--white);">📅 Avg Daily</h3><div class="value">£${avgDailySpend.toFixed(2)}</div></div>
+            <div class="summary-card"><h3 style="color:var(--white);">🔢 Transactions</h3><div class="value">${allExpenses.length}</div></div>
+        </div>
+    `;
+    
+    // Render charts
+    renderCategoryPieChart(categoryTotals);
+    renderPaymentPieChart(paymentTotals);
+    renderNetWorthChart(periods);
+    renderSavingsRateChart(periods);
+    renderDailySpendingChart(periods);
+    renderTopExpensesTable(allExpenses);
+    renderSubcategoryBreakdown(subcategoryTotals);
+    renderPeriodComparisonTable(periods);
+}
+
+// Chart rendering functions
+let categoryPieChart, paymentPieChart, networthChart, savingsRateChart, dailySpendingChart;
+
+function renderCategoryPieChart(categoryTotals) {
+    const ctx = document.getElementById('category-pie-chart');
+    if (categoryPieChart) categoryPieChart.destroy();
+    
+    categoryPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Bills', 'Food', 'Wants', 'One-off Needs', 'Unexpected'],
+            datasets: [{
+                data: [
+                    categoryTotals.bills,
+                    categoryTotals.food,
+                    categoryTotals.wants,
+                    categoryTotals.oneOff,
+                    categoryTotals.unexpected
+                ],
+                backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a,b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': £' + context.parsed.toFixed(2) + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderPaymentPieChart(paymentTotals) {
+    const ctx = document.getElementById('payment-pie-chart');
+    if (paymentPieChart) paymentPieChart.destroy();
+    
+    const labels = Object.keys(paymentTotals);
+    const data = Object.values(paymentTotals);
+    const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#6366F1'];
+    
+    paymentPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a,b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': £' + context.parsed.toFixed(2) + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderNetWorthChart(periods) {
+    const ctx = document.getElementById('networth-chart');
+    if (networthChart) networthChart.destroy();
+    
+    const labels = periods.map(p => formatDate(p.startDate));
+    const netWorthData = periods.map(p => {
+        const sb = p.startingBalances || {};
+        const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
+        const debts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+        return money - debts;
+    });
+    
+    networthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Net Worth',
+                data: netWorthData,
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Net Worth: £' + context.parsed.y.toFixed(2);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return '£' + value.toFixed(0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderSavingsRateChart(periods) {
+    const ctx = document.getElementById('savings-rate-chart');
+    if (savingsRateChart) savingsRateChart.destroy();
+    
+    const labels = periods.map(p => formatDate(p.startDate));
+    const savingsData = periods.map(p => {
+        const stats = calculatePeriodStats(p);
+        return stats.savingsRate;
+    });
+    
+    savingsRateChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Savings Rate (%)',
+                data: savingsData,
+                backgroundColor: '#3B82F6',
+                borderColor: '#1E40AF',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Savings Rate: ' + context.parsed.y.toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderDailySpendingChart(periods) {
+    const ctx = document.getElementById('daily-spending-chart');
+    if (dailySpendingChart) dailySpendingChart.destroy();
+    
+    let allExpenses = [];
+    periods.forEach(period => {
+        (period.expenses || []).forEach(e => {
+            if (e.category !== 'Income') {
+                allExpenses.push({...e});
+            }
+        });
+    });
+    
+    if (allExpenses.length === 0) return;
+    
+    const dates = allExpenses.map(e => new Date(e.date)).sort((a,b) => a - b);
+    const minDate = dates[0];
+    const maxDate = dates[dates.length - 1];
+    
+    const dailyData = {};
+    allExpenses.forEach(expense => {
+        const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
+        const date = expense.date;
+        
+        if (!dailyData[date]) {
+            dailyData[date] = { bills: 0, wants: 0, food: 0, needs: 0, unexpected: 0 };
+        }
+
+        if (expense.category === 'Bills/Subscriptions') dailyData[date].bills += amount;
+        else if (expense.category === 'Wants') dailyData[date].wants += amount;
+        else if (expense.category === 'Food') dailyData[date].food += amount;
+        else if (expense.category === 'One-off Needs') dailyData[date].needs += amount;
+        else if (expense.category === 'Unexpected') dailyData[date].unexpected += amount;
+    });
+
+    const labels = [];
+    const currentDate = new Date(minDate);
+    while (currentDate <= maxDate) {
+        labels.push(formatDateForInput(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    const datasets = [];
+    const isCumulative = document.getElementById('toggle-cumulative-summary').checked;
+
+    function makeCumulative(data) {
+        let cumSum = 0;
+        return data.map(val => {
+            cumSum += val;
+            return cumSum;
+        });
+    }
+
+    if (document.getElementById('toggle-bills-summary').checked) {
+        const billsData = labels.map(date => dailyData[date]?.bills || 0);
+        datasets.push({
+            label: 'Bills/Subscriptions',
+            data: isCumulative ? makeCumulative(billsData) : billsData,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+
+    if (document.getElementById('toggle-wants-summary').checked) {
+        const wantsData = labels.map(date => dailyData[date]?.wants || 0);
+        datasets.push({
+            label: 'Wants',
+            data: isCumulative ? makeCumulative(wantsData) : wantsData,
+            borderColor: '#8B5CF6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+
+    if (document.getElementById('toggle-food-summary').checked) {
+        const foodData = labels.map(date => dailyData[date]?.food || 0);
+        datasets.push({
+            label: 'Food',
+            data: isCumulative ? makeCumulative(foodData) : foodData,
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+
+    if (document.getElementById('toggle-needs-summary').checked) {
+        const needsData = labels.map(date => dailyData[date]?.needs || 0);
+        datasets.push({
+            label: 'One-off Needs',
+            data: isCumulative ? makeCumulative(needsData) : needsData,
+            borderColor: '#F59E0B',
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+
+    if (document.getElementById('toggle-unexpected-summary').checked) {
+        const unexpectedData = labels.map(date => dailyData[date]?.unexpected || 0);
+        datasets.push({
+            label: 'Unexpected',
+            data: isCumulative ? makeCumulative(unexpectedData) : unexpectedData,
+            borderColor: '#EF4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+
+    dailySpendingChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            }),
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': £' + context.parsed.y.toFixed(2);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '£' + value.toFixed(0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderTopExpensesTable(allExpenses) {
+    const tbody = document.getElementById('top-expenses-tbody');
+    const sorted = allExpenses.sort((a,b) => b.amount - a.amount).slice(0, 10);
+    
+    tbody.innerHTML = sorted.map(expense => `
+        <tr>
+            <td><strong>${formatDate(expense.date)}</strong></td>
+            <td><strong>${escapeHtml(expense.description)}</strong></td>
+            <td><span style="display:inline-block;padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--light-blue);font-weight:700;color:var(--primary-blue);">${expense.category}</span></td>
+            <td><strong style="color:var(--danger);">£${expense.amount.toFixed(2)}</strong></td>
+        </tr>
+    `).join('');
+}
+
+function renderSubcategoryBreakdown(subcategoryTotals) {
+    const container = document.getElementById('subcategory-breakdown');
+    const sorted = Object.entries(subcategoryTotals).sort((a,b) => b[1] - a[1]);
+    
+    container.innerHTML = sorted.map(([key, amount]) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--spacing-sm); border-bottom:1px solid var(--medium-gray);">
+            <span style="font-weight:600;">${escapeHtml(key)}</span>
+            <span style="font-size:1.1rem; font-weight:700; color:var(--primary-blue);">£${amount.toFixed(2)}</span>
+        </div>
+    `).join('');
+}
+
+function renderPeriodComparisonTable(periods) {
+    const tbody = document.getElementById('period-comparison-tbody');
+    
+    tbody.innerHTML = periods.map(period => {
+        const stats = calculatePeriodStats(period);
+        const saved = (period.salary || 0) - stats.totalSpent;
+        const sb = period.startingBalances || {};
+        const netWorth = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0) - (sb.lloydsCredit || 0) - (sb.natwestCredit || 0) - (sb.virginCredit || 0);
+        
+        return `
+            <tr>
+                <td><strong>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</strong></td>
+                <td><strong>£${(period.salary || 0).toFixed(2)}</strong></td>
+                <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
+                <td><strong style="color:var(--success);">£${saved.toFixed(2)}</strong></td>
+                <td><strong>${stats.savingsRate.toFixed(1)}%</strong></td>
+                <td>£${stats.categorySpending.bills.toFixed(2)}</td>
+                <td>£${stats.categorySpending.food.toFixed(2)}</td>
+                <td>£${stats.categorySpending.wants.toFixed(2)}</td>
+                <td><strong style="color:${netWorth >= 0 ? 'var(--success)' : 'var(--danger)'};">£${netWorth.toFixed(2)}</strong></td>
+            </tr>
+        `;
+    }).join('');
 }
         // ============================================
         // SUBCATEGORY MANAGEMENT
