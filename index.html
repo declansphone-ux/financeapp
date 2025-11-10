@@ -2594,142 +2594,152 @@
     periods.sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
     
     container.innerHTML = `
-        <!-- Filter Controls -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-            <div style="display:flex; gap:var(--spacing-md); align-items:end; flex-wrap:wrap;">
-                <div style="flex:1; min-width:200px;">
-                    <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Filter by Period</label>
-                    <select id="summary-period-filter" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
-                        <option value="all">All Periods</option>
-                        ${periods.map(p => `<option value="${p.id}">${formatDate(p.startDate)} - ${formatDate(p.endDate)}</option>`).join('')}
-                    </select>
-                </div>
-                <div style="flex:1; min-width:200px;">
-                    <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Or Date Range</label>
-                    <div style="display:flex; gap:0.5rem; align-items:center;">
-                        <input type="date" id="summary-start-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
-                        <span>to</span>
-                        <input type="date" id="summary-end-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
-                    </div>
-                </div>
-                <button class="btn btn-primary" id="apply-summary-filter">Apply Filter</button>
-                <button class="btn btn-secondary" id="reset-summary-filter">Reset</button>
+    <!-- Filter Controls -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+        <div style="display:flex; gap:var(--spacing-md); align-items:end; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+                <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Filter by Period</label>
+                <select id="summary-period-filter" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
+                    <option value="all">All Periods</option>
+                    ${periods.map(p => `<option value="${p.id}">${formatDate(p.startDate)} - ${formatDate(p.endDate)}</option>`).join('')}
+                </select>
             </div>
-        </div>
-        
-        <!-- Summary Stats Cards -->
-        <div id="summary-stats-cards"></div>
-        
-        <!-- Charts Section -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(500px, 1fr)); gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
-            <!-- Category Breakdown Pie Chart -->
-            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
-                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending by Category</h3>
-                <canvas id="category-pie-chart" height="300"></canvas>
-            </div>
-            
-            <!-- Payment Method Breakdown -->
-            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
-                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💳 Spending by Payment Method</h3>
-                <canvas id="payment-pie-chart" height="300"></canvas>
-            </div>
-        </div>
-        
-        <!-- Net Worth Progression -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
-            <canvas id="networth-chart" height="100"></canvas>
-        </div>
-        
-        <!-- Savings Rate Over Time -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
-            <canvas id="savings-rate-chart" height="100"></canvas>
-        </div>
-        
-        <!-- Daily Spending Chart -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Daily Spending Trends</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
-                <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                        <input type="checkbox" id="toggle-cumulative-summary" checked> 
-                        <span style="font-weight:600; color:var(--dark-blue);">Cumulative</span>
-                    </label>
-                </div>
-                <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                        <input type="checkbox" id="toggle-bills-summary" checked> 
-                        <span style="color:#3B82F6; font-weight:600;">📄 Bills</span>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                        <input type="checkbox" id="toggle-wants-summary" checked> 
-                        <span style="color:#8B5CF6; font-weight:600;">🎁 Wants</span>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                        <input type="checkbox" id="toggle-food-summary" checked> 
-                        <span style="color:#10B981; font-weight:600;">🍔 Food</span>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                        <input type="checkbox" id="toggle-needs-summary"> 
-                        <span style="color:#F59E0B; font-weight:600;">🛒 Needs</span>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                        <input type="checkbox" id="toggle-unexpected-summary"> 
-                        <span style="color:#EF4444; font-weight:600;">⚠️ Unexpected</span>
-                    </label>
+            <div style="flex:1; min-width:200px;">
+                <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Or Date Range</label>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <input type="date" id="summary-start-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
+                    <span>to</span>
+                    <input type="date" id="summary-end-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
                 </div>
             </div>
-            <canvas id="daily-spending-chart" height="80"></canvas>
+            <button class="btn btn-primary" id="apply-summary-filter">Apply Filter</button>
+            <button class="btn btn-secondary" id="reset-summary-filter">Reset</button>
         </div>
-        
-        <!-- Top Expenses Table -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💰 Top 10 Expenses</h3>
-            <div class="table-container">
-                <table id="top-expenses-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody id="top-expenses-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Subcategory Breakdown -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏷️ Spending by Subcategory</h3>
-            <div id="subcategory-breakdown"></div>
-        </div>
-        
-        <!-- Period Comparison Table -->
+    </div>
+    
+    <!-- Summary Stats Cards -->
+    <div id="summary-stats-cards"></div>
+    
+    <!-- Charts Section - Fixed Grid -->
+    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
+        <!-- Category Breakdown Pie Chart -->
         <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Period Comparison</h3>
-            <div class="table-container">
-                <table id="period-comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Period</th>
-                            <th>Salary</th>
-                            <th>Spent</th>
-                            <th>Saved</th>
-                            <th>Save %</th>
-                            <th>Bills</th>
-                            <th>Food</th>
-                            <th>Wants</th>
-                            <th>Net Worth</th>
-                        </tr>
-                    </thead>
-                    <tbody id="period-comparison-tbody"></tbody>
-                </table>
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending by Category</h3>
+            <div style="height:300px; position:relative;">
+                <canvas id="category-pie-chart"></canvas>
             </div>
         </div>
-    `;
+        
+        <!-- Payment Method Breakdown -->
+        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💳 Spending by Payment Method</h3>
+            <div style="height:300px; position:relative;">
+                <canvas id="payment-pie-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Net Worth Progression -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
+        <div style="height:300px; position:relative;">
+            <canvas id="networth-chart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Savings Rate Over Time -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
+        <div style="height:300px; position:relative;">
+            <canvas id="savings-rate-chart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Daily Spending Chart -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Daily Spending Trends</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
+            <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-cumulative-summary" checked> 
+                    <span style="font-weight:600; color:var(--dark-blue);">Cumulative</span>
+                </label>
+            </div>
+            <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-bills-summary" checked> 
+                    <span style="color:#3B82F6; font-weight:600;">📄 Bills</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-wants-summary" checked> 
+                    <span style="color:#8B5CF6; font-weight:600;">🎁 Wants</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-food-summary" checked> 
+                    <span style="color:#10B981; font-weight:600;">🍔 Food</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-needs-summary"> 
+                    <span style="color:#F59E0B; font-weight:600;">🛒 Needs</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-unexpected-summary"> 
+                    <span style="color:#EF4444; font-weight:600;">⚠️ Unexpected</span>
+                </label>
+            </div>
+        </div>
+        <div style="height:400px; position:relative;">
+            <canvas id="daily-spending-chart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Top Expenses Table -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💰 Top 10 Expenses</h3>
+        <div class="table-container">
+            <table id="top-expenses-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="top-expenses-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Subcategory Breakdown -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏷️ Spending by Subcategory</h3>
+        <div id="subcategory-breakdown"></div>
+    </div>
+    
+    <!-- Period Comparison Table -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Period Comparison</h3>
+        <div class="table-container">
+            <table id="period-comparison-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Salary</th>
+                        <th>Spent</th>
+                        <th>Saved</th>
+                        <th>Save %</th>
+                        <th>Bills</th>
+                        <th>Food</th>
+                        <th>Wants</th>
+                        <th>Net Worth</th>
+                    </tr>
+                </thead>
+                <tbody id="period-comparison-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+`;
     
     // Initialize with all data
     renderSummaryData(periods);
