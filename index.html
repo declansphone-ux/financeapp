@@ -1034,6 +1034,30 @@
                 </div>
             </div>
 
+            <!-- Subcategory Transactions Modal -->
+            <div id="subcategory-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="subcategory-modal-title">Transactions</h2>
+                        <button class="close-modal" id="close-subcategory-modal">&times;</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Subcategory</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subcategory-transactions-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
             <!-- SECOND ROW: balances & debts wide card -->
             <div class="wide-row">
                 <div class="wide-card" id="balances-card">
@@ -2641,7 +2665,19 @@
     
     <!-- Net Worth Progression -->
     <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
+            <h3 style="color:var(--dark-blue); margin:0;">📈 Net Worth Progression</h3>
+            <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-networth" checked> 
+                    <span style="color:#10B981; font-weight:600;">💰 Net Worth</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="toggle-networth-owed" checked> 
+                    <span style="color:#3B82F6; font-weight:600;">💎 Net Worth + Owed</span>
+                </label>
+            </div>
+        </div>
         <div style="height:300px; position:relative;">
             <canvas id="networth-chart"></canvas>
         </div>
@@ -2858,7 +2894,7 @@ function renderSummaryData(periods) {
     
     // Render summary cards
     document.getElementById('summary-stats-cards').innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
             <div class="summary-card"><h3 style="color:var(--white);">💰 Total Salary</h3><div class="value">£${totalSalary.toFixed(2)}</div></div>
             <div class="summary-card"><h3 style="color:var(--white);">📊 Total Spent</h3><div class="value">£${totalSpent.toFixed(2)}</div></div>
             <div class="summary-card"><h3 style="color:var(--white);">💎 Total Saved</h3><div class="value">£${totalSaved.toFixed(2)}</div></div>
@@ -2964,7 +3000,14 @@ function renderNetWorthChart(periods) {
     const ctx = document.getElementById('networth-chart');
     if (networthChart) networthChart.destroy();
     
-    const labels = periods.map(p => formatDate(p.startDate));
+    const labels = periods.map(p => {
+        const start = new Date(p.startDate);
+        const end = new Date(p.endDate);
+        const startMonth = start.toLocaleDateString('en-GB', { month: 'short' });
+        const endMonth = end.toLocaleDateString('en-GB', { month: 'short' });
+        return startMonth === endMonth ? startMonth : `${startMonth}-${endMonth}`;
+    });
+    
     const netWorthData = periods.map(p => {
         const sb = p.startingBalances || {};
         const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
@@ -2972,28 +3015,53 @@ function renderNetWorthChart(periods) {
         return money - debts;
     });
     
+    const netWorthOwedData = periods.map(p => {
+        const sb = p.startingBalances || {};
+        const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
+        const debts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+        const totalOwed = (p.owedPeople || []).reduce((sum, person) => sum + (person.amount || 0), 0);
+        return money - debts + totalOwed;
+    });
+    
+    const datasets = [];
+    
+    if (document.getElementById('toggle-networth').checked) {
+        datasets.push({
+            label: 'Net Worth',
+            data: netWorthData,
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+    
+    if (document.getElementById('toggle-networth-owed').checked) {
+        datasets.push({
+            label: 'Net Worth + Owed',
+            data: netWorthOwedData,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+        });
+    }
+    
     networthChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Net Worth',
-                data: netWorthData,
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
+            datasets: datasets
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false },
+                legend: { position: 'bottom' },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return 'Net Worth: £' + context.parsed.y.toFixed(2);
+                            return context.dataset.label + ': £' + context.parsed.y.toFixed(2);
                         }
                     }
                 }
@@ -3234,10 +3302,52 @@ function renderSubcategoryBreakdown(subcategoryTotals) {
     container.innerHTML = sorted.map(([key, amount]) => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--spacing-sm); border-bottom:1px solid var(--medium-gray);">
             <span style="font-weight:600;">${escapeHtml(key)}</span>
-            <span style="font-size:1.1rem; font-weight:700; color:var(--primary-blue);">£${amount.toFixed(2)}</span>
+            <span style="font-size:1.1rem; font-weight:700; color:var(--primary-blue); cursor:pointer; transition: color 0.2s;" 
+                  onmouseover="this.style.color='var(--dark-blue)'" 
+                  onmouseout="this.style.color='var(--primary-blue)'"
+                  onclick="showSubcategoryTransactions('${key.replace(/'/g, "\\'")}')">
+                £${amount.toFixed(2)} 🔍
+            </span>
         </div>
     `).join('');
 }
+
+function showSubcategoryTransactions(subcategoryKey) {
+    const [category, subcategory] = subcategoryKey.split(' > ');
+    
+    const periods = getFilteredPeriods();
+    let matchingExpenses = [];
+    
+    periods.forEach(period => {
+        (period.expenses || []).forEach(expense => {
+            if (expense.category === category && expense.subcategory === subcategory) {
+                const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
+                matchingExpenses.push({...expense, amount});
+            }
+        });
+    });
+    
+    // Sort by date descending
+    matchingExpenses.sort((a,b) => new Date(b.date) - new Date(a.date));
+    
+    document.getElementById('subcategory-modal-title').textContent = `Transactions: ${subcategoryKey}`;
+    
+    const tbody = document.getElementById('subcategory-transactions-tbody');
+    tbody.innerHTML = matchingExpenses.map(expense => `
+        <tr>
+            <td><strong>${formatDate(expense.date)}</strong></td>
+            <td><strong>${escapeHtml(expense.description)}</strong></td>
+            <td><span style="display:inline-block;padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--light-blue);font-weight:700;color:var(--primary-blue);">${expense.category}</span></td>
+            <td>${escapeHtml(expense.subcategory)}</td>
+            <td><strong style="color:var(--danger);">£${expense.amount.toFixed(2)}</strong></td>
+        </tr>
+    `).join('');
+    
+    openModal('subcategory-modal');
+}
+
+// Make globally accessible
+window.showSubcategoryTransactions = showSubcategoryTransactions;
 
 function renderPeriodComparisonTable(periods) {
     const tbody = document.getElementById('period-comparison-tbody');
@@ -3248,9 +3358,16 @@ function renderPeriodComparisonTable(periods) {
         const sb = period.startingBalances || {};
         const netWorth = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0) - (sb.lloydsCredit || 0) - (sb.natwestCredit || 0) - (sb.virginCredit || 0);
         
+        // Short date format
+        const start = new Date(period.startDate);
+        const end = new Date(period.endDate);
+        const startMonth = start.toLocaleDateString('en-GB', { month: 'short' });
+        const endMonth = end.toLocaleDateString('en-GB', { month: 'short' });
+        const dateLabel = startMonth === endMonth ? startMonth : `${startMonth}-${endMonth}`;
+        
         return `
             <tr>
-                <td><strong>${formatDate(period.startDate)} - ${formatDate(period.endDate)}</strong></td>
+                <td><strong>${dateLabel}</strong></td>
                 <td><strong>£${(period.salary || 0).toFixed(2)}</strong></td>
                 <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
                 <td><strong style="color:var(--success);">£${saved.toFixed(2)}</strong></td>
@@ -3469,6 +3586,8 @@ function renderPeriodComparisonTable(periods) {
             document.getElementById('btn-edit-balances').addEventListener('click', openEditBalancesModal);
             document.getElementById('btn-export-csv').addEventListener('click', exportPeriodCSV);
 
+            document.getElementById('close-subcategory-modal').addEventListener('click', () => closeModal('subcategory-modal'));
+
             document.getElementById('close-new-period').addEventListener('click', () => closeModal('new-period-modal'));
             document.getElementById('cancel-new-period').addEventListener('click', () => closeModal('new-period-modal'));
             document.getElementById('close-expense').addEventListener('click', () => closeModal('expense-modal'));
@@ -3557,6 +3676,9 @@ function initializeSpendingChart() {
     document.getElementById('update-chart-range').addEventListener('click', renderSpendingChart);
     ['toggle-bills', 'toggle-wants', 'toggle-food', 'toggle-needs', 'toggle-income', 'toggle-unexpected'].forEach(id => {
         document.getElementById(id).addEventListener('change', renderSpendingChart);
+    });
+    ['toggle-networth', 'toggle-networth-owed'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => renderNetWorthChart(getFilteredPeriods()));
     });
 }
 
