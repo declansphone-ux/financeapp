@@ -1038,29 +1038,6 @@
                 </div>
             </div>
 
-            <!-- Subcategory Transactions Modal -->
-            <div id="subcategory-modal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 id="subcategory-modal-title">Transactions</h2>
-                        <button class="close-modal" id="close-subcategory-modal">&times;</button>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th>Category</th>
-                                    <th>Subcategory</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="subcategory-transactions-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
             
             <!-- SECOND ROW: balances & debts wide card -->
             <div class="wide-row">
@@ -1137,6 +1114,30 @@
                 </div>
             </div>
         </section>
+
+        <!-- Subcategory Transactions Modal (moved outside period-detail) -->
+    <div id="subcategory-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="subcategory-modal-title">Transactions</h2>
+                <button class="close-modal" id="close-subcategory-modal">&times;</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subcategory-transactions-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
         <section id="summary" class="content-section">
             <h2 style="margin-bottom:var(--spacing-lg);">📊 Full Summary - All Periods</h2>
