@@ -54,13 +54,28 @@
         }
         
         header { 
-            background:var(--white); 
-            padding:var(--spacing-lg); 
-            border-radius:var(--radius-lg); 
-            box-shadow:var(--shadow-md); 
-            margin-bottom:var(--spacing-lg); 
-            text-align:center;
-            border: 1px solid var(--medium-gray);
+            background: linear-gradient(135deg, var(--white) 0%, #F8FAFC 100%);
+            padding: var(--spacing-lg) 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--medium-gray);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        header .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header .header-left {
+            text-align: left;
         }
         
         h1 { 
@@ -927,8 +942,17 @@
 <body>
     <div class="container">
         <header>
-            <h1>💰 Budget Tracker</h1>
-            <p class="subtitle">Manage your finances with ease</p>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>💰 Budget Tracker</h1>
+                    <p class="subtitle">Manage your finances with ease</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-success" id="btn-save-cloud" style="font-weight:700;">
+                        💾 Save to Cloud
+                    </button>
+                </div>
+            </div>
         </header>
 
         <nav class="nav-tabs">
