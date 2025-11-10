@@ -1636,13 +1636,32 @@
                 
                 <!-- Main Grid: Stats + Chart -->
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-md);">
-                    <!-- Left: Key Stats -->
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm);">
-                        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%); padding: var(--spacing-sm); border-radius: var(--radius-md); border: 1px solid rgba(59, 130, 246, 0.2);">
-                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💰 Spent</div>
-                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${stats.totalSpent.toFixed(2)}</div>
-                            <div style="font-size: 0.7rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.budgets.total||0).toFixed(2)}</div>
-                        </div>
+                <!-- Left: Key Stats -->
+                                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm);">
+                                        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(59, 130, 246, 0.2); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💰 Spent</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${stats.totalSpent.toFixed(2)}</div>
+                                            <div style="font-size: 0.7rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.budgets.total||0).toFixed(2)}</div>
+                                        </div>
+                                        
+                                        <div style="background: linear-gradient(135deg, ${remaining >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'} 0%, ${remaining >= 0 ? 'rgba(52, 211, 153, 0.05)' : 'rgba(248, 113, 113, 0.05)'} 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid ${remaining >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💵 Left</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; margin-top: 0.25rem;">£${remaining.toFixed(2)}</div>
+                                            <div style="font-size: 0.7rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.salary||0).toFixed(2)}</div>
+                                        </div>
+                                        
+                                        <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(139, 92, 246, 0.2); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">📊 Daily Avg</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${dailyAverage.toFixed(2)}</div>
+                                            <div style="font-size: 0.7rem; color: var(--dark-gray); margin-top: 0.125rem;">per day</div>
+                                        </div>
+                                        
+                                        <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(16, 185, 129, 0.2); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💎 Savings</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">${savingsRate.toFixed(1)}%</div>
+                                            <div style="font-size: 0.7rem; color: var(--dark-gray); margin-top: 0.125rem;">${daysPassed} days</div>
+                                        </div>
+                                    </div>
                         
                         <div style="background: linear-gradient(135deg, ${remaining >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'} 0%, ${remaining >= 0 ? 'rgba(52, 211, 153, 0.05)' : 'rgba(248, 113, 113, 0.05)'} 100%); padding: var(--spacing-sm); border-radius: var(--radius-md); border: 1px solid ${remaining >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'};">
                             <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💵 Left</div>
@@ -1669,13 +1688,38 @@
                     </div>
                 </div>
                 
-                <!-- Compact Progress Bars -->
+<!-- Compact Progress Bars -->
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-sm);">
                     <div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
                             <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">📄 Bills</span>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.bills.toFixed(0)}</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.bills.toFixed(0)} <span style="color: ${billsOver ? 'var(--danger)' : 'var(--success)'};">(£${Math.max(0, (period.budgets.bills || 0) - stats.categorySpending.bills).toFixed(0)})</span></span>
                         </div>
+                        <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
+                            <div style="height: 100%; background: ${billsOver ? 'linear-gradient(90deg, #EF4444 0%, #F87171 100%)' : 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)'}; width: ${billsPercent}%; transition: width 0.4s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">🍔 Food</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.food.toFixed(0)} <span style="color: ${foodOver ? 'var(--danger)' : 'var(--success)'};">(£${Math.max(0, (period.budgets.food || 0) - stats.categorySpending.food).toFixed(0)})</span></span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
+                            <div style="height: 100%; background: ${foodOver ? 'linear-gradient(90deg, #EF4444 0%, #F87171 100%)' : 'linear-gradient(90deg, #10B981 0%, #34D399 100%)'}; width: ${foodPercent}%; transition: width 0.4s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">🎉 Wants</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.wants.toFixed(0)} <span style="color: ${wantsOver ? 'var(--danger)' : 'var(--success)'};">(£${Math.max(0, (period.budgets.wants || 0) - stats.categorySpending.wants).toFixed(0)})</span></span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
+                            <div style="height: 100%; background: ${wantsOver ? 'linear-gradient(90deg, #EF4444 0%, #F87171 100%)' : 'linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%)'}; width: ${wantsPercent}%; transition: width 0.4s ease;"></div>
+                        </div>
+                    </div>
+                </div>
                         <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
                             <div style="height: 100%; background: ${billsOver ? 'linear-gradient(90deg, #EF4444 0%, #F87171 100%)' : 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)'}; width: ${billsPercent}%; transition: width 0.4s ease;"></div>
                         </div>
