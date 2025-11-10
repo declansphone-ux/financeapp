@@ -3332,6 +3332,7 @@ function renderTopExpensesTable(allExpenses) {
 }
 
 function renderSubcategoryBreakdown(subcategoryTotals) {
+    console.log('renderSubcategoryBreakdown called with:', subcategoryTotals);
     const container = document.getElementById('subcategory-breakdown');
     const sorted = Object.entries(subcategoryTotals).sort((a,b) => b[1] - a[1]);
     
@@ -3341,8 +3342,9 @@ function renderSubcategoryBreakdown(subcategoryTotals) {
     }
     
     container.innerHTML = sorted.map(([key, amount]) => {
-        // Escape the key for use in onclick
-        const escapedKey = key.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        console.log('Creating row for subcategory:', key);
+        // Create a safe ID for the key
+        const safeId = key.replace(/[^a-zA-Z0-9]/g, '_');
         
         return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--spacing-sm); border-bottom:1px solid var(--medium-gray);">
@@ -3350,23 +3352,54 @@ function renderSubcategoryBreakdown(subcategoryTotals) {
             <span style="font-size:1.1rem; font-weight:700; color:var(--primary-blue); cursor:pointer; transition: color 0.2s;" 
                   onmouseover="this.style.color='var(--dark-blue)'" 
                   onmouseout="this.style.color='var(--primary-blue)'"
-                  onclick="window.showSubcategoryTransactions('${escapedKey}')">
+                  data-subcategory="${escapeHtml(key)}"
+                  id="subcat-${safeId}">
                 £${amount.toFixed(2)} 🔍
             </span>
         </div>
     `;
     }).join('');
+    
+    // Add click listeners after rendering
+    console.log('Adding click listeners to subcategory rows');
+    sorted.forEach(([key, amount]) => {
+        const safeId = key.replace(/[^a-zA-Z0-9]/g, '_');
+        const element = document.getElementById(`subcat-${safeId}`);
+        if (element) {
+            element.addEventListener('click', function() {
+                console.log('Clicked on subcategory:', key);
+                showSubcategoryTransactions(key);
+            });
+        } else {
+            console.error('Could not find element for:', key);
+        }
+    });
 }
 
 function showSubcategoryTransactions(subcategoryKey) {
-    const [category, subcategory] = subcategoryKey.split(' > ');
+    console.log('showSubcategoryTransactions called with:', subcategoryKey);
+    
+    const parts = subcategoryKey.split(' > ');
+    console.log('Split into parts:', parts);
+    
+    if (parts.length !== 2) {
+        console.error('Invalid subcategory key format:', subcategoryKey);
+        return;
+    }
+    
+    const [category, subcategory] = parts;
+    console.log('Category:', category, 'Subcategory:', subcategory);
     
     const periods = getFilteredPeriods();
+    console.log('Filtered periods:', periods.length);
+    
     let matchingExpenses = [];
     
     periods.forEach(period => {
+        console.log('Checking period:', period.id, 'with', (period.expenses || []).length, 'expenses');
         (period.expenses || []).forEach(expense => {
             if (expense.category === category && expense.subcategory === subcategory && expense.category !== 'Income') {
+                console.log('Found matching expense:', expense.description, expense.amount);
                 const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
                 matchingExpenses.push({
                     ...expense, 
@@ -3376,6 +3409,8 @@ function showSubcategoryTransactions(subcategoryKey) {
             }
         });
     });
+    
+    console.log('Total matching expenses:', matchingExpenses.length);
     
     // Sort by date descending
     matchingExpenses.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -3401,11 +3436,9 @@ function showSubcategoryTransactions(subcategoryKey) {
         `).join('');
     }
     
+    console.log('Opening modal');
     openModal('subcategory-modal');
 }
-
-// Make globally accessible
-window.showSubcategoryTransactions = showSubcategoryTransactions;
 
 function renderPeriodComparisonTable(periods) {
     const tbody = document.getElementById('period-comparison-tbody');
