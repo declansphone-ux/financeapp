@@ -9,37 +9,38 @@
         /* ============================================
            ENHANCED STYLES & CSS VARIABLES
            ============================================ */
-        :root {
-            --primary-blue: #60A5FA;
-            --light-blue: #1E3A8A;
-            --dark-blue: #93C5FD;
-            --accent-blue: #3B82F6;
-            --white: #1F2937;
-            --light-gray: #374151;
-            --medium-gray: #4B5563;
-            --dark-gray: #9CA3AF;
-            --text-dark: #F9FAFB;
-            --success: #34D399;
-            --warning: #FBBF24;
-            --danger: #F87171;
-            --spacing-xs: 0.5rem;
-            --spacing-sm: 1rem;
-            --spacing-md: 1.5rem;
-            --spacing-lg: 2rem;
-            --spacing-xl: 3rem;
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
-            --shadow-md: 0 4px 8px rgba(0,0,0,0.5);
-            --shadow-lg: 0 10px 20px rgba(0,0,0,0.6);
-            --shadow-xl: 0 20px 30px rgba(0,0,0,0.7);
-            --bg-dark: #111827;
-            --bg-darker: #0F172A;
-            --card-bg: #1F2937;
-            --card-bg-light: #374151;
-        }
+
+            :root {
+                --primary-blue: #60A5FA;
+                --light-blue: #1E3A8A;
+                --dark-blue: #93C5FD;
+                --accent-blue: #3B82F6;
+                --white: #1F2937;
+                --light-gray: #374151;
+                --medium-gray: #4B5563;
+                --dark-gray: #D1D5DB; /* Changed from #9CA3AF for better contrast */
+                --text-dark: #F9FAFB;
+                --success: #34D399;
+                --warning: #FBBF24;
+                --danger: #F87171;
+                --spacing-xs: 0.5rem;
+                --spacing-sm: 1rem;
+                --spacing-md: 1.5rem;
+                --spacing-lg: 2rem;
+                --spacing-xl: 3rem;
+                --radius-sm: 6px;
+                --radius-md: 10px;
+                --radius-lg: 16px;
+                --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+                --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
+                --shadow-md: 0 4px 8px rgba(0,0,0,0.5);
+                --shadow-lg: 0 10px 20px rgba(0,0,0,0.6);
+                --shadow-xl: 0 20px 30px rgba(0,0,0,0.7);
+                --bg-dark: #111827;
+                --bg-darker: #0F172A;
+                --card-bg: #1F2937;
+                --card-bg-light: #374151;
+            }
 
         * { margin:0; padding:0; box-sizing:border-box; }
         
@@ -59,7 +60,7 @@
         
         header { 
             background: linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
-            padding: var(--spacing-lg) 0;
+            padding: var(--spacing-sm) 0; /* Reduced from var(--spacing-lg) */
             box-shadow: 0 2px 8px rgba(0,0,0,0.6);
             margin-bottom: var(--spacing-lg);
             border-bottom: 2px solid var(--medium-gray);
@@ -72,7 +73,7 @@
         header .header-content {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 0 var(--spacing-lg);
+            padding: 0 var(--spacing-md); /* Reduced from var(--spacing-lg) */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -84,15 +85,15 @@
         
         h1 { 
             color:var(--primary-blue); 
-            font-size:2.75rem; 
-            margin-bottom:var(--spacing-xs);
+            font-size:1.75rem; /* Reduced from 2.75rem */
+            margin-bottom:0.25rem; /* Reduced from var(--spacing-xs) */
             font-weight:700;
             letter-spacing:-0.025em;
         }
         
         .subtitle { 
             color:var(--dark-gray); 
-            font-size:1.125rem;
+            font-size:0.875rem; /* Reduced from 1.125rem */
             font-weight:400;
         }
 
@@ -575,7 +576,7 @@
         }
         
         .period-card.current-period {
-            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.95) 0%, rgba(55, 65, 81, 0.95) 100%); /* Much darker, matching theme */
             border: 3px solid var(--primary-blue);
             padding: var(--spacing-xl);
             box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
@@ -2711,113 +2712,116 @@
     <div id="summary-stats-cards"></div>
     
     <!-- Charts Section - Fixed Grid -->
-    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
-        <!-- Category Breakdown Pie Chart -->
-        <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending by Category</h3>
-            <div style="height:300px; position:relative;">
-                <canvas id="category-pie-chart"></canvas>
-            </div>
+    <!-- Replace the Full Summary charts section (around line 950 in your HTML) with this fixed version -->
+<!-- Charts Section - Fixed Grid with overflow handling -->
+<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
+    <!-- Category Breakdown Pie Chart -->
+    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray); overflow:hidden;">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending by Category</h3>
+        <div style="height:300px; position:relative;">
+            <canvas id="category-pie-chart"></canvas>
         </div>
-        
-        <!-- Weekly Spending Bar Chart -->
-        <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
-            <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Weekly Spending Breakdown</h3>
-            <div style="display:flex; gap:var(--spacing-sm); margin-bottom:var(--spacing-md); flex-wrap:wrap;">
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-weekly-bills" checked> 
-                    <span style="color:#60A5FA; font-weight:600;">📄 Bills</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-weekly-wants" checked> 
-                    <span style="color:#A78BFA; font-weight:600;">🎁 Wants</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-weekly-food" checked> 
-                    <span style="color:#34D399; font-weight:600;">🍔 Food</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-weekly-needs"> 
-                    <span style="color:#FBBF24; font-weight:600;">🛒 Needs</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-weekly-unexpected"> 
-                    <span style="color:#F87171; font-weight:600;">⚠️ Unexpected</span>
-                </label>
-            </div>
-            <div style="height:300px; position:relative;">
-                <canvas id="weekly-spending-chart"></canvas>
-            </div>
-        </div>
+    </div>
     
-    <!-- Net Worth Progression -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
-            <h3 style="color:var(--dark-blue); margin:0;">📈 Net Worth Progression</h3>
-            <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-networth" checked> 
-                    <span style="color:#10B981; font-weight:600;">💰 Net Worth</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-networth-owed" checked> 
-                    <span style="color:#3B82F6; font-weight:600;">💎 Net Worth + Owed</span>
-                </label>
-            </div>
+    <!-- Weekly Spending Bar Chart -->
+    <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray); overflow:hidden;">
+        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Weekly Spending Breakdown</h3>
+        <div style="display:flex; gap:var(--spacing-sm); margin-bottom:var(--spacing-md); flex-wrap:wrap;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-weekly-bills" checked> 
+                <span style="color:#60A5FA; font-weight:600;">📄 Bills</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-weekly-wants" checked> 
+                <span style="color:#A78BFA; font-weight:600;">🎁 Wants</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-weekly-food" checked> 
+                <span style="color:#34D399; font-weight:600;">🍔 Food</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-weekly-needs"> 
+                <span style="color:#FBBF24; font-weight:600;">🛒 Needs</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-weekly-unexpected"> 
+                <span style="color:#F87171; font-weight:600;">⚠️ Unexpected</span>
+            </label>
         </div>
         <div style="height:300px; position:relative;">
-            <canvas id="networth-chart"></canvas>
+            <canvas id="weekly-spending-chart"></canvas>
         </div>
     </div>
-    
-    <!-- Savings Rate Over Time -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
-        <div style="height:300px; position:relative;">
-            <canvas id="savings-rate-chart"></canvas>
+</div>
+
+<!-- Net Worth Progression -->
+<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
+        <h3 style="color:var(--dark-blue); margin:0;">📈 Net Worth Progression</h3>
+        <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-networth" checked> 
+                <span style="color:#10B981; font-weight:600;">💰 Net Worth</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-networth-owed" checked> 
+                <span style="color:#3B82F6; font-weight:600;">💎 Net Worth + Owed</span>
+            </label>
         </div>
     </div>
-    
-    <!-- Daily Spending Chart -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Daily Spending Trends</h3>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
-            <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-cumulative-summary" checked> 
-                    <span style="font-weight:600; color:var(--dark-blue);">Cumulative</span>
-                </label>
-            </div>
-            <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-bills-summary" checked> 
-                    <span style="color:#3B82F6; font-weight:600;">📄 Bills</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-wants-summary" checked> 
-                    <span style="color:#8B5CF6; font-weight:600;">🎁 Wants</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-food-summary" checked> 
-                    <span style="color:#10B981; font-weight:600;">🍔 Food</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-needs-summary"> 
-                    <span style="color:#F59E0B; font-weight:600;">🛒 Needs</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                    <input type="checkbox" id="toggle-unexpected-summary"> 
-                    <span style="color:#EF4444; font-weight:600;">⚠️ Unexpected</span>
-                </label>
-            </div>
+    <div style="height:300px; position:relative;">
+        <canvas id="networth-chart"></canvas>
+    </div>
+</div>
+
+<!-- Savings Rate Over Time -->
+<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
+    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
+    <div style="height:300px; position:relative;">
+        <canvas id="savings-rate-chart"></canvas>
+    </div>
+</div>
+
+<!-- Daily Spending Chart -->
+<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
+    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Daily Spending Trends</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
+        <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-cumulative-summary" checked> 
+                <span style="font-weight:600; color:var(--dark-blue);">Cumulative</span>
+            </label>
         </div>
-        <div style="height:400px; position:relative;">
-            <canvas id="daily-spending-chart"></canvas>
+        <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-bills-summary" checked> 
+                <span style="color:#3B82F6; font-weight:600;">📄 Bills</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-wants-summary" checked> 
+                <span style="color:#8B5CF6; font-weight:600;">🎁 Wants</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-food-summary" checked> 
+                <span style="color:#10B981; font-weight:600;">🍔 Food</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-needs-summary"> 
+                <span style="color:#F59E0B; font-weight:600;">🛒 Needs</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                <input type="checkbox" id="toggle-unexpected-summary"> 
+                <span style="color:#EF4444; font-weight:600;">⚠️ Unexpected</span>
+            </label>
         </div>
     </div>
-    
+    <div style="height:400px; position:relative;">
+        <canvas id="daily-spending-chart"></canvas>
+    </div>
+</div>
+
 <!-- Top Expenses Table -->
-<div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+<div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md);">
         <h3 style="color:var(--dark-blue); margin:0;">💰 Top 10 Expenses</h3>
         <select id="top-expenses-filter" style="padding:0.5rem 1rem; border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:var(--card-bg-light); color:var(--text-dark);">
