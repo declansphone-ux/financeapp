@@ -1726,28 +1726,28 @@
                     <!-- Left: Key Stats -->
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm);">
                         <div style="background: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(96, 165, 250, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💰 Spent</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💰 Spent</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${stats.totalSpent.toFixed(2)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.budgets.total||0).toFixed(2)}</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${spentDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${spentDiff > 0 ? '+' : ''}£${spentDiff.toFixed(2)} (${spentDiffPercent > 0 ? '+' : ''}${spentDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, ${remaining >= 0 ? 'rgba(52, 211, 153, 0.15)' : 'rgba(248, 113, 113, 0.15)'} 0%, ${remaining >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'} 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid ${remaining >= 0 ? 'rgba(52, 211, 153, 0.3)' : 'rgba(248, 113, 113, 0.3)'}; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💵 Left</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💵 Left</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; margin-top: 0.25rem;">£${remaining.toFixed(2)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.salary||0).toFixed(2)}</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${leftDiff > 0 ? 'var(--success)' : 'var(--danger)'};">${leftDiff > 0 ? '+' : ''}£${leftDiff.toFixed(2)} (${leftDiffPercent > 0 ? '+' : ''}${leftDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(167, 139, 250, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">📊 Daily Avg</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">📊 Daily Avg</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${dailyAverage.toFixed(2)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">per day</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${dailyDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${dailyDiff > 0 ? '+' : ''}£${dailyDiff.toFixed(2)} (${dailyDiffPercent > 0 ? '+' : ''}${dailyDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(52, 211, 153, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💎 Savings</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💎 Savings</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">${savingsRate.toFixed(1)}%</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">${daysPassed} days</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${savingsDiff > 0 ? 'var(--success)' : 'var(--danger)'};">${savingsDiff > 0 ? '+' : ''}${savingsDiff.toFixed(1)}%</div>` : ''}
