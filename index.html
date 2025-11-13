@@ -432,6 +432,8 @@
             border:2px solid var(--medium-gray); 
             border-radius:var(--radius-sm);
             transition: border-color .2s ease;
+            color: var(--text-dark);  /* Add this line */
+            background: var(--card-bg);  /* Also add background for consistency */
         }
         
         .shared-table input[type="number"]:focus {
@@ -460,6 +462,7 @@
             font-size:1rem; 
             transition:border-color .2s ease, box-shadow .2s ease;
             background: var(--white);
+            color: var(--text-dark);  /* Add this line */
         }
         
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
@@ -1432,7 +1435,8 @@
         // ============================================
         let currentPeriodId = null;
         let editingExpenseId = null;
-
+        Chart.defaults.color = '#F9FAFB'; // Light text color for all charts
+        Chart.defaults.borderColor = '#4B5563'; // Grid line color
                 // Global in-memory storage for the periods data
         let periods = []; 
         
