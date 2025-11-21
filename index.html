@@ -1661,20 +1661,20 @@
     document.getElementById('home-balances-card').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-md);">
             <div>
-                <h3 style="margin:0;color:var(--white);font-size:1.5rem;">💳 Current Balances & Debts</h3>
+                <h3 style="margin:0;color:#3B82F6;font-size:1.5rem;">💳 Current Balances & Debts</h3>
                 <div class="small-muted" style="color:rgba(255,255,255,0.9)">All accounts shown (positive = balance, credit card = owed)</div>
             </div>
             <div style="text-align:right;">
-                <div style="font-weight:700;font-size:1.3rem">💰 Savings: £${totalSavings.toFixed(2)}</div>
-                <div style="font-weight:700;font-size:1.3rem">💳 Debt: £${totalDebt.toFixed(2)}</div>
+                <div style="font-weight:700;font-size:1.3rem">💰 Savings: £${formatCurrency(totalSavings)}</div>
+                <div style="font-weight:700;font-size:1.3rem">💳 Debt: £${formatCurrency(totalDebt)}</div>
             </div>
         </div>
         <div class="balances-grid">
-            <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingCurrent||0).toFixed(2)}</div></div>
-            <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingSaver||0).toFixed(2)}</div></div>
-            <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.lloydsCredit||0).toFixed(2)}</div></div>
-            <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.natwestCredit||0).toFixed(2)}</div></div>
-            <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.virginCredit||0).toFixed(2)}</div></div>
+            <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingCurrent||0)}</div></div>
+            <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingSaver||0)}</div></div>
+            <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.lloydsCredit||0)}</div></div>
+            <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.natwestCredit||0)}</div></div>
+            <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.virginCredit||0)}</div></div>
         </div>
     `;
     
@@ -1767,23 +1767,23 @@
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm);">
                         <div style="background: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(96, 165, 250, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                             <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💰 Spent</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${stats.totalSpent.toFixed(2)}</div>
-                            <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.budgets.total||0).toFixed(2)}</div>
-                            ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${spentDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${spentDiff > 0 ? '+' : ''}£${spentDiff.toFixed(2)} (${spentDiffPercent > 0 ? '+' : ''}${spentDiffPercent.toFixed(1)}%)</div>` : ''}
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${formatCurrency(stats.totalSpent)}</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${formatCurrency(period.budgets.total||0)}</div>
+                            ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${spentDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${spentDiff > 0 ? '+' : ''}£${formatCurrency(spentDiff)} (${spentDiffPercent > 0 ? '+' : ''}${spentDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, ${remaining >= 0 ? 'rgba(52, 211, 153, 0.15)' : 'rgba(248, 113, 113, 0.15)'} 0%, ${remaining >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'} 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid ${remaining >= 0 ? 'rgba(52, 211, 153, 0.3)' : 'rgba(248, 113, 113, 0.3)'}; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                             <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💵 Left</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; margin-top: 0.25rem;">£${remaining.toFixed(2)}</div>
-                            <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${(period.salary||0).toFixed(2)}</div>
-                            ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${leftDiff > 0 ? 'var(--success)' : 'var(--danger)'};">${leftDiff > 0 ? '+' : ''}£${leftDiff.toFixed(2)} (${leftDiffPercent > 0 ? '+' : ''}${leftDiffPercent.toFixed(1)}%)</div>` : ''}
+                            <div style="font-size: 1.5rem; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; margin-top: 0.25rem;">£${formatCurrency(remaining)}</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${formatCurrency(period.salary||0)}</div>
+                            ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${leftDiff > 0 ? 'var(--success)' : 'var(--danger)'};">${leftDiff > 0 ? '+' : ''}£${formatCurrency(leftDiff)} (${leftDiffPercent > 0 ? '+' : ''}${leftDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(167, 139, 250, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                             <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">📊 Daily Avg</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${dailyAverage.toFixed(2)}</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${formatCurrency(dailyAverage)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">per day</div>
-                            ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${dailyDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${dailyDiff > 0 ? '+' : ''}£${dailyDiff.toFixed(2)} (${dailyDiffPercent > 0 ? '+' : ''}${dailyDiffPercent.toFixed(1)}%)</div>` : ''}
+                            ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${dailyDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${dailyDiff > 0 ? '+' : ''}£${formatCurrency(dailyDiff)} (${dailyDiffPercent > 0 ? '+' : ''}${dailyDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(52, 211, 153, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
@@ -1856,7 +1856,7 @@
                     <div class="period-summary-top">
                         <div class="period-stat-box">
                             <div class="period-stat-label">Spent</div>
-                            <div class="period-stat-value">£${stats.totalSpent.toFixed(2)}</div>
+                            <div class="period-stat-value">£${formatCurrency(stats.totalSpent)}</div>
                         </div>
                     </div>
 
@@ -1865,7 +1865,7 @@
                         <div class="period-progress-item">
                             <div class="period-progress-header">
                                 <span class="period-progress-label">📄 Bills</span>
-                                <span class="period-progress-amount">£${stats.categorySpending.bills.toFixed(2)}</span>
+                                <span class="period-progress-amount">£${formatCurrency(stats.categorySpending.bills)}</span>
                             </div>
                             <div class="period-progress-bar-container">
                                 <div class="period-progress-bar ${(period.budgets.bills > 0 && stats.categorySpending.bills > period.budgets.bills) ? 'over' : 'bills'}" style="width: ${Math.min((stats.categorySpending.bills / (period.budgets.bills || 1)) * 100, 100)}%;"></div>
@@ -1875,7 +1875,7 @@
                         <div class="period-progress-item">
                             <div class="period-progress-header">
                                 <span class="period-progress-label">🍔 Food</span>
-                                <span class="period-progress-amount">£${stats.categorySpending.food.toFixed(2)}</span>
+                                <span class="period-progress-amount">£${formatCurrency(stats.categorySpending.food)}</span>
                             </div>
                             <div class="period-progress-bar-container">
                                 <div class="period-progress-bar ${(period.budgets.food > 0 && stats.categorySpending.food > period.budgets.food) ? 'over' : 'food'}" style="width: ${Math.min((stats.categorySpending.food / (period.budgets.food || 1)) * 100, 100)}%;"></div>
@@ -1885,7 +1885,7 @@
                         <div class="period-progress-item">
                             <div class="period-progress-header">
                                 <span class="period-progress-label">🎉 Wants</span>
-                                <span class="period-progress-amount">£${stats.categorySpending.wants.toFixed(2)}</span>
+                                <span class="period-progress-amount">£${formatCurrency(stats.categorySpending.wants)}</span>
                             </div>
                             <div class="period-progress-bar-container">
                                 <div class="period-progress-bar ${(period.budgets.wants > 0 && stats.categorySpending.wants > period.budgets.wants) ? 'over' : 'wants'}" style="width: ${Math.min((stats.categorySpending.wants / (period.budgets.wants || 1)) * 100, 100)}%;"></div>
@@ -1896,7 +1896,7 @@
                     <div class="period-savings-indicator" style="margin-top: var(--spacing-sm);">
                         <div class="period-savings-label">Savings Rate</div>
                         <div class="period-savings-value">${savingsRate.toFixed(1)}%</div>
-                        <div class="period-savings-subtext">£${remaining.toFixed(2)} saved</div>
+                        <div class="period-savings-subtext">£${formatCurrency(remaining)} saved</div>
                     </div>
                 </div>
             `;
@@ -1942,7 +1942,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return context.label + ': £' + context.parsed.toFixed(2);
+                                    return context.label + ': £' + formatCurrency(context.parsed);
                                 }
                             }
                         }
@@ -2042,22 +2042,22 @@
             container.innerHTML = `
                 <div class="summary-card networth-card">
                     <h3>💰 Current Money</h3>
-                    <div class="value">£${currentMoney.toFixed(2)}</div>
+                    <div class="value">£${formatCurrency(currentMoney)}</div>
                     <div class="small-muted">Starling accounts</div>
                 </div>
                 <div class="summary-card networth-card">
                     <h3>💳 Current Debts</h3>
-                    <div class="value">£${currentDebts.toFixed(2)}</div>
+                    <div class="value">£${formatCurrency(currentDebts)}</div>
                     <div class="small-muted">Credit cards</div>
                 </div>
                 <div class="summary-card networth-card">
                     <h3>📊 Net Worth</h3>
-                    <div class="value ${netWorth < 0 ? 'text-danger' : ''}">£${netWorth.toFixed(2)}</div>
+                    <div class="value ${netWorth < 0 ? 'text-danger' : ''}">£${formatCurrency(netWorth)}</div>
                     <div class="small-muted">Money - Debts</div>
                 </div>
                 <div class="summary-card networth-card">
                     <h3>🎯 Net Worth Once Paid</h3>
-                    <div class="value">£${netWorthOncePaid.toFixed(2)}</div>
+                    <div class="value">£${formatCurrency(netWorthOncePaid)}</div>
                     <div class="small-muted">Including owed to me</div>
                 </div>
             `;
@@ -2074,27 +2074,27 @@
             container.innerHTML = `
                 <div class="summary-card">
                     <h3>Total Spent</h3>
-                    <div class="value">£${stats.totalSpent.toFixed(2)}</div>
-                    <div class="small-muted">of £${(period.salary||0).toFixed(2)} salary</div>
+                    <div class="value">£${formatCurrency(stats.totalSpent)}</div>
+                    <div class="small-muted">of £${formatCurrency(period.salary||0)} salary</div>
                 </div>
                 <div class="summary-card">
                     <h3>Remaining</h3>
-                    <div class="value">£${remaining.toFixed(2)}</div>
+                    <div class="value">£${formatCurrency(remaining)}</div>
                     <div class="small-muted">${stats.savingsRate.toFixed(1)}% savings rate</div>
                 </div>
                 <div class="summary-card">
                     <h3>Budget Status</h3>
                     <div class="value">${stats.budgetStatus === 'over' ? '⚠️ Over' : '✅ On Track'}</div>
-                    <div class="small-muted">${stats.overUnder >= 0 ? '+' : ''}£${stats.overUnder.toFixed(2)}</div>
+                    <div class="small-muted">${stats.overUnder >= 0 ? '+' : ''}£${formatCurrency(stats.overUnder)}</div>
                 </div>
                 <div class="summary-card">
                     <h3>Unexpected</h3>
-                    <div class="value">£${(stats.categorySpending.unexpected || 0).toFixed(2)}</div>
+                    <div class="value">£${formatCurrency(stats.categorySpending.unexpected || 0)}</div>
                     <div class="small-muted">Running total</div>
                 </div>
                 <div class="summary-card">
                     <h3>One-off Needs</h3>
-                    <div class="value">£${(stats.categorySpending.oneOff || 0).toFixed(2)}</div>
+                    <div class="value">£${formatCurrency(stats.categorySpending.oneOff || 0)}</div>
                     <div class="small-muted">Running total</div>
                 </div>
             `;
@@ -2141,7 +2141,7 @@
                     <div class="progress-item">
                         <div class="progress-header">
                             <span class="progress-label">${item.emoji} ${item.name}</span>
-                            <span class="progress-values">£${item.spent.toFixed(2)} / £${item.budget.toFixed(2)} ${percentage >= 100 ? '⚠️' : ''}</span>
+                            <span class="progress-values">£${formatCurrency(item.spent)} / £${formatCurrency(item.budget)} ${percentage >= 100 ? '⚠️' : ''}</span>
                         </div>
                         <div class="progress-bar-container">
                             <div class="progress-bar-fill ${colorClass}" style="width: ${displayPercentage}%">
@@ -2149,7 +2149,7 @@
                             </div>
                         </div>
                         <div style="text-align:right; margin-top:0.25rem; font-size:0.85rem; color:${percentage >= 100 ? 'var(--danger)' : 'var(--dark-gray)'}; font-weight:600;">
-                            ${percentage >= 100 ? 'Over by £' + (item.spent - item.budget).toFixed(2) : '£' + remaining.toFixed(2) + ' remaining'}
+                            ${percentage >= 100 ? 'Over by £' + formatCurrency(item.spent - item.budget) : '£' + formatCurrency(remaining) + ' remaining'}
                         </div>
                     </div>
                 `;
@@ -2172,16 +2172,16 @@
                         <div class="small-muted" style="color:rgba(255,255,255,0.9)">All accounts shown (positive = balance, credit card = owed)</div>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-weight:700;font-size:1.3rem">💰 Savings: £${totalSavings.toFixed(2)}</div>
-                        <div style="font-weight:700;font-size:1.3rem">💳 Debt: £${totalDebt.toFixed(2)}</div>
+                        <div style="font-weight:700;font-size:1.3rem">💰 Savings: £${formatCurrency(totalSavings)}</div>
+                        <div style="font-weight:700;font-size:1.3rem">💳 Debt: £${formatCurrency(totalDebt)}</div>
                     </div>
                 </div>
                 <div class="balances-grid">
-                    <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingCurrent||0).toFixed(2)}</div></div>
-                    <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingSaver||0).toFixed(2)}</div></div>
-                    <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.lloydsCredit||0).toFixed(2)}</div></div>
-                    <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.natwestCredit||0).toFixed(2)}</div></div>
-                    <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.virginCredit||0).toFixed(2)}</div></div>
+                    <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingCurrent||0)}</div></div>
+                    <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingSaver||0)}</div></div>
+                    <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.lloydsCredit||0)}</div></div>
+                    <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.natwestCredit||0)}</div></div>
+                    <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.virginCredit||0)}</div></div>
                 </div>
             `;
         }
@@ -2195,7 +2195,7 @@
 
             // Calculate and display total
             const totalOwed = period.owedPeople.reduce((sum, p) => sum + (p.amount || 0), 0);
-            document.getElementById('owed-total').textContent = `Total: £${totalOwed.toFixed(2)}`;
+            document.getElementById('owed-total').textContent = `Total: £${formatCurrency(totalOwed)}`;
 
             const listEl = document.getElementById('owed-list');
             if (!period.owedPeople || period.owedPeople.length === 0) {
@@ -2337,7 +2337,7 @@
                             <br><small style="color:var(--dark-gray);font-weight:500;">${expense.subcategory || ''}</small>
                         </td>
                         <td class="${amountClass}">
-                            <strong style="font-size:1.1rem;">${amountSign}£${amount.toFixed(2)}</strong>
+                            <strong style="font-size:1.1rem;">${amountSign}£${formatCurrency(amount)}</strong>
                             ${(expense.sharedAllocations && expense.sharedAllocations.length>0) ? `<br><small style="color:var(--dark-gray);">📊 Split</small>` : ''}
                         </td>
                         <td><span style="font-weight:600;">${expense.paymentMethod}</span></td>
@@ -2671,7 +2671,7 @@
                 (period.owedPeople || []).forEach((p, idx) => {
                     const o = document.createElement('option');
                     o.value = idx;
-                    o.textContent = `${p.name} (£${(p.amount||0).toFixed(2)})`;
+                    o.textContent = `${p.name} (£${formatCurrency(p.amount||0)})`;
                     received.appendChild(o);
                 });
             }
@@ -2825,10 +2825,11 @@
         </div>
         <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
-                <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
+                <thead style="position:sticky; top:0; background:#3B82F6; z-index:1;">
                     <tr>
-                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray);">Period</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray);">Net Worth</th>
+                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Net Worth</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW + Owed</th>
                     </tr>
                 </thead>
                 <tbody id="networth-table-body">
@@ -2848,10 +2849,10 @@
         </div>
         <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
-                <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
+                <thead style="position:sticky; top:0; background:#3B82F6; z-index:1;">
                     <tr>
-                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray);">Period</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray);">Savings Rate</th>
+                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Savings Rate</th>
                     </tr>
                 </thead>
                 <tbody id="savings-rate-table-body">
@@ -3096,11 +3097,11 @@ function renderSummaryData(periods) {
     // Render summary cards
         document.getElementById('summary-stats-cards').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">💰 Total Salary</h3><div class="value">£${totalSalary.toFixed(2)}</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📊 Total Spent</h3><div class="value">£${totalSpent.toFixed(2)}</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">💎 Total Saved</h3><div class="value">£${totalSaved.toFixed(2)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">💰 Total Salary</h3><div class="value">£${formatCurrency(totalSalary)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📊 Total Spent</h3><div class="value">£${formatCurrency(totalSpent)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">💎 Total Saved</h3><div class="value">£${formatCurrency(totalSaved)}</div></div>
                 <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📈 Savings Rate</h3><div class="value">${savingsRate.toFixed(1)}%</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📅 Avg Daily</h3><div class="value">£${avgDailySpend.toFixed(2)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📅 Avg Daily</h3><div class="value">£${formatCurrency(avgDailySpend)}</div></div>
                 <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📅 No Spend Days</h3><div class="value">${calculateNoSpendDays(periods)}</div></div>
             </div>
         `;
@@ -3150,7 +3151,7 @@ function renderCategoryPieChart(categoryTotals) {
                         label: function(context) {
                             const total = context.dataset.data.reduce((a,b) => a + b, 0);
                             const percentage = ((context.parsed / total) * 100).toFixed(1);
-                            return context.label + ': £' + context.parsed.toFixed(2) + ' (' + percentage + '%)';
+                            return context.label + ': £' + formatCurrency(context.parsed) + ' (' + percentage + '%)';
                         }
                     }
                 }
@@ -3188,7 +3189,7 @@ function renderPaymentPieChart(paymentTotals) {
                         label: function(context) {
                             const total = context.dataset.data.reduce((a,b) => a + b, 0);
                             const percentage = ((context.parsed / total) * 100).toFixed(1);
-                            return context.label + ': £' + context.parsed.toFixed(2) + ' (' + percentage + '%)';
+                            return context.label + ': £' + formatCurrency(context.parsed) + ' (' + percentage + '%)';
                         }
                     }
                 }
@@ -3293,7 +3294,7 @@ function renderWeeklySpendingChart(periods) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': £' + context.parsed.y.toFixed(2);
+                            return context.dataset.label + ': £' + formatCurrency(context.parsed.y);
                         }
                     }
                 }
@@ -3382,7 +3383,7 @@ function renderNetWorthChart(periods) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': £' + context.parsed.y.toFixed(2);
+                            return context.dataset.label + ': £' + formatCurrency(context.parsed.y);
                         }
                     }
                 }
@@ -3404,7 +3405,8 @@ function renderNetWorthChart(periods) {
     tableBody.innerHTML = periods.map((p, i) => `
         <tr style="border-bottom:1px solid var(--light-gray);">
             <td style="padding:var(--spacing-sm);">${labels[i]}</td>
-            <td style="padding:var(--spacing-sm); text-align:right;">£${netWorthData[i].toFixed(2)}</td>
+            <td style="padding:var(--spacing-sm); text-align:right;">£${formatCurrency(netWorthData[i])}</td>
+            <td style="padding:var(--spacing-sm); text-align:right;">£${formatCurrency(netWorthOwedData[i])}</td>
         </tr>
     `).join('');
 }
@@ -3601,7 +3603,7 @@ function renderDailySpendingChart(periods) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': £' + context.parsed.y.toFixed(2);
+                            return context.dataset.label + ': £' + formatCurrency(context.parsed.y);
                         }
                     }
                 }
@@ -3660,7 +3662,7 @@ function renderTopExpensesTable(allExpenses) {
             <td><strong>${formatDate(expense.date)}</strong></td>
             <td><strong>${escapeHtml(expense.description)}</strong></td>
             <td><span style="display:inline-block;padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--light-blue);font-weight:700;color:var(--primary-blue);">${expense.category}</span></td>
-            <td><strong style="color:var(--danger);">£${expense.amount.toFixed(2)}</strong></td>
+            <td><strong style="color:var(--danger);">£${formatCurrency(expense.amount)}</strong></td>
         </tr>
     `).join('');
 }
@@ -3683,12 +3685,12 @@ function renderSubcategoryBreakdown(subcategoryTotals) {
         return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:var(--spacing-sm); border-bottom:1px solid var(--medium-gray);">
             <span style="font-weight:600;">${escapeHtml(key)}</span>
-            <span style="font-size:1.1rem; font-weight:700; color:var(--primary-blue); cursor:pointer; transition: color 0.2s;" 
-                  onmouseover="this.style.color='var(--dark-blue)'" 
+            <span style="font-size:1.1rem; font-weight:700; color:var(--primary-blue); cursor:pointer; transition: color 0.2s;"
+                  onmouseover="this.style.color='var(--dark-blue)'"
                   onmouseout="this.style.color='var(--primary-blue)'"
                   data-subcategory="${escapeHtml(key)}"
                   id="subcat-${safeId}">
-                £${amount.toFixed(2)} 🔍
+                £${formatCurrency(amount)} 🔍
             </span>
         </div>
     `;
@@ -3765,7 +3767,7 @@ function showSubcategoryTransactions(subcategoryKey) {
                 </td>
                 <td><span style="display:inline-block;padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--light-blue);font-weight:700;color:var(--primary-blue);">${expense.category}</span></td>
                 <td>${escapeHtml(expense.subcategory)}</td>
-                <td><strong style="color:var(--danger);font-size:1.1rem;">£${expense.amount.toFixed(2)}</strong></td>
+                <td><strong style="color:var(--danger);font-size:1.1rem;">£${formatCurrency(expense.amount)}</strong></td>
             </tr>
         `).join('');
     }
@@ -3792,13 +3794,13 @@ function renderPeriodComparisonTable(periods) {
         return `
             <tr>
                 <td><strong>${dateLabel}</strong></td>
-                <td><strong>£${stats.totalSpent.toFixed(2)}</strong></td>
-                <td><strong style="color:var(--success);">£${saved.toFixed(2)}</strong></td>
+                <td><strong>£${formatCurrency(stats.totalSpent)}</strong></td>
+                <td><strong style="color:var(--success);">£${formatCurrency(saved)}</strong></td>
                 <td><strong>${stats.savingsRate.toFixed(1)}%</strong></td>
-                <td>£${stats.categorySpending.bills.toFixed(2)}</td>
-                <td>£${stats.categorySpending.food.toFixed(2)}</td>
-                <td>£${stats.categorySpending.wants.toFixed(2)}</td>
-                <td><strong style="color:${netWorth >= 0 ? 'var(--success)' : 'var(--danger)'};">£${netWorth.toFixed(2)}</strong></td>
+                <td>£${formatCurrency(stats.categorySpending.bills)}</td>
+                <td>£${formatCurrency(stats.categorySpending.food)}</td>
+                <td>£${formatCurrency(stats.categorySpending.wants)}</td>
+                <td><strong style="color:${netWorth >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorth)}</strong></td>
             </tr>
         `;
     }).join('');
@@ -3952,6 +3954,14 @@ function renderPeriodComparisonTable(periods) {
         }
         function formatDateForInput(date) { return date.toISOString().split('T')[0]; }
         function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); }); }
+        function formatCurrency(value) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return '0.00';
+            if (Math.abs(num) > 999.99) {
+                return num.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            return num.toFixed(2);
+        }
 
         function updatePeriodInStorage(period) {
             const periods = getPeriods();
@@ -4292,7 +4302,7 @@ function renderSpendingChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': £' + context.parsed.y.toFixed(2);
+                            return context.dataset.label + ': £' + formatCurrency(context.parsed.y);
                         }
                     }
                 }
