@@ -1010,8 +1010,17 @@
         <section id="home" class="content-section active">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-lg);">
                 <h2>Budget Periods</h2>
-                <button class="btn btn-primary" id="btn-new-period">➕ New Period</button>
+                <div style="display:flex; gap:var(--spacing-sm);">
+                    <button class="btn btn-primary" id="btn-home-add-expense">➕ Add Expense</button>
+                    <button class="btn btn-primary" id="btn-new-period">➕ New Period</button>
+                </div>
             </div>
+
+            <!-- Current Balances & Debts -->
+            <div id="home-balances-card" style="background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));padding:var(--spacing-lg);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);margin-bottom:var(--spacing-lg);border:2px solid var(--gold);">
+                <!-- Populated by JavaScript -->
+            </div>
+
             <div id="periods-container" class="periods-grid"></div>
         </section>
 
@@ -1638,9 +1647,36 @@
     const container = document.getElementById('periods-container');
     if (periods.length === 0) {
         container.innerHTML = '<p style="text-align:center;color:var(--dark-gray);padding:var(--spacing-xl);">No periods yet. Create your first one! 🚀</p>';
+        document.getElementById('home-balances-card').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.9);padding:var(--spacing-md);">No balances to display yet. 💰</p>';
         return;
     }
     periods.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+
+    // Display current balances from the most recent period
+    const latestPeriod = periods[0];
+    const sb = latestPeriod.startingBalances || {};
+    const totalSavings = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
+    const totalDebt = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+
+    document.getElementById('home-balances-card').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-md);">
+            <div>
+                <h3 style="margin:0;color:var(--white);font-size:1.5rem;">💳 Current Balances & Debts</h3>
+                <div class="small-muted" style="color:rgba(255,255,255,0.9)">All accounts shown (positive = balance, credit card = owed)</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-weight:700;font-size:1.3rem">💰 Savings: £${totalSavings.toFixed(2)}</div>
+                <div style="font-weight:700;font-size:1.3rem">💳 Debt: £${totalDebt.toFixed(2)}</div>
+            </div>
+        </div>
+        <div class="balances-grid">
+            <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingCurrent||0).toFixed(2)}</div></div>
+            <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.starlingSaver||0).toFixed(2)}</div></div>
+            <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.lloydsCredit||0).toFixed(2)}</div></div>
+            <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.natwestCredit||0).toFixed(2)}</div></div>
+            <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${(sb.virginCredit||0).toFixed(2)}</div></div>
+        </div>
+    `;
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -2758,31 +2794,71 @@
     </div>
 </div>
 
+<!-- Period Comparison Table -->
+<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Period Comparison</h3>
+    <div class="table-container">
+        <table id="period-comparison-table">
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Spent</th>
+                    <th>Saved</th>
+                    <th>Save %</th>
+                    <th>Bills</th>
+                    <th>Food</th>
+                    <th>Wants</th>
+                    <th>Net Worth</th>
+                </tr>
+            </thead>
+            <tbody id="period-comparison-tbody"></tbody>
+        </table>
+    </div>
+</div>
+
 <!-- Net Worth Progression -->
 <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
-        <h3 style="color:var(--dark-blue); margin:0;">📈 Net Worth Progression</h3>
-        <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
-            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                <input type="checkbox" id="toggle-networth" checked> 
-                <span style="color:#10B981; font-weight:600;">💰 Net Worth</span>
-            </label>
-            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-                <input type="checkbox" id="toggle-networth-owed" checked> 
-                <span style="color:#3B82F6; font-weight:600;">💎 Net Worth + Owed</span>
-            </label>
+    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
+    <div style="display:flex; gap:var(--spacing-md);">
+        <div style="flex: 0 0 66.666%; height:300px; position:relative;">
+            <canvas id="networth-chart"></canvas>
         </div>
-    </div>
-    <div style="height:300px; position:relative;">
-        <canvas id="networth-chart"></canvas>
+        <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
+                    <tr>
+                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray);">Period</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray);">Net Worth</th>
+                    </tr>
+                </thead>
+                <tbody id="networth-table-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <!-- Savings Rate Over Time -->
 <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
-    <div style="height:300px; position:relative;">
-        <canvas id="savings-rate-chart"></canvas>
+    <div style="display:flex; gap:var(--spacing-md);">
+        <div style="flex: 0 0 66.666%; height:300px; position:relative;">
+            <canvas id="savings-rate-chart"></canvas>
+        </div>
+        <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
+                    <tr>
+                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray);">Period</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray);">Savings Rate</th>
+                    </tr>
+                </thead>
+                <tbody id="savings-rate-table-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -2856,28 +2932,6 @@
     <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
         <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏷️ Spending by Subcategory</h3>
         <div id="subcategory-breakdown"></div>
-    </div>
-    
-    <!-- Period Comparison Table -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
-        <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Period Comparison</h3>
-        <div class="table-container">
-            <table id="period-comparison-table">
-                <thead>
-                    <tr>
-                        <th>Period</th>
-                        <th>Spent</th>
-                        <th>Saved</th>
-                        <th>Save %</th>
-                        <th>Bills</th>
-                        <th>Food</th>
-                        <th>Wants</th>
-                        <th>Net Worth</th>
-                    </tr>
-                </thead>
-                <tbody id="period-comparison-tbody"></tbody>
-            </table>
-        </div>
     </div>
 `;
     
@@ -3271,7 +3325,7 @@ function getWeekNumber(date) {
 function renderNetWorthChart(periods) {
     const ctx = document.getElementById('networth-chart');
     if (networthChart) networthChart.destroy();
-    
+
     const labels = periods.map(p => {
         const start = new Date(p.startDate);
         const end = new Date(p.endDate);
@@ -3279,14 +3333,14 @@ function renderNetWorthChart(periods) {
         const endMonth = end.toLocaleDateString('en-GB', { month: 'short' });
         return startMonth === endMonth ? startMonth : `${startMonth}-${endMonth}`;
     });
-    
+
     const netWorthData = periods.map(p => {
         const sb = p.startingBalances || {};
         const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
         const debts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
         return money - debts;
     });
-    
+
     const netWorthOwedData = periods.map(p => {
         const sb = p.startingBalances || {};
         const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
@@ -3294,31 +3348,26 @@ function renderNetWorthChart(periods) {
         const totalOwed = (p.owedPeople || []).reduce((sum, person) => sum + (person.amount || 0), 0);
         return money - debts + totalOwed;
     });
-    
-    const datasets = [];
-    
-    if (document.getElementById('toggle-networth').checked) {
-        datasets.push({
+
+    const datasets = [
+        {
             label: 'Net Worth',
             data: netWorthData,
             borderColor: '#10B981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4,
             fill: true
-        });
-    }
-    
-    if (document.getElementById('toggle-networth-owed').checked) {
-        datasets.push({
+        },
+        {
             label: 'Net Worth + Owed',
             data: netWorthOwedData,
             borderColor: '#3B82F6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             tension: 0.4,
             fill: true
-        });
-    }
-    
+        }
+    ];
+
     networthChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -3349,18 +3398,27 @@ function renderNetWorthChart(periods) {
             }
         }
     });
+
+    // Populate the table
+    const tableBody = document.getElementById('networth-table-body');
+    tableBody.innerHTML = periods.map((p, i) => `
+        <tr style="border-bottom:1px solid var(--light-gray);">
+            <td style="padding:var(--spacing-sm);">${labels[i]}</td>
+            <td style="padding:var(--spacing-sm); text-align:right;">£${netWorthData[i].toFixed(2)}</td>
+        </tr>
+    `).join('');
 }
 
 function renderSavingsRateChart(periods) {
     const ctx = document.getElementById('savings-rate-chart');
     if (savingsRateChart) savingsRateChart.destroy();
-    
+
     const labels = periods.map(p => formatDate(p.startDate));
     const savingsData = periods.map(p => {
         const stats = calculatePeriodStats(p);
         return stats.savingsRate;
     });
-    
+
     savingsRateChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -3398,6 +3456,15 @@ function renderSavingsRateChart(periods) {
             }
         }
     });
+
+    // Populate the table
+    const tableBody = document.getElementById('savings-rate-table-body');
+    tableBody.innerHTML = periods.map((p, i) => `
+        <tr style="border-bottom:1px solid var(--light-gray);">
+            <td style="padding:var(--spacing-sm);">${labels[i]}</td>
+            <td style="padding:var(--spacing-sm); text-align:right;">${savingsData[i].toFixed(1)}%</td>
+        </tr>
+    `).join('');
 }
 
 function renderDailySpendingChart(periods) {
@@ -3939,6 +4006,40 @@ function renderPeriodComparisonTable(periods) {
             document.getElementById('btn-new-period').addEventListener('click', openNewPeriodModal);
             document.getElementById('btn-back-home').addEventListener('click', () => showSection('home'));
             document.getElementById('btn-add-expense').addEventListener('click', openAddExpenseModal);
+            document.getElementById('btn-home-add-expense').addEventListener('click', () => {
+                // Find the current period (most recent with days remaining >= 0)
+                const periods = getPeriods();
+                if (periods.length === 0) {
+                    alert('Please create a period first! 🚀');
+                    return;
+                }
+                periods.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Find the first current period
+                let currentActivePeriod = null;
+                for (const period of periods) {
+                    const endDate = new Date(period.endDate);
+                    endDate.setHours(0, 0, 0, 0);
+                    const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+
+                    if (daysRemaining >= 0) {
+                        currentActivePeriod = period;
+                        break;
+                    }
+                }
+
+                if (!currentActivePeriod) {
+                    alert('No active period found. Please create a new period! 📅');
+                    return;
+                }
+
+                // Set as current period and open modal
+                currentPeriod = currentActivePeriod;
+                openAddExpenseModal();
+            });
             document.getElementById('btn-edit-balances').addEventListener('click', openEditBalancesModal);
             document.getElementById('btn-export-csv').addEventListener('click', exportPeriodCSV);
 
