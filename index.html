@@ -2806,22 +2806,24 @@
 <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
     <div style="display:flex; gap:var(--spacing-md);">
-        <div style="flex: 0 0 66.666%; height:300px; position:relative;">
-            <canvas id="networth-chart"></canvas>
-        </div>
-        <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
+        <div style="flex: 0 0 66.666%; height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
                 <thead style="position:sticky; top:0; background:#3B82F6; z-index:1;">
                     <tr>
                         <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Net Worth</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW Change</th>
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW + Owed</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW+Owed Change</th>
                     </tr>
                 </thead>
                 <tbody id="networth-table-body">
                     <!-- Populated by JavaScript -->
                 </tbody>
             </table>
+        </div>
+        <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; position:relative;">
+            <canvas id="networth-chart"></canvas>
         </div>
     </div>
 </div>
@@ -3385,13 +3387,40 @@ function renderNetWorthChart(periods) {
 
     // Populate the table
     const tableBody = document.getElementById('networth-table-body');
-    tableBody.innerHTML = periods.map((p, i) => `
+    tableBody.innerHTML = periods.map((p, i) => {
+        // Calculate monthly changes
+        let nwChange = '';
+        let nwOwedChange = '';
+
+        if (i > 0) {
+            // Net Worth change
+            const nwDiff = netWorthData[i] - netWorthData[i - 1];
+            const nwPercent = netWorthData[i - 1] !== 0 ? ((nwDiff / Math.abs(netWorthData[i - 1])) * 100) : 0;
+            const nwSign = nwDiff >= 0 ? '+' : '';
+            const nwColor = nwDiff >= 0 ? 'var(--success)' : 'var(--danger)';
+            nwChange = `<span style="color:${nwColor};">${nwSign}£${formatCurrency(Math.abs(nwDiff))} (${nwSign}${nwPercent.toFixed(1)}%)</span>`;
+
+            // Net Worth + Owed change
+            const nwOwedDiff = netWorthOwedData[i] - netWorthOwedData[i - 1];
+            const nwOwedPercent = netWorthOwedData[i - 1] !== 0 ? ((nwOwedDiff / Math.abs(netWorthOwedData[i - 1])) * 100) : 0;
+            const nwOwedSign = nwOwedDiff >= 0 ? '+' : '';
+            const nwOwedColor = nwOwedDiff >= 0 ? 'var(--success)' : 'var(--danger)';
+            nwOwedChange = `<span style="color:${nwOwedColor};">${nwOwedSign}£${formatCurrency(Math.abs(nwOwedDiff))} (${nwOwedSign}${nwOwedPercent.toFixed(1)}%)</span>`;
+        } else {
+            nwChange = '<span style="color:var(--text-secondary);">-</span>';
+            nwOwedChange = '<span style="color:var(--text-secondary);">-</span>';
+        }
+
+        return `
         <tr style="border-bottom:1px solid var(--light-gray);">
             <td style="padding:var(--spacing-sm);">${labels[i]}</td>
             <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthData[i])}</td>
+            <td style="padding:var(--spacing-sm); text-align:right; font-size:0.9em;">${nwChange}</td>
             <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthOwedData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthOwedData[i])}</td>
+            <td style="padding:var(--spacing-sm); text-align:right; font-size:0.9em;">${nwOwedChange}</td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function renderSavingsRateChart(periods) {
