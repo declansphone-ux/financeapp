@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
 
   let fullDataObject;
   try {
-    // Expecting { periods: [...], subcategories: {...} } from the HTML
+    // Expecting { periods: [...], subcategories: {...}, bankAccounts: [...] } from the HTML
     fullDataObject = JSON.parse(event.body);
   } catch (e) {
     return { statusCode: 400, body: 'Bad Request: Invalid JSON in body' };
@@ -48,12 +48,24 @@ exports.handler = async (event, context) => {
     // UPSERT: Insert if not exists (id=1), otherwise update the existing row
     const upsertQuery = `
       INSERT INTO subcategories_data (id, app_config)
-      VALUES (1, $1) 
+      VALUES (1, $1)
       ON CONFLICT (id) DO UPDATE SET app_config = $1;
     `;
     await client.query(upsertQuery, [configJsonString]);
-    
-    // --- 3. Commit Transaction ---
+
+    // --- 3. Save Bank Accounts Data (subcategories_data table with id=2) ---
+    const bankAccountsConfig = { bankAccounts: fullDataObject.bankAccounts || [] };
+    const bankAccountsJsonString = JSON.stringify(bankAccountsConfig);
+
+    // UPSERT: Insert if not exists (id=2), otherwise update the existing row
+    const upsertBankAccountsQuery = `
+      INSERT INTO subcategories_data (id, app_config)
+      VALUES (2, $1)
+      ON CONFLICT (id) DO UPDATE SET app_config = $1;
+    `;
+    await client.query(upsertBankAccountsQuery, [bankAccountsJsonString]);
+
+    // --- 4. Commit Transaction ---
     await client.query('COMMIT');
 
     return {
