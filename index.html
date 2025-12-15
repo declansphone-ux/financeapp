@@ -1187,6 +1187,25 @@
                     </div>
                 </div>
 
+                <div class="settings-card">
+                    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏦 Bank Account Management</h3>
+                    <p style="color:var(--dark-gray); margin-bottom:var(--spacing-md);">
+                        Add or remove bank accounts. Credit cards and loans will be treated as negative values in net worth calculations.
+                    </p>
+                    <div id="bank-account-management">
+                        <!-- filled dynamically -->
+                    </div>
+                    <div class="inline-input" style="margin-top:var(--spacing-md);">
+                        <input type="text" id="new-account-name" placeholder="Account name (e.g., Starling Current)">
+                        <select id="new-account-type" style="padding:0.5rem; border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:var(--white); color:var(--text-dark);">
+                            <option value="debit">Bank Account (Debit)</option>
+                            <option value="credit">Credit Card</option>
+                            <option value="loan">Loan</option>
+                        </select>
+                        <button class="btn btn-sm btn-primary" onclick="addBankAccount()">Add Account</button>
+                    </div>
+                </div>
+
                 <div class="settings-card" style="background:var(--light-blue);">
                     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">ℹ️ About</h3>
                     <p style="color:var(--text-dark); line-height:1.8;">
@@ -1220,29 +1239,8 @@
                 </div>
 
                 <h3 style="color:var(--dark-blue); margin:var(--spacing-md) 0;">Starting Balances</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Starling Current</label>
-                        <input type="number" id="starling-current" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Starling Saver</label>
-                        <input type="number" id="starling-saver" step="0.01" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Lloyds Credit</label>
-                        <input type="number" id="lloyds-credit" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Natwest Credit</label>
-                        <input type="number" id="natwest-credit" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Virgin Credit</label>
-                        <input type="number" id="virgin-credit" step="0.01" required>
-                    </div>
+                <div id="starting-balances-fields">
+                    <!-- Dynamically generated based on bankAccounts -->
                 </div>
 
                 <h3 style="color:var(--dark-blue); margin:var(--spacing-md) 0;">Budget Targets</h3>
@@ -1332,11 +1330,7 @@
                         <label>Payment Method</label>
                         <select id="expense-payment" required>
                             <option value="">Select Payment Method</option>
-                            <option value="Starling Current">Starling Current</option>
-                            <option value="Starling Saver">Starling Saver</option>
-                            <option value="Lloyds Credit">Lloyds Credit</option>
-                            <option value="Natwest Credit">Natwest Credit</option>
-                            <option value="Virgin Credit">Virgin Credit</option>
+                            <!-- Dynamically populated from bankAccounts -->
                             <option value="Cash">Cash</option>
                         </select>
                     </div>
@@ -1405,29 +1399,8 @@
                 <p style="color:var(--dark-gray); margin-bottom:var(--spacing-md);">
                     💡 Use this to transfer money between accounts or correct balances
                 </p>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Starling Current</label>
-                        <input type="number" id="edit-starling-current" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Starling Saver</label>
-                        <input type="number" id="edit-starling-saver" step="0.01" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Lloyds Credit</label>
-                        <input type="number" id="edit-lloyds-credit" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Natwest Credit</label>
-                        <input type="number" id="edit-natwest-credit" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Virgin Credit</label>
-                        <input type="number" id="edit-virgin-credit" step="0.01" required>
-                    </div>
+                <div id="edit-balances-fields">
+                    <!-- Dynamically generated based on bankAccounts -->
                 </div>
 
                 <div style="display:flex; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
@@ -1465,6 +1438,17 @@
             'Unexpected': ['Transport', 'Medical', 'Repairs', 'Fines', 'Gifts/Annual', 'Insurance'],
             'Income': ['Salary', 'Freelance', 'Gifts', 'Refund', 'Interest', 'Other']
         };
+
+        // ============================================
+        // BANK ACCOUNTS MAPPING (stored/loaded from database)
+        // ============================================
+        let bankAccounts = [
+            { name: 'Starling Current', type: 'debit', key: 'starlingCurrent' },
+            { name: 'Starling Saver', type: 'debit', key: 'starlingSaver' },
+            { name: 'Lloyds Credit', type: 'credit', key: 'lloydsCredit' },
+            { name: 'Natwest Credit', type: 'credit', key: 'natwestCredit' },
+            { name: 'Virgin Credit', type: 'credit', key: 'virginCredit' }
+        ];
 
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
@@ -1586,19 +1570,25 @@
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Expecting the combined object: { periods: [...], subcategories: {...} }
+        // Expecting the combined object: { periods: [...], subcategories: {...}, bankAccounts: [...] }
         const fullDataObject = await response.json();
-        
+
         // 1. SET the global 'periods' array
-        periods = fullDataObject.periods || []; 
-        
+        periods = fullDataObject.periods || [];
+
         // 2. SET the global 'subcategories' object
         // Use loaded data if available, otherwise keep the default defined in the HTML
         if (fullDataObject.subcategories && Object.keys(fullDataObject.subcategories).length > 0) {
             subcategories = fullDataObject.subcategories;
-        } 
-        
-        // 3. Refresh the UI using the now populated global data
+        }
+
+        // 3. SET the global 'bankAccounts' array
+        // Use loaded data if available, otherwise keep the default defined in the HTML
+        if (fullDataObject.bankAccounts && fullDataObject.bankAccounts.length > 0) {
+            bankAccounts = fullDataObject.bankAccounts;
+        }
+
+        // 4. Refresh the UI using the now populated global data
         loadPeriods(); 
         
         showMessage('Data successfully loaded from database. ✅', 'success');
@@ -1631,9 +1621,10 @@
             document.getElementById(sectionId).classList.add('active');
             if (sectionId === 'home') document.getElementById('tab-home').classList.add('active');
             if (sectionId === 'summary') { document.getElementById('tab-summary').classList.add('active'); loadFullSummary(); }
-            if (sectionId === 'settings') { 
+            if (sectionId === 'settings') {
                 document.getElementById('tab-settings').classList.add('active');
                 renderSubcategoryManagement();
+                renderBankAccountManagement();
             }
         }
         function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -1655,8 +1646,13 @@
     // Display current balances from the most recent period
     const latestPeriod = periods[0];
     const sb = latestPeriod.startingBalances || {};
-    const totalSavings = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
-    const totalDebt = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+    const totalSavings = calculateTotalDebit(sb);
+    const totalDebt = calculateTotalCredit(sb);
+
+    const accountsHtml = bankAccounts.map(account => {
+        const typeIcon = account.type === 'debit' ? '💳' : account.type === 'credit' ? '🔴' : '💰';
+        return `<div class="balance-item"><strong>${typeIcon} ${escapeHtml(account.name)}</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb[account.key]||0)}</div></div>`;
+    }).join('');
 
     document.getElementById('home-balances-card').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-md);">
@@ -1670,11 +1666,7 @@
             </div>
         </div>
         <div class="balances-grid">
-            <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingCurrent||0)}</div></div>
-            <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingSaver||0)}</div></div>
-            <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.lloydsCredit||0)}</div></div>
-            <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.natwestCredit||0)}</div></div>
-            <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.virginCredit||0)}</div></div>
+            ${accountsHtml}
         </div>
     `;
     
@@ -1955,6 +1947,7 @@
 
         function openNewPeriodModal() {
             const periods = getPeriods();
+            renderStartingBalancesFields(); // Render dynamic bank account fields
             document.getElementById('new-period-form').reset();
             const startDateInput = document.getElementById('period-start-date');
             if (periods.length > 0) {
@@ -1992,13 +1985,7 @@
                     wants: wantsBudget,
                     total: (billsBudget || 0) + (foodBudget || 0) + (wantsBudget || 0)
                 },
-                startingBalances: {
-                    starlingCurrent: parseFloat(document.getElementById('starling-current').value || 0),
-                    starlingSaver: parseFloat(document.getElementById('starling-saver').value || 0),
-                    lloydsCredit: parseFloat(document.getElementById('lloyds-credit').value || 0),
-                    natwestCredit: parseFloat(document.getElementById('natwest-credit').value || 0),
-                    virginCredit: parseFloat(document.getElementById('virgin-credit').value || 0)
-                },
+                startingBalances: getStartingBalancesFromForm(),
                 expenses: [],
                 owedPeople: []
             };
@@ -2030,9 +2017,9 @@
         // ============================================
         function renderNetWorthCards(period) {
             const sb = period.startingBalances || {};
-            const currentMoney = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
-            const currentDebts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
-            const netWorth = currentMoney - currentDebts;
+            const currentMoney = calculateTotalDebit(sb);
+            const currentDebts = calculateTotalCredit(sb);
+            const netWorth = calculateNetWorth(sb);
             
             // Calculate total owed to me
             const totalOwed = (period.owedPeople || []).reduce((sum, p) => sum + (p.amount || 0), 0);
@@ -2043,12 +2030,12 @@
                 <div class="summary-card networth-card">
                     <h3>💰 Current Money</h3>
                     <div class="value">£${formatCurrency(currentMoney)}</div>
-                    <div class="small-muted">Starling accounts</div>
+                    <div class="small-muted">Bank accounts</div>
                 </div>
                 <div class="summary-card networth-card">
                     <h3>💳 Current Debts</h3>
                     <div class="value">£${formatCurrency(currentDebts)}</div>
-                    <div class="small-muted">Credit cards</div>
+                    <div class="small-muted">Credit cards & loans</div>
                 </div>
                 <div class="summary-card networth-card">
                     <h3>📊 Net Worth</h3>
@@ -2161,8 +2148,13 @@
         // ============================================
         function renderBalancesCard(period) {
             const sb = period.startingBalances || {};
-            const totalSavings = (sb.starlingCurrent||0) + (sb.starlingSaver||0);
-            const totalDebt = (sb.lloydsCredit||0) + (sb.natwestCredit||0) + (sb.virginCredit||0);
+            const totalSavings = calculateTotalDebit(sb);
+            const totalDebt = calculateTotalCredit(sb);
+
+            const accountsHtml = bankAccounts.map(account => {
+                const typeIcon = account.type === 'debit' ? '💳' : account.type === 'credit' ? '🔴' : '💰';
+                return `<div class="balance-item"><strong>${typeIcon} ${escapeHtml(account.name)}</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb[account.key]||0)}</div></div>`;
+            }).join('');
 
             const el = document.getElementById('balances-card');
             el.innerHTML = `
@@ -2177,11 +2169,7 @@
                     </div>
                 </div>
                 <div class="balances-grid">
-                    <div class="balance-item"><strong>Starling Current</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingCurrent||0)}</div></div>
-                    <div class="balance-item"><strong>Starling Saver</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.starlingSaver||0)}</div></div>
-                    <div class="balance-item"><strong>Lloyds Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.lloydsCredit||0)}</div></div>
-                    <div class="balance-item"><strong>Natwest Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.natwestCredit||0)}</div></div>
-                    <div class="balance-item"><strong>Virgin Credit</strong><div style="font-size:1.25rem;margin-top:0.25rem;">£${formatCurrency(sb.virginCredit||0)}</div></div>
+                    ${accountsHtml}
                 </div>
             `;
         }
@@ -2404,6 +2392,7 @@
             document.getElementById('expense-id').value = '';
             document.getElementById('expense-date').value = formatDateForInput(new Date());
             document.getElementById('income-controls').style.display = 'none';
+            populatePaymentMethods(); // Populate dynamic bank accounts
             populatePeopleAndSharedForPeriod();
             openModal('expense-modal');
         }
@@ -2421,6 +2410,7 @@
             document.getElementById('expense-category').value = expense.category;
             updateSubcategories();
             document.getElementById('expense-subcategory').value = expense.subcategory;
+            populatePaymentMethods(); // Populate dynamic bank accounts
             document.getElementById('expense-payment').value = expense.paymentMethod;
             document.getElementById('expense-notes').value = expense.notes || '';
             populatePeopleAndSharedForPeriod(expense);
@@ -2499,12 +2489,10 @@
             const sb = period.startingBalances || {};
             function adjustAccount(method, delta) {
                 if (!sb) return;
-                if (method === 'Starling Current') sb.starlingCurrent = parseFloat(((sb.starlingCurrent || 0) + delta).toFixed(2));
-                else if (method === 'Starling Saver') sb.starlingSaver = parseFloat(((sb.starlingSaver || 0) + delta).toFixed(2));
-                else if (method === 'Lloyds Credit') sb.lloydsCredit = parseFloat(((sb.lloydsCredit || 0) + delta).toFixed(2));
-                else if (method === 'Natwest Credit') sb.natwestCredit = parseFloat(((sb.natwestCredit || 0) + delta).toFixed(2));
-                else if (method === 'Virgin Credit') sb.virginCredit = parseFloat(((sb.virginCredit || 0) + delta).toFixed(2));
-                else {}
+                const account = bankAccounts.find(acc => acc.name === method);
+                if (account) {
+                    sb[account.key] = parseFloat(((sb[account.key] || 0) + delta).toFixed(2));
+                }
             }
 
             if (category === 'Income') {
@@ -2512,8 +2500,9 @@
                 adjustAccount(paymentMethod, amount);
             } else {
                 // Expense decreases balance - use FULL amount (not myShare) because you paid the full amount
-                if (paymentMethod === 'Lloyds Credit' || paymentMethod === 'Natwest Credit' || paymentMethod === 'Virgin Credit') {
-                    // Credit cards: increase debt by full amount
+                const account = bankAccounts.find(acc => acc.name === paymentMethod);
+                if (account && (account.type === 'credit' || account.type === 'loan')) {
+                    // Credit cards and loans: increase debt by full amount
                     adjustAccount(paymentMethod, amount);
                 } else {
                     // Debit/cash: reduce balance by full amount
@@ -2544,14 +2533,17 @@
         function openEditBalancesModal() {
             const period = getPeriod(currentPeriodId);
             if (!period) { alert('No period selected'); return; }
-            
+
+            renderEditBalancesFields(); // Render dynamic bank account fields
+
             const sb = period.startingBalances || {};
-            document.getElementById('edit-starling-current').value = (sb.starlingCurrent || 0).toFixed(2);
-            document.getElementById('edit-starling-saver').value = (sb.starlingSaver || 0).toFixed(2);
-            document.getElementById('edit-lloyds-credit').value = (sb.lloydsCredit || 0).toFixed(2);
-            document.getElementById('edit-natwest-credit').value = (sb.natwestCredit || 0).toFixed(2);
-            document.getElementById('edit-virgin-credit').value = (sb.virginCredit || 0).toFixed(2);
-            
+            bankAccounts.forEach(account => {
+                const input = document.getElementById(`edit-${account.key}`);
+                if (input) {
+                    input.value = (sb[account.key] || 0).toFixed(2);
+                }
+            });
+
             openModal('edit-balances-modal');
         }
 
@@ -2559,15 +2551,9 @@
             e.preventDefault();
             const period = getPeriod(currentPeriodId);
             if (!period) { alert('No period selected'); return; }
-            
-            period.startingBalances = {
-                starlingCurrent: parseFloat(document.getElementById('edit-starling-current').value || 0),
-                starlingSaver: parseFloat(document.getElementById('edit-starling-saver').value || 0),
-                lloydsCredit: parseFloat(document.getElementById('edit-lloyds-credit').value || 0),
-                natwestCredit: parseFloat(document.getElementById('edit-natwest-credit').value || 0),
-                virginCredit: parseFloat(document.getElementById('edit-virgin-credit').value || 0)
-            };
-            
+
+            period.startingBalances = getStartingBalancesFromEditForm();
+
             updatePeriodInStorage(period);
             closeModal('edit-balances-modal');
             viewPeriod(currentPeriodId);
@@ -2598,11 +2584,10 @@
             const sb = period.startingBalances || {};
             function adjustAccount(method, delta) {
                 if (!sb) return;
-                if (method === 'Starling Current') sb.starlingCurrent = parseFloat(((sb.starlingCurrent || 0) + delta).toFixed(2));
-                else if (method === 'Starling Saver') sb.starlingSaver = parseFloat(((sb.starlingSaver || 0) + delta).toFixed(2));
-                else if (method === 'Lloyds Credit') sb.lloydsCredit = parseFloat(((sb.lloydsCredit || 0) + delta).toFixed(2));
-                else if (method === 'Natwest Credit') sb.natwestCredit = parseFloat(((sb.natwestCredit || 0) + delta).toFixed(2));
-                else if (method === 'Virgin Credit') sb.virginCredit = parseFloat(((sb.virginCredit || 0) + delta).toFixed(2));
+                const account = bankAccounts.find(acc => acc.name === method);
+                if (account) {
+                    sb[account.key] = parseFloat(((sb[account.key] || 0) + delta).toFixed(2));
+                }
             }
 
             const amount = expense.amount;
@@ -2622,8 +2607,9 @@
                 }
             } else {
                 // Reverse expense
-                if (paymentMethod === 'Lloyds Credit' || paymentMethod === 'Natwest Credit' || paymentMethod === 'Virgin Credit') {
-                    // Credit cards: decrease debt
+                const account = bankAccounts.find(acc => acc.name === paymentMethod);
+                if (account && (account.type === 'credit' || account.type === 'loan')) {
+                    // Credit cards and loans: decrease debt
                     adjustAccount(paymentMethod, -amount);
                 } else {
                     // Debit/cash: add balance back
@@ -3337,17 +3323,14 @@ function renderNetWorthChart(periods) {
 
     const netWorthData = periods.map(p => {
         const sb = p.startingBalances || {};
-        const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
-        const debts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
-        return money - debts;
+        return calculateNetWorth(sb);
     });
 
     const netWorthOwedData = periods.map(p => {
         const sb = p.startingBalances || {};
-        const money = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0);
-        const debts = (sb.lloydsCredit || 0) + (sb.natwestCredit || 0) + (sb.virginCredit || 0);
+        const netWorth = calculateNetWorth(sb);
         const totalOwed = (p.owedPeople || []).reduce((sum, person) => sum + (person.amount || 0), 0);
-        return money - debts + totalOwed;
+        return netWorth + totalOwed;
     });
 
     const datasets = [
@@ -3405,8 +3388,8 @@ function renderNetWorthChart(periods) {
     tableBody.innerHTML = periods.map((p, i) => `
         <tr style="border-bottom:1px solid var(--light-gray);">
             <td style="padding:var(--spacing-sm);">${labels[i]}</td>
-            <td style="padding:var(--spacing-sm); text-align:right;">£${formatCurrency(netWorthData[i])}</td>
-            <td style="padding:var(--spacing-sm); text-align:right;">£${formatCurrency(netWorthOwedData[i])}</td>
+            <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthData[i])}</td>
+            <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthOwedData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthOwedData[i])}</td>
         </tr>
     `).join('');
 }
@@ -3783,7 +3766,7 @@ function renderPeriodComparisonTable(periods) {
         const stats = calculatePeriodStats(period);
         const saved = (period.salary || 0) - stats.totalSpent;
         const sb = period.startingBalances || {};
-        const netWorth = (sb.starlingCurrent || 0) + (sb.starlingSaver || 0) - (sb.lloydsCredit || 0) - (sb.natwestCredit || 0) - (sb.virginCredit || 0);
+        const netWorth = calculateNetWorth(sb);
         
         const start = new Date(period.startDate);
         const end = new Date(period.endDate);
@@ -3868,13 +3851,199 @@ function renderPeriodComparisonTable(periods) {
         window.removeSubcategory = removeSubcategory;
 
         // ============================================
+        // BANK ACCOUNT MANAGEMENT
+        // ============================================
+        function renderBankAccountManagement() {
+            const container = document.getElementById('bank-account-management');
+
+            container.innerHTML = bankAccounts.map((account, idx) => `
+                <div class="subcategory-chip" style="margin:0.25rem;">
+                    ${escapeHtml(account.name)}
+                    <span style="font-size:0.8em; opacity:0.7;">(${account.type === 'debit' ? '💳 Debit' : account.type === 'credit' ? '🔴 Credit' : '💰 Loan'})</span>
+                    <button onclick="removeBankAccount(${idx})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function addBankAccount() {
+            const nameInput = document.getElementById('new-account-name');
+            const typeSelect = document.getElementById('new-account-type');
+            const name = nameInput.value.trim();
+            const type = typeSelect.value;
+
+            if (!name) {
+                alert('Please enter an account name');
+                return;
+            }
+
+            // Check if account already exists
+            if (bankAccounts.some(acc => acc.name === name)) {
+                alert('An account with this name already exists');
+                return;
+            }
+
+            // Generate a camelCase key from the name
+            const key = name
+                .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special chars
+                .split(' ')
+                .map((word, idx) => {
+                    word = word.toLowerCase();
+                    return idx === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1);
+                })
+                .join('');
+
+            // Check if key already exists
+            if (bankAccounts.some(acc => acc.key === key)) {
+                alert('An account with a similar name already exists (key conflict)');
+                return;
+            }
+
+            bankAccounts.push({ name, type, key });
+            saveBankAccounts();
+            nameInput.value = '';
+            renderBankAccountManagement();
+        }
+
+        function removeBankAccount(index) {
+            const account = bankAccounts[index];
+            if (!confirm(`Remove ${account.name}? This will not delete existing data but the account will no longer be available.`)) return;
+            bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccountManagement();
+        }
+
+        async function saveBankAccounts() {
+            // Bank accounts are part of the full application state
+            await saveAllDataToDatabase();
+        }
+
+        // Make functions globally accessible
+        window.addBankAccount = addBankAccount;
+        window.removeBankAccount = removeBankAccount;
+
+        // ============================================
+        // DYNAMIC FORM FIELD GENERATION
+        // ============================================
+        function renderStartingBalancesFields() {
+            const container = document.getElementById('starting-balances-fields');
+            if (!container) return;
+
+            // Group accounts in rows of 3
+            let html = '<div class="form-row">';
+            bankAccounts.forEach((account, idx) => {
+                if (idx > 0 && idx % 3 === 0) {
+                    html += '</div><div class="form-row">';
+                }
+                const typeIcon = account.type === 'debit' ? '💳' : account.type === 'credit' ? '🔴' : '💰';
+                html += `
+                    <div class="form-group">
+                        <label>${typeIcon} ${escapeHtml(account.name)}</label>
+                        <input type="number" id="${account.key}" step="0.01" value="0" required>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderEditBalancesFields() {
+            const container = document.getElementById('edit-balances-fields');
+            if (!container) return;
+
+            // Group accounts in rows of 3
+            let html = '<div class="form-row">';
+            bankAccounts.forEach((account, idx) => {
+                if (idx > 0 && idx % 3 === 0) {
+                    html += '</div><div class="form-row">';
+                }
+                const typeIcon = account.type === 'debit' ? '💳' : account.type === 'credit' ? '🔴' : '💰';
+                html += `
+                    <div class="form-group">
+                        <label>${typeIcon} ${escapeHtml(account.name)}</label>
+                        <input type="number" id="edit-${account.key}" step="0.01" value="0" required>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function getStartingBalancesFromForm() {
+            const balances = {};
+            bankAccounts.forEach(account => {
+                const input = document.getElementById(account.key);
+                balances[account.key] = input ? parseFloat(input.value || 0) : 0;
+            });
+            return balances;
+        }
+
+        function getStartingBalancesFromEditForm() {
+            const balances = {};
+            bankAccounts.forEach(account => {
+                const input = document.getElementById(`edit-${account.key}`);
+                balances[account.key] = input ? parseFloat(input.value || 0) : 0;
+            });
+            return balances;
+        }
+
+        // Populate payment method dropdown
+        function populatePaymentMethods() {
+            const select = document.getElementById('expense-payment');
+            if (!select) return;
+
+            // Clear existing options except the first one and Cash
+            const options = select.querySelectorAll('option');
+            options.forEach(opt => {
+                if (opt.value !== '' && opt.value !== 'Cash') {
+                    opt.remove();
+                }
+            });
+
+            // Add bank accounts as options
+            bankAccounts.forEach(account => {
+                const option = document.createElement('option');
+                option.value = account.name;
+                option.textContent = account.name;
+                select.insertBefore(option, select.querySelector('option[value="Cash"]'));
+            });
+        }
+
+        // ============================================
+        // DYNAMIC NET WORTH CALCULATIONS
+        // ============================================
+        function calculateTotalDebit(startingBalances) {
+            let total = 0;
+            bankAccounts.forEach(account => {
+                if (account.type === 'debit') {
+                    total += (startingBalances[account.key] || 0);
+                }
+            });
+            return total;
+        }
+
+        function calculateTotalCredit(startingBalances) {
+            let total = 0;
+            bankAccounts.forEach(account => {
+                if (account.type === 'credit' || account.type === 'loan') {
+                    total += (startingBalances[account.key] || 0);
+                }
+            });
+            return total;
+        }
+
+        function calculateNetWorth(startingBalances) {
+            return calculateTotalDebit(startingBalances) - calculateTotalCredit(startingBalances);
+        }
+
+        // ============================================
         // EXPORT / IMPORT
         // ============================================
         function exportAllData() {
             const periods = getPeriods();
             const exportData = {
                 periods: periods,
-                subcategories: subcategories
+                subcategories: subcategories,
+                bankAccounts: bankAccounts
             };
             const str = JSON.stringify(exportData, null, 2);
             const blob = new Blob([str], { type:'application/json' });
@@ -3919,6 +4088,10 @@ function renderPeriodComparisonTable(periods) {
                         if (imported.subcategories) {
                             subcategories = imported.subcategories;
                             saveSubcategories();
+                        }
+                        if (imported.bankAccounts) {
+                            bankAccounts = imported.bankAccounts;
+                            saveBankAccounts();
                         }
                     } else if (Array.isArray(imported)) {
                         // Old format - just periods array
@@ -3976,7 +4149,8 @@ function renderPeriodComparisonTable(periods) {
             // 1. Compile the full state object from global variables
             const fullDataObject = {
                 periods: periods, // Global 'periods' array
-                subcategories: subcategories // Global 'subcategories' object
+                subcategories: subcategories, // Global 'subcategories' object
+                bankAccounts: bankAccounts // Global 'bankAccounts' array
             };
         
             try {

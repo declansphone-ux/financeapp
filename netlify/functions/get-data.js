@@ -39,17 +39,27 @@ exports.handler = async (event, context) => {
     // 2. Get Subcategories Data (from subcategories_data table)
     // The 'app_config' column holds the object containing the subcategories.
     const subcategoriesResult = await client.query('SELECT app_config FROM subcategories_data WHERE id = 1');
-    
+
     let subcategoriesObject = {};
     if (subcategoriesResult.rows.length > 0 && subcategoriesResult.rows[0].app_config) {
         // Extract the actual 'subcategories' map from the 'app_config' JSONB column
-        subcategoriesObject = subcategoriesResult.rows[0].app_config.subcategories || {}; 
+        subcategoriesObject = subcategoriesResult.rows[0].app_config.subcategories || {};
     }
 
-    // 3. Combine both into a single object for the app
+    // 3. Get Bank Accounts Data (from subcategories_data table with id = 2)
+    const bankAccountsResult = await client.query('SELECT app_config FROM subcategories_data WHERE id = 2');
+
+    let bankAccountsArray = [];
+    if (bankAccountsResult.rows.length > 0 && bankAccountsResult.rows[0].app_config) {
+        // Extract the actual 'bankAccounts' array from the 'app_config' JSONB column
+        bankAccountsArray = bankAccountsResult.rows[0].app_config.bankAccounts || [];
+    }
+
+    // 4. Combine all into a single object for the app
     const fullDataObject = {
         periods: periodsArray,
-        subcategories: subcategoriesObject
+        subcategories: subcategoriesObject,
+        bankAccounts: bankAccountsArray
     };
 
     // 4. Return the full object
