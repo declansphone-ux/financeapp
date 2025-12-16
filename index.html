@@ -1055,7 +1055,15 @@
                 </div>
             </div>
 
-            
+            <!-- CATEGORY BREAKDOWN PIE CHART -->
+            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending Breakdown</h3>
+                <div style="height:300px; position:relative;">
+                    <canvas id="period-detail-pie-chart"></canvas>
+                </div>
+            </div>
+
+
             <!-- SECOND ROW: balances & debts wide card -->
             <div class="wide-row">
                 <div class="wide-card" id="balances-card">
@@ -1909,19 +1917,21 @@
         if (canvas) {
             const stats = calculatePeriodStats(period);
             const other = stats.categorySpending.oneOff + stats.categorySpending.unexpected;
-            
+            const savings = (period.salary || 0) - stats.totalSpent;
+
             new Chart(canvas, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Bills', 'Food', 'Wants', 'Other'],
+                    labels: ['Bills', 'Food', 'Wants', 'Other', 'Savings'],
                     datasets: [{
                         data: [
                             stats.categorySpending.bills,
                             stats.categorySpending.food,
                             stats.categorySpending.wants,
-                            other
+                            other,
+                            savings
                         ],
-                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'],
+                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#22C55E'],
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -2004,6 +2014,7 @@
             document.getElementById('period-title').textContent = `${formatDate(period.startDate)} - ${formatDate(period.endDate)}`;
             renderNetWorthCards(period);
             renderPeriodSummary(period);
+            renderPeriodDetailPieChart(period);
             renderBalancesCard(period);
             renderOwedList(period);
             renderTransactions(period);
@@ -3043,16 +3054,16 @@ function renderSummaryData(periods) {
     
     // Calculate aggregate stats
     let totalSalary = 0, totalSpent = 0;
-    let categoryTotals = { bills: 0, food: 0, wants: 0, oneOff: 0, unexpected: 0 };
+    let categoryTotals = { bills: 0, food: 0, wants: 0, oneOff: 0, unexpected: 0, savings: 0 };
     let paymentTotals = {};
     let allExpenses = [];
     let subcategoryTotals = {};
-    
+
     periods.forEach(period => {
         const stats = calculatePeriodStats(period);
         totalSalary += period.salary || 0;
         totalSpent += stats.totalSpent;
-        
+
         categoryTotals.bills += stats.categorySpending.bills;
         categoryTotals.food += stats.categorySpending.food;
         categoryTotals.wants += stats.categorySpending.wants;
@@ -3079,9 +3090,10 @@ function renderSummaryData(periods) {
     });
     
     const totalSaved = totalSalary - totalSpent;
+    categoryTotals.savings = totalSaved;
     const savingsRate = totalSalary > 0 ? (totalSaved / totalSalary) * 100 : 0;
     const avgDailySpend = allExpenses.length > 0 ? totalSpent / periods.length / 30 : 0;
-    
+
     // Render summary cards
         document.getElementById('summary-stats-cards').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
@@ -3106,25 +3118,71 @@ function renderSummaryData(periods) {
 }
 
 // Chart rendering functions
-let categoryPieChart, paymentPieChart, networthChart, savingsRateChart, dailySpendingChart;
+let categoryPieChart, paymentPieChart, networthChart, savingsRateChart, dailySpendingChart, periodDetailPieChart;
 
 function renderCategoryPieChart(categoryTotals) {
     const ctx = document.getElementById('category-pie-chart');
     if (categoryPieChart) categoryPieChart.destroy();
-    
+
     categoryPieChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Bills', 'Food', 'Wants', 'One-off Needs', 'Unexpected'],
+            labels: ['Bills', 'Food', 'Wants', 'One-off Needs', 'Unexpected', 'Savings'],
             datasets: [{
                 data: [
                     categoryTotals.bills,
                     categoryTotals.food,
                     categoryTotals.wants,
                     categoryTotals.oneOff,
-                    categoryTotals.unexpected
+                    categoryTotals.unexpected,
+                    categoryTotals.savings
                 ],
-                backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444'],
+                backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#22C55E'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a,b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': £' + formatCurrency(context.parsed) + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderPeriodDetailPieChart(period) {
+    const ctx = document.getElementById('period-detail-pie-chart');
+    if (!ctx) return;
+    if (periodDetailPieChart) periodDetailPieChart.destroy();
+
+    const stats = calculatePeriodStats(period);
+    const savings = (period.salary || 0) - stats.totalSpent;
+
+    periodDetailPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Bills', 'Food', 'Wants', 'One-off Needs', 'Unexpected', 'Savings'],
+            datasets: [{
+                data: [
+                    stats.categorySpending.bills,
+                    stats.categorySpending.food,
+                    stats.categorySpending.wants,
+                    stats.categorySpending.oneOff,
+                    stats.categorySpending.unexpected,
+                    savings
+                ],
+                backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#22C55E'],
                 borderWidth: 2,
                 borderColor: '#fff'
             }]
