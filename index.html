@@ -1047,22 +1047,24 @@
                 <!-- filled dynamically -->
             </div>
 
-            <!-- BUDGET PROGRESS BARS -->
-            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Budget Progress</h3>
-                <div id="budget-progress-bars">
-                    <!-- filled dynamically -->
+            <!-- BUDGET PROGRESS & PIE CHART ROW -->
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
+                <!-- BUDGET PROGRESS BARS -->
+                <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+                    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Budget Progress</h3>
+                    <div id="budget-progress-bars">
+                        <!-- filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- CATEGORY BREAKDOWN PIE CHART -->
+                <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+                    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending Breakdown</h3>
+                    <div style="height:300px; position:relative;">
+                        <canvas id="period-detail-pie-chart"></canvas>
+                    </div>
                 </div>
             </div>
-
-            <!-- CATEGORY BREAKDOWN PIE CHART -->
-            <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-                <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending Breakdown</h3>
-                <div style="height:300px; position:relative;">
-                    <canvas id="period-detail-pie-chart"></canvas>
-                </div>
-            </div>
-
 
             <!-- SECOND ROW: balances & debts wide card -->
             <div class="wide-row">
