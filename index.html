@@ -3760,6 +3760,14 @@ function renderDailySpendingChart(periods) {
                 mode: 'index',
                 intersect: false,
             },
+            onClick: (event, activeElements) => {
+                if (activeElements.length > 0) {
+                    const index = activeElements[0].index;
+                    const clickedDate = labels[index];
+                    console.log('Clicked on date:', clickedDate);
+                    showDailySpendingDetails(clickedDate);
+                }
+            },
             plugins: {
                 legend: { position: 'bottom' },
                 tooltip: {
@@ -3934,6 +3942,59 @@ function showSubcategoryTransactions(subcategoryKey) {
         `).join('');
     }
     
+    console.log('Opening modal');
+    openModal('subcategory-modal');
+}
+
+function showDailySpendingDetails(date) {
+    console.log('showDailySpendingDetails called with:', date);
+
+    const periods = getFilteredPeriods();
+    console.log('Filtered periods:', periods.length);
+
+    let matchingExpenses = [];
+
+    periods.forEach(period => {
+        (period.expenses || []).forEach(expense => {
+            if (expense.date === date && expense.category !== 'Income') {
+                console.log('Found matching expense:', expense.description, expense.amount);
+                const amount = (expense.myShare !== undefined && expense.myShare !== null) ? expense.myShare : expense.amount;
+                matchingExpenses.push({
+                    ...expense,
+                    amount,
+                    periodStart: period.startDate
+                });
+            }
+        });
+    });
+
+    console.log('Total matching expenses:', matchingExpenses.length);
+
+    // Sort by amount descending (highest to lowest)
+    matchingExpenses.sort((a,b) => b.amount - a.amount);
+
+    const formattedDate = formatDate(date);
+    document.getElementById('subcategory-modal-title').textContent = `Transactions on ${formattedDate} (${matchingExpenses.length} total)`;
+
+    const tbody = document.getElementById('subcategory-transactions-tbody');
+
+    if (matchingExpenses.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--spacing-lg);color:var(--dark-gray);">No transactions found for this day</td></tr>';
+    } else {
+        tbody.innerHTML = matchingExpenses.map(expense => `
+            <tr>
+                <td><strong>${formatDate(expense.date)}</strong></td>
+                <td>
+                    <strong>${escapeHtml(expense.description)}</strong>
+                    ${expense.notes ? `<br><small style="color:var(--dark-gray);">${escapeHtml(expense.notes)}</small>` : ''}
+                </td>
+                <td><span style="display:inline-block;padding:.35rem .75rem;border-radius:var(--radius-sm);background:var(--light-blue);font-weight:700;color:var(--primary-blue);">${expense.category}</span></td>
+                <td>${escapeHtml(expense.subcategory)}</td>
+                <td><strong style="color:var(--danger);font-size:1.1rem;">£${formatCurrency(expense.amount)}</strong></td>
+            </tr>
+        `).join('');
+    }
+
     console.log('Opening modal');
     openModal('subcategory-modal');
 }
