@@ -555,7 +555,7 @@
 
         /* Multi-select dropdown styles */
         .period-checkbox-label:hover {
-            background: #f3f4f6;
+            background: var(--light-gray);
         }
 
         .inline-input { 
@@ -2735,27 +2735,27 @@
             <div style="flex:1; min-width:200px; position:relative;">
                 <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Filter by Period</label>
                 <div class="multi-select-wrapper">
-                    <div id="summary-period-filter" class="multi-select-trigger" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:white; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                    <div id="summary-period-filter" class="multi-select-trigger" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:var(--white); color:var(--text-dark); cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
                         <span id="period-filter-display">All Periods</span>
                         <span style="margin-left:auto;">▼</span>
                     </div>
-                    <div id="period-filter-dropdown" class="multi-select-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; border:2px solid var(--medium-gray); border-radius:var(--radius-md); margin-top:0.25rem; max-height:300px; overflow-y:auto; z-index:1000; box-shadow:var(--shadow-md);">
+                    <div id="period-filter-dropdown" class="multi-select-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:var(--white); border:2px solid var(--medium-gray); border-radius:var(--radius-md); margin-top:0.25rem; max-height:300px; overflow-y:auto; z-index:1000; box-shadow:var(--shadow-md);">
                         <div style="padding:var(--spacing-sm); border-bottom:1px solid var(--light-gray);">
                             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.25rem;">
                                 <input type="checkbox" id="select-all-periods" style="cursor:pointer;">
-                                <span style="font-weight:600;">All Periods</span>
+                                <span style="font-weight:600; color:var(--text-dark);">All Periods</span>
                             </label>
                         </div>
                         <div id="period-checkboxes-container">
                             ${periods.map(p => `
                                 <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:var(--spacing-sm); border-bottom:1px solid var(--light-gray);" class="period-checkbox-label">
                                     <input type="checkbox" class="period-checkbox" value="${p.id}" style="cursor:pointer;">
-                                    <span>${formatDate(p.startDate)} - ${formatDate(p.endDate)}</span>
+                                    <span style="color:var(--text-dark);">${formatDate(p.startDate)} - ${formatDate(p.endDate)}</span>
                                 </label>
                             `).join('')}
                         </div>
-                        <div style="padding:var(--spacing-sm); border-top:2px solid var(--medium-gray); display:flex; gap:var(--spacing-sm); background:#f9fafb;">
-                            <button id="clear-all-periods" style="flex:1; padding:0.5rem; border:1px solid var(--medium-gray); border-radius:var(--radius-md); background:white; cursor:pointer; font-size:0.9em;">Clear All</button>
+                        <div style="padding:var(--spacing-sm); border-top:2px solid var(--medium-gray); display:flex; gap:var(--spacing-sm); background:var(--light-gray);">
+                            <button id="clear-all-periods" style="flex:1; padding:0.5rem; border:1px solid var(--medium-gray); border-radius:var(--radius-md); background:var(--card-bg); color:var(--text-dark); cursor:pointer; font-size:0.9em;">Clear All</button>
                         </div>
                     </div>
                 </div>
@@ -2763,9 +2763,9 @@
             <div style="flex:1; min-width:200px;">
                 <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Or Date Range</label>
                 <div style="display:flex; gap:0.5rem; align-items:center;">
-                    <input type="date" id="summary-start-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
-                    <span>to</span>
-                    <input type="date" id="summary-end-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
+                    <input type="date" id="summary-start-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:var(--white); color:var(--text-dark);">
+                    <span style="color:var(--text-dark);">to</span>
+                    <input type="date" id="summary-end-date" style="flex:1; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:var(--white); color:var(--text-dark);">
                 </div>
             </div>
             <button class="btn btn-primary" id="apply-summary-filter">Apply Filter</button>
