@@ -553,6 +553,11 @@
             color: var(--dark-gray);
         }
 
+        /* Multi-select dropdown styles */
+        .period-checkbox-label:hover {
+            background: #f3f4f6;
+        }
+
         .inline-input { 
             display:flex; 
             gap:.5rem; 
@@ -2727,12 +2732,33 @@
     <!-- Filter Controls -->
     <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
         <div style="display:flex; gap:var(--spacing-md); align-items:end; flex-wrap:wrap;">
-            <div style="flex:1; min-width:200px;">
+            <div style="flex:1; min-width:200px; position:relative;">
                 <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Filter by Period</label>
-                <select id="summary-period-filter" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md);">
-                    <option value="all">All Periods</option>
-                    ${periods.map(p => `<option value="${p.id}">${formatDate(p.startDate)} - ${formatDate(p.endDate)}</option>`).join('')}
-                </select>
+                <div class="multi-select-wrapper">
+                    <div id="summary-period-filter" class="multi-select-trigger" style="width:100%; padding:var(--spacing-sm); border:2px solid var(--medium-gray); border-radius:var(--radius-md); background:white; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                        <span id="period-filter-display">All Periods</span>
+                        <span style="margin-left:auto;">▼</span>
+                    </div>
+                    <div id="period-filter-dropdown" class="multi-select-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; border:2px solid var(--medium-gray); border-radius:var(--radius-md); margin-top:0.25rem; max-height:300px; overflow-y:auto; z-index:1000; box-shadow:var(--shadow-md);">
+                        <div style="padding:var(--spacing-sm); border-bottom:1px solid var(--light-gray);">
+                            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:0.25rem;">
+                                <input type="checkbox" id="select-all-periods" style="cursor:pointer;">
+                                <span style="font-weight:600;">All Periods</span>
+                            </label>
+                        </div>
+                        <div id="period-checkboxes-container">
+                            ${periods.map(p => `
+                                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; padding:var(--spacing-sm); border-bottom:1px solid var(--light-gray);" class="period-checkbox-label">
+                                    <input type="checkbox" class="period-checkbox" value="${p.id}" style="cursor:pointer;">
+                                    <span>${formatDate(p.startDate)} - ${formatDate(p.endDate)}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div style="padding:var(--spacing-sm); border-top:2px solid var(--medium-gray); display:flex; gap:var(--spacing-sm); background:#f9fafb;">
+                            <button id="clear-all-periods" style="flex:1; padding:0.5rem; border:1px solid var(--medium-gray); border-radius:var(--radius-md); background:white; cursor:pointer; font-size:0.9em;">Clear All</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div style="flex:1; min-width:200px;">
                 <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Or Date Range</label>
@@ -2819,7 +2845,7 @@
 <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
     <div style="display:flex; gap:var(--spacing-md);">
-        <div style="flex: 0 0 66.666%; height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
+        <div style="flex: 0 0 50%; height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
                 <thead style="position:sticky; top:0; background:#3B82F6; z-index:1;">
                     <tr>
@@ -2827,7 +2853,6 @@
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Net Worth</th>
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW Change</th>
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW + Owed</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW+Owed Change</th>
                     </tr>
                 </thead>
                 <tbody id="networth-table-body">
@@ -2835,7 +2860,7 @@
                 </tbody>
             </table>
         </div>
-        <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; position:relative;">
+        <div style="flex: 0 0 calc(50% - var(--spacing-md)); height:300px; position:relative;">
             <canvas id="networth-chart"></canvas>
         </div>
     </div>
@@ -2939,21 +2964,81 @@
     
     // Initialize with all data
     renderSummaryData(periods);
-    
+
+    // Multi-select dropdown functionality
+    const filterTrigger = document.getElementById('summary-period-filter');
+    const filterDropdown = document.getElementById('period-filter-dropdown');
+    const filterDisplay = document.getElementById('period-filter-display');
+    const selectAllCheckbox = document.getElementById('select-all-periods');
+    const clearAllButton = document.getElementById('clear-all-periods');
+    const periodCheckboxes = document.querySelectorAll('.period-checkbox');
+
+    // Toggle dropdown
+    filterTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterDropdown.style.display = filterDropdown.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!filterTrigger.contains(e.target) && !filterDropdown.contains(e.target)) {
+            filterDropdown.style.display = 'none';
+        }
+    });
+
+    // Update display text
+    function updateFilterDisplay() {
+        const checked = Array.from(periodCheckboxes).filter(cb => cb.checked);
+        if (checked.length === 0 || checked.length === periodCheckboxes.length) {
+            filterDisplay.textContent = 'All Periods';
+            selectAllCheckbox.checked = true;
+        } else if (checked.length === 1) {
+            const label = checked[0].parentElement.querySelector('span').textContent;
+            filterDisplay.textContent = label;
+            selectAllCheckbox.checked = false;
+        } else {
+            filterDisplay.textContent = `${checked.length} Periods Selected`;
+            selectAllCheckbox.checked = false;
+        }
+    }
+
+    // Select/Deselect all
+    selectAllCheckbox.addEventListener('change', function() {
+        periodCheckboxes.forEach(cb => cb.checked = this.checked);
+        updateFilterDisplay();
+    });
+
+    // Clear all
+    clearAllButton.addEventListener('click', () => {
+        periodCheckboxes.forEach(cb => cb.checked = false);
+        selectAllCheckbox.checked = false;
+        updateFilterDisplay();
+    });
+
+    // Individual checkbox change
+    periodCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            updateFilterDisplay();
+            // Check if all are selected
+            const allChecked = Array.from(periodCheckboxes).every(checkbox => checkbox.checked);
+            selectAllCheckbox.checked = allChecked;
+        });
+    });
+
+    // Initialize - check all by default
+    selectAllCheckbox.checked = true;
+    periodCheckboxes.forEach(cb => cb.checked = true);
+    updateFilterDisplay();
+
     // Event listeners for filters
     document.getElementById('apply-summary-filter').addEventListener('click', applySummaryFilter);
     document.getElementById('reset-summary-filter').addEventListener('click', () => {
-        document.getElementById('summary-period-filter').value = 'all';
+        selectAllCheckbox.checked = true;
+        periodCheckboxes.forEach(cb => cb.checked = true);
+        updateFilterDisplay();
         document.getElementById('summary-start-date').value = '';
         document.getElementById('summary-end-date').value = '';
         renderSummaryData(periods);
-    });
-    
-    document.getElementById('summary-period-filter').addEventListener('change', function() {
-        if (this.value !== 'all') {
-            document.getElementById('summary-start-date').value = '';
-            document.getElementById('summary-end-date').value = '';
-        }
     });
     
     ['toggle-cumulative-summary', 'toggle-bills-summary', 'toggle-wants-summary', 'toggle-food-summary', 'toggle-needs-summary', 'toggle-unexpected-summary'].forEach(id => {
@@ -2969,14 +3054,17 @@
 }
 
 function applySummaryFilter() {
-    const periodFilter = document.getElementById('summary-period-filter').value;
+    const periodCheckboxes = document.querySelectorAll('.period-checkbox');
+    const selectedPeriodIds = Array.from(periodCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
     const startDate = document.getElementById('summary-start-date').value;
     const endDate = document.getElementById('summary-end-date').value;
-    
+
     let filtered = getPeriods();
-    
-    if (periodFilter !== 'all') {
-        filtered = filtered.filter(p => p.id === periodFilter);
+
+    if (selectedPeriodIds.length > 0 && selectedPeriodIds.length < periodCheckboxes.length) {
+        filtered = filtered.filter(p => selectedPeriodIds.includes(p.id));
     } else if (startDate && endDate) {
         filtered = filtered.filter(p => {
             const pStart = new Date(p.startDate);
@@ -2986,19 +3074,22 @@ function applySummaryFilter() {
             return (pStart <= fEnd && pEnd >= fStart);
         });
     }
-    
+
     renderSummaryData(filtered);
 }
 
 function getFilteredPeriods() {
-    const periodFilter = document.getElementById('summary-period-filter').value;
+    const periodCheckboxes = document.querySelectorAll('.period-checkbox');
+    const selectedPeriodIds = Array.from(periodCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
     const startDate = document.getElementById('summary-start-date').value;
     const endDate = document.getElementById('summary-end-date').value;
-    
+
     let filtered = getPeriods();
-    
-    if (periodFilter !== 'all') {
-        filtered = filtered.filter(p => p.id === periodFilter);
+
+    if (selectedPeriodIds.length > 0 && selectedPeriodIds.length < periodCheckboxes.length) {
+        filtered = filtered.filter(p => selectedPeriodIds.includes(p.id));
     } else if (startDate && endDate) {
         filtered = filtered.filter(p => {
             const pStart = new Date(p.startDate);
@@ -3008,7 +3099,7 @@ function getFilteredPeriods() {
             return (pStart <= fEnd && pEnd >= fStart);
         });
     }
-    
+
     return filtered;
 }
 
@@ -3034,9 +3125,9 @@ function calculateNoSpendDays(periods) {
             currentDate.setDate(currentDate.getDate() + 1);
         }
         
-        // Track dates with expenses (excluding income)
+        // Track dates with Wants or Food expenses (no-spend means no Wants or Food)
         (period.expenses || []).forEach(expense => {
-            if (expense.category !== 'Income') {
+            if (expense.category === 'Wants' || expense.category === 'Food') {
                 spendDates.add(expense.date);
             }
         });
@@ -3477,7 +3568,6 @@ function renderNetWorthChart(periods) {
             <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthData[i])}</td>
             <td style="padding:var(--spacing-sm); text-align:right; font-size:0.9em;">${nwChange}</td>
             <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthOwedData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthOwedData[i])}</td>
-            <td style="padding:var(--spacing-sm); text-align:right; font-size:0.9em;">${nwOwedChange}</td>
         </tr>
         `;
     }).join('');
