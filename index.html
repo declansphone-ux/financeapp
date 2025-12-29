@@ -2038,10 +2038,20 @@
             const currentMoney = calculateTotalDebit(sb);
             const currentDebts = calculateTotalCredit(sb);
             const netWorth = calculateNetWorth(sb);
-            
+
             // Calculate total owed to me
             const totalOwed = (period.owedPeople || []).reduce((sum, p) => sum + (p.amount || 0), 0);
             const netWorthOncePaid = netWorth + totalOwed;
+
+            // Calculate remaining budgets
+            const stats = calculatePeriodStats(period);
+            const remainingBills = Math.max(0, (period.budgets.bills || 0) - stats.categorySpending.bills);
+            const remainingFood = Math.max(0, (period.budgets.food || 0) - stats.categorySpending.food);
+            const remainingWants = Math.max(0, (period.budgets.wants || 0) - stats.categorySpending.wants);
+            const totalRemainingBudget = remainingBills + remainingFood + remainingWants;
+
+            // Calculate projected net worth if all remaining budget is spent
+            const projectedNetWorth = netWorth - totalRemainingBudget;
 
             const container = document.getElementById('networth-cards');
             container.innerHTML = `
@@ -2059,6 +2069,10 @@
                     <h3>📊 Net Worth</h3>
                     <div class="value ${netWorth < 0 ? 'text-danger' : ''}">£${formatCurrency(netWorth)}</div>
                     <div class="small-muted">Money - Debts</div>
+                    <div style="font-size: 0.8rem; color: var(--dark-gray); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--light-gray);">
+                        After remaining budgets:<br>
+                        <span style="font-weight: 600; color: ${projectedNetWorth < 0 ? 'var(--danger)' : 'var(--text-dark)'};">£${formatCurrency(projectedNetWorth)}</span>
+                    </div>
                 </div>
                 <div class="summary-card networth-card">
                     <h3>🎯 Net Worth Once Paid</h3>
