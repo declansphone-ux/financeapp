@@ -3584,7 +3584,7 @@ function renderNetWorthChart(periods) {
             <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthOwedData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthOwedData[i])}</td>
         </tr>
         `;
-    }).join('');
+    }).reverse().join('');
 }
 
 function renderSavingsRateChart(periods) {
@@ -3642,7 +3642,7 @@ function renderSavingsRateChart(periods) {
             <td style="padding:var(--spacing-sm);">${labels[i]}</td>
             <td style="padding:var(--spacing-sm); text-align:right;">${savingsData[i].toFixed(1)}%</td>
         </tr>
-    `).join('');
+    `).reverse().join('');
 }
 
 function renderDailySpendingChart(periods) {
@@ -4015,19 +4015,19 @@ function showDailySpendingDetails(date) {
 
 function renderPeriodComparisonTable(periods) {
     const tbody = document.getElementById('period-comparison-tbody');
-    
+
     tbody.innerHTML = periods.map(period => {
         const stats = calculatePeriodStats(period);
         const saved = (period.salary || 0) - stats.totalSpent;
         const sb = period.startingBalances || {};
         const netWorth = calculateNetWorth(sb);
-        
+
         const start = new Date(period.startDate);
         const end = new Date(period.endDate);
         const startMonth = start.toLocaleDateString('en-GB', { month: 'short' });
         const endMonth = end.toLocaleDateString('en-GB', { month: 'short' });
         const dateLabel = startMonth === endMonth ? startMonth : `${startMonth}-${endMonth}`;
-        
+
         return `
             <tr>
                 <td><strong>${dateLabel}</strong></td>
@@ -4040,7 +4040,7 @@ function renderPeriodComparisonTable(periods) {
                 <td><strong style="color:${netWorth >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorth)}</strong></td>
             </tr>
         `;
-    }).join('');
+    }).reverse().join('');
 }
         // ============================================
         // SUBCATEGORY MANAGEMENT
