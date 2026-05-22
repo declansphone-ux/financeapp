@@ -2841,6 +2841,7 @@
             <thead>
                 <tr>
                     <th>Period</th>
+                    <th>Salary</th>
                     <th>Spent</th>
                     <th>Saved</th>
                     <th>Save %</th>
@@ -4031,8 +4032,9 @@ function renderPeriodComparisonTable(periods) {
         return `
             <tr>
                 <td><strong>${dateLabel}</strong></td>
+                <td><strong>£${formatCurrency(period.salary || 0)}</strong></td>
                 <td><strong>£${formatCurrency(stats.totalSpent)}</strong></td>
-                <td><strong style="color:var(--success);">£${formatCurrency(saved)}</strong></td>
+                <td><strong style="color:${saved < 0 ? 'var(--danger)' : 'var(--success)'};">£${formatCurrency(saved)}</strong></td>
                 <td><strong>${stats.savingsRate.toFixed(1)}%</strong></td>
                 <td>£${formatCurrency(stats.categorySpending.bills)}</td>
                 <td>£${formatCurrency(stats.categorySpending.food)}</td>
