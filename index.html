@@ -1167,6 +1167,144 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Split section */
+        #mobile-split-section {
+            margin-bottom: 1rem;
+        }
+        .split-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--card-bg);
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .split-toggle-row span {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+        .split-toggle-row .split-chevron {
+            color: var(--dark-gray);
+            transition: transform 0.2s;
+            font-size: 0.85rem;
+        }
+        .split-toggle-row.open { border-color: var(--primary-blue); }
+        .split-toggle-row.open .split-chevron { transform: rotate(180deg); }
+        #mobile-split-body {
+            display: none;
+            padding: 0.75rem;
+            background: var(--light-gray);
+            border: 1px solid var(--medium-gray);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+        }
+        #mobile-split-body.open { display: block; }
+        .split-mode-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .split-mode-btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--radius-sm);
+            background: var(--card-bg);
+            color: var(--dark-gray);
+            cursor: pointer;
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .split-mode-btn.active {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        .split-person-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        .split-person-row:last-child { border-bottom: none; }
+        .split-person-check {
+            width: 22px; height: 22px;
+            accent-color: var(--primary-blue);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .split-person-name {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+        .split-person-amount {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+        .split-person-input {
+            width: 90px;
+            padding: 0.35rem 0.5rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--radius-sm);
+            background: var(--card-bg);
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            text-align: right;
+        }
+        .split-person-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+        .split-summary {
+            margin-top: 0.6rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(96, 165, 250, 0.1);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+        .split-summary .my-share {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+        .split-add-person-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+        }
+        .split-add-person-row input {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--radius-sm);
+            background: var(--card-bg);
+            color: var(--text-dark);
+            font-size: 0.875rem;
+        }
+        .split-add-person-row button {
+            padding: 0.4rem 0.75rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         /* Smooth scrollbar styling */
         ::-webkit-scrollbar {
             width: 10px;
@@ -1515,6 +1653,26 @@
                         <option value="">Select method</option>
                         <option value="Cash">Cash</option>
                     </select>
+                </div>
+
+                <!-- Split section -->
+                <div id="mobile-split-section">
+                    <div class="split-toggle-row" id="split-toggle-row" onclick="mobileToggleSplit()">
+                        <span>🤝 Split with others</span>
+                        <span class="split-chevron">▼</span>
+                    </div>
+                    <div id="mobile-split-body">
+                        <div class="split-mode-row">
+                            <button class="split-mode-btn active" id="split-mode-even" onclick="mobileSetSplitMode('even')">⚖️ Even split</button>
+                            <button class="split-mode-btn" id="split-mode-custom" onclick="mobileSetSplitMode('custom')">✏️ Custom amounts</button>
+                        </div>
+                        <div id="split-people-list"></div>
+                        <div class="split-summary" id="split-summary" style="display:none"></div>
+                        <div class="split-add-person-row">
+                            <input type="text" id="split-new-person" placeholder="Add new person…" />
+                            <button onclick="mobileAddSplitPerson()">+ Add</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mobile-form-group">
@@ -1970,9 +2128,7 @@
         function mobileShowForm() {
             document.getElementById('mobile-loading-msg').style.display = 'none';
             document.getElementById('mobile-form-fields').style.display = 'block';
-            // Set today's date
             document.getElementById('m-date').value = formatDateForInput(new Date());
-            // Set period badge
             const currentP = mobileGetCurrentPeriod();
             if (currentP) {
                 document.getElementById('mobile-period-badge').textContent =
@@ -1983,14 +2139,169 @@
             paymentSel.innerHTML = '<option value="">Select method</option>';
             bankAccounts.forEach(acc => {
                 const opt = document.createElement('option');
-                opt.value = acc.name;
-                opt.textContent = acc.name;
+                opt.value = acc.name; opt.textContent = acc.name;
                 paymentSel.appendChild(opt);
             });
             const cashOpt = document.createElement('option');
-            cashOpt.value = 'Cash';
-            cashOpt.textContent = 'Cash';
+            cashOpt.value = 'Cash'; cashOpt.textContent = 'Cash';
             paymentSel.appendChild(cashOpt);
+            // Render split section with current period's people
+            mobileRenderSplitPeople();
+            // Recalc whenever amount changes
+            document.getElementById('m-amount').addEventListener('input', mobileRecalcSplit);
+        }
+
+        // ============================================
+        // MOBILE SPLIT LOGIC
+        // ============================================
+        let mobileSplitMode = 'even'; // 'even' | 'custom'
+        let mobileSplitOpen = false;
+
+        function mobileToggleSplit() {
+            mobileSplitOpen = !mobileSplitOpen;
+            const body = document.getElementById('mobile-split-body');
+            const row = document.getElementById('split-toggle-row');
+            body.classList.toggle('open', mobileSplitOpen);
+            row.classList.toggle('open', mobileSplitOpen);
+        }
+
+        function mobileSetSplitMode(mode) {
+            mobileSplitMode = mode;
+            document.getElementById('split-mode-even').classList.toggle('active', mode === 'even');
+            document.getElementById('split-mode-custom').classList.toggle('active', mode === 'custom');
+            mobileRenderSplitPeople();
+        }
+
+        // Internal list of people in the split UI: [{name, checked, customAmount}]
+        // "Me" is always first
+        let mobileSplitPeople = [];
+
+        function mobileRenderSplitPeople() {
+            const currentP = mobileGetCurrentPeriod();
+            // Build list: Me first, then owedPeople from the period
+            const existing = (currentP && currentP.owedPeople) ? currentP.owedPeople : [];
+            // Preserve checked/custom state for people already in the list
+            const prev = {};
+            mobileSplitPeople.forEach(p => { prev[p.name] = p; });
+
+            mobileSplitPeople = [
+                { name: 'Me', isMe: true, checked: prev['Me'] ? prev['Me'].checked : false, customAmount: prev['Me'] ? prev['Me'].customAmount : '' },
+                ...existing.map(p => ({
+                    name: p.name, isMe: false,
+                    checked: prev[p.name] ? prev[p.name].checked : false,
+                    customAmount: prev[p.name] ? prev[p.name].customAmount : ''
+                }))
+            ];
+            // Also keep any manually added people not in owedPeople
+            mobileSplitPeople.forEach(p => {});
+            _renderSplitRows();
+        }
+
+        function _renderSplitRows() {
+            const list = document.getElementById('split-people-list');
+            list.innerHTML = mobileSplitPeople.map((p, i) => {
+                const isCustom = mobileSplitMode === 'custom';
+                const checkedAttr = p.checked ? 'checked' : '';
+                const sharePreview = mobileSplitMode === 'even' ? _evenShareFor(i) : '';
+                const inputHtml = isCustom
+                    ? `<input class="split-person-input" type="number" step="0.01" placeholder="0.00"
+                         id="split-custom-${i}" value="${p.customAmount || ''}"
+                         oninput="mobileSplitCustomInput(${i}, this.value)" ${!p.checked ? 'disabled' : ''}>`
+                    : `<span class="split-person-amount">${p.checked && sharePreview !== '' ? '£' + sharePreview : ''}</span>`;
+                return `
+                    <div class="split-person-row">
+                        <input type="checkbox" class="split-person-check" ${checkedAttr}
+                            onchange="mobileSplitToggle(${i}, this.checked)">
+                        <span class="split-person-name">${escapeHtml(p.name)}${p.isMe ? ' (me)' : ''}</span>
+                        ${inputHtml}
+                    </div>`;
+            }).join('');
+            mobileUpdateSplitSummary();
+        }
+
+        function _evenShareFor(idx) {
+            const amount = parseFloat(document.getElementById('m-amount').value) || 0;
+            const checkedCount = mobileSplitPeople.filter(p => p.checked).length;
+            if (!mobileSplitPeople[idx].checked || checkedCount === 0 || amount === 0) return '';
+            return (amount / checkedCount).toFixed(2);
+        }
+
+        function mobileSplitToggle(idx, checked) {
+            mobileSplitPeople[idx].checked = checked;
+            if (!checked) mobileSplitPeople[idx].customAmount = '';
+            _renderSplitRows();
+        }
+
+        function mobileSplitCustomInput(idx, val) {
+            mobileSplitPeople[idx].customAmount = val;
+            mobileUpdateSplitSummary();
+        }
+
+        function mobileRecalcSplit() {
+            if (mobileSplitMode === 'even') _renderSplitRows();
+            else mobileUpdateSplitSummary();
+        }
+
+        function mobileUpdateSplitSummary() {
+            const amount = parseFloat(document.getElementById('m-amount').value) || 0;
+            const summaryEl = document.getElementById('split-summary');
+            const checkedOthers = mobileSplitPeople.filter(p => !p.isMe && p.checked);
+            const meChecked = mobileSplitPeople[0] && mobileSplitPeople[0].checked;
+
+            if (checkedOthers.length === 0 && !meChecked) {
+                summaryEl.style.display = 'none';
+                return;
+            }
+
+            let myShare;
+            if (mobileSplitMode === 'even') {
+                const n = mobileSplitPeople.filter(p => p.checked).length;
+                myShare = meChecked ? (n > 0 ? amount / n : amount) : amount - checkedOthers.reduce((s, p) => {
+                    const n2 = mobileSplitPeople.filter(x => x.checked).length;
+                    return s + (n2 > 0 ? amount / n2 : 0);
+                }, 0);
+                // Simpler: if me is checked, my share = amount/n; others each owe amount/n
+                if (meChecked) {
+                    const n2 = mobileSplitPeople.filter(p => p.checked).length;
+                    myShare = n2 > 0 ? amount / n2 : amount;
+                } else {
+                    // I'm not in the split — I paid but others owe me their even shares
+                    const n2 = checkedOthers.length;
+                    const eachOwes = n2 > 0 ? amount / n2 : 0;
+                    myShare = amount - (eachOwes * n2);
+                }
+            } else {
+                const totalOwed = checkedOthers.reduce((s, p) => s + (parseFloat(p.customAmount) || 0), 0);
+                myShare = amount - totalOwed;
+            }
+
+            const othersLines = checkedOthers.map(p => {
+                let owes;
+                if (mobileSplitMode === 'even') {
+                    const n = mobileSplitPeople.filter(x => x.checked).length;
+                    owes = n > 0 ? (amount / n).toFixed(2) : '0.00';
+                } else {
+                    owes = (parseFloat(p.customAmount) || 0).toFixed(2);
+                }
+                return `${escapeHtml(p.name)} owes £${owes}`;
+            }).join(' · ');
+
+            summaryEl.style.display = 'block';
+            summaryEl.innerHTML = (othersLines ? othersLines + '<br>' : '') +
+                `My share: <span class="my-share">£${Math.max(0, myShare).toFixed(2)}</span>`;
+        }
+
+        function mobileAddSplitPerson() {
+            const input = document.getElementById('split-new-person');
+            const name = input.value.trim();
+            if (!name) return;
+            if (mobileSplitPeople.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                input.value = '';
+                return;
+            }
+            mobileSplitPeople.push({ name, isMe: false, checked: true, customAmount: '' });
+            input.value = '';
+            _renderSplitRows();
         }
 
         function mobileGetCurrentPeriod() {
@@ -2034,20 +2345,55 @@
             const currentP = mobileGetCurrentPeriod();
             if (!currentP) { alert('No active period found. Please use the full app to create a period first.'); return; }
 
+            // ---- Work out split allocations ----
+            currentP.owedPeople = currentP.owedPeople || [];
+            const sharedAllocations = [];
+            let totalOwedByOthers = 0;
+
+            const checkedOthers = mobileSplitOpen
+                ? mobileSplitPeople.filter(p => !p.isMe && p.checked)
+                : [];
+
+            if (checkedOthers.length > 0) {
+                const meChecked = mobileSplitPeople[0] && mobileSplitPeople[0].checked;
+                const n = mobileSplitPeople.filter(p => p.checked).length;
+
+                checkedOthers.forEach(sp => {
+                    let owes;
+                    if (mobileSplitMode === 'even') {
+                        owes = parseFloat((amount / n).toFixed(2));
+                    } else {
+                        owes = parseFloat(sp.customAmount) || 0;
+                    }
+                    if (owes <= 0) return;
+
+                    // Find or create the person in owedPeople
+                    let personIdx = currentP.owedPeople.findIndex(
+                        p => p.name.toLowerCase() === sp.name.toLowerCase()
+                    );
+                    if (personIdx === -1) {
+                        currentP.owedPeople.push({ name: sp.name, amount: 0 });
+                        personIdx = currentP.owedPeople.length - 1;
+                    }
+                    currentP.owedPeople[personIdx].amount = parseFloat(
+                        ((currentP.owedPeople[personIdx].amount || 0) + owes).toFixed(2)
+                    );
+                    sharedAllocations.push({ idx: personIdx, name: sp.name, amount: owes });
+                    totalOwedByOthers += owes;
+                });
+            }
+
+            const myShare = parseFloat((amount - totalOwedByOthers).toFixed(2));
+
             const expense = {
                 id: 'expense_' + Date.now(),
-                date: date,
-                amount: amount,
-                description: description,
-                category: category,
-                subcategory: subcategory,
-                paymentMethod: paymentMethod,
-                notes: '',
-                sharedAllocations: [],
-                myShare: amount
+                date, amount, description, category, subcategory,
+                paymentMethod, notes: '',
+                sharedAllocations,
+                myShare: Math.max(0, myShare)
             };
 
-            // Adjust account balance
+            // Adjust account balance (always full amount — I paid)
             const sb = currentP.startingBalances || {};
             const account = bankAccounts.find(acc => acc.name === paymentMethod);
             if (account) {
@@ -2071,16 +2417,22 @@
             // Show success
             const successEl = document.getElementById('mobile-success-msg');
             successEl.style.display = 'block';
-            successEl.textContent = `✅ Saved: £${amount.toFixed(2)} – ${description}`;
-            setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+            const splitNote = sharedAllocations.length
+                ? ` (split with ${sharedAllocations.map(a => a.name).join(', ')})`
+                : '';
+            successEl.textContent = `✅ Saved: £${amount.toFixed(2)} – ${description}${splitNote}`;
+            setTimeout(() => { successEl.style.display = 'none'; }, 4000);
 
-            // Reset form fields (keep date and payment method)
+            // Reset form (keep date and payment method)
             document.getElementById('m-amount').value = '';
             document.getElementById('m-category').value = '';
             document.getElementById('m-subcategory').innerHTML = '<option value="">Select subcategory</option>';
             document.getElementById('m-description').value = '';
+            // Reset split
+            mobileSplitPeople.forEach(p => { p.checked = false; p.customAmount = ''; });
+            _renderSplitRows();
+            document.getElementById('split-summary').style.display = 'none';
 
-            // Auto-save to cloud
             saveAllDataToDatabase().catch(err => console.warn('Mobile: cloud save failed', err));
         }
 
@@ -2091,6 +2443,9 @@
             document.getElementById('m-description').value = '';
             document.getElementById('m-payment').value = '';
             document.getElementById('m-date').value = formatDateForInput(new Date());
+            mobileSplitPeople.forEach(p => { p.checked = false; p.customAmount = ''; });
+            _renderSplitRows();
+            document.getElementById('split-summary').style.display = 'none';
         }
 
         function mobileOpenFullApp() {
