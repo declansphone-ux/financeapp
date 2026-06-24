@@ -1305,6 +1305,119 @@
             cursor: pointer;
         }
 
+        /* Mobile summary screen */
+        .msummary-stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .msummary-stat {
+            background: var(--card-bg);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+        }
+        .msummary-stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.4rem;
+        }
+        .msummary-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.1;
+        }
+        .msummary-stat-sub {
+            font-size: 0.75rem;
+            color: var(--dark-gray);
+            margin-top: 0.2rem;
+        }
+        .msummary-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.6rem;
+        }
+        .msummary-budget-block {
+            background: var(--card-bg);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .msummary-bar-row {
+            margin-bottom: 0.85rem;
+        }
+        .msummary-bar-row:last-child { margin-bottom: 0; }
+        .msummary-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.3rem;
+        }
+        .msummary-bar-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+        .msummary-bar-amounts {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+        .msummary-bar-remaining {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+            text-align: right;
+        }
+        .msummary-bar-track {
+            width: 100%;
+            height: 12px;
+            background: var(--light-gray);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .msummary-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.4s ease;
+        }
+        .msummary-networth-block {
+            background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(5,150,105,0.1) 100%);
+            border: 1px solid rgba(52,211,153,0.4);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+        .msummary-networth-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--success);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.3rem;
+        }
+        .msummary-networth-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--success);
+        }
+        .msummary-networth-sub {
+            font-size: 0.78rem;
+            color: var(--dark-gray);
+            margin-top: 0.3rem;
+        }
+
         /* Smooth scrollbar styling */
         ::-webkit-scrollbar {
             width: 10px;
@@ -1602,6 +1715,18 @@
             </div>
         </div>
 
+        <!-- Summary Screen -->
+        <div id="mobile-summary-screen" style="display:none; flex-direction:column; width:100%; max-width:480px; height:100%; overflow-y:auto;">
+            <div class="mobile-header">
+                <div>
+                    <h2>📊 Period Summary</h2>
+                    <div class="mobile-period-badge" id="mobile-summary-period-badge"></div>
+                </div>
+                <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileCloseSummary()">← Add</button>
+            </div>
+            <div id="mobile-summary-content"></div>
+        </div>
+
         <!-- Add Transaction Screen (shown after PIN) -->
         <div id="mobile-add-screen">
             <div class="mobile-header">
@@ -1609,7 +1734,7 @@
                     <h2>➕ Add Transaction</h2>
                     <div class="mobile-period-badge" id="mobile-period-badge"></div>
                 </div>
-                <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileOpenFullApp()">Full App →</button>
+                <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileOpenSummary()">View Summary →</button>
             </div>
 
             <div id="mobile-loading-msg">⏳ Loading data...</div>
@@ -2448,10 +2573,105 @@
             document.getElementById('split-summary').style.display = 'none';
         }
 
-        function mobileOpenFullApp() {
-            // Hide overlay and run desktop init
-            document.getElementById('mobile-overlay').classList.remove('active');
-            initializeDataFromDatabase();
+        function mobileOpenSummary() {
+            document.getElementById('mobile-add-screen').classList.remove('active');
+            const summaryEl = document.getElementById('mobile-summary-screen');
+            summaryEl.style.display = 'flex';
+            mobileRenderSummary();
+        }
+
+        function mobileCloseSummary() {
+            document.getElementById('mobile-summary-screen').style.display = 'none';
+            document.getElementById('mobile-add-screen').classList.add('active');
+        }
+
+        function mobileRenderSummary() {
+            const currentP = mobileGetCurrentPeriod();
+            const container = document.getElementById('mobile-summary-content');
+
+            if (!currentP) {
+                container.innerHTML = '<p style="color:var(--dark-gray);text-align:center;padding:2rem;">No active period found.</p>';
+                return;
+            }
+
+            const stats = calculatePeriodStats(currentP);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const endDate = new Date(currentP.endDate); endDate.setHours(0,0,0,0);
+            const daysLeft = Math.max(0, Math.ceil((endDate - today) / 86400000));
+            const moneyLeft = (currentP.salary || 0) - stats.totalSpent;
+            const savingsRate = stats.savingsRate;
+
+            // Predicted net worth if remaining budgets are spent
+            const sb = currentP.startingBalances || {};
+            const netWorth = calculateNetWorth(sb);
+            const remainingBills  = Math.max(0, (currentP.budgets.bills  || 0) - stats.categorySpending.bills);
+            const remainingFood   = Math.max(0, (currentP.budgets.food   || 0) - stats.categorySpending.food);
+            const remainingWants  = Math.max(0, (currentP.budgets.wants  || 0) - stats.categorySpending.wants);
+            const predictedNetWorth = netWorth - (remainingBills + remainingFood + remainingWants);
+
+            document.getElementById('mobile-summary-period-badge').textContent =
+                formatDate(currentP.startDate) + ' – ' + formatDate(currentP.endDate);
+
+            // Build budget bars
+            const budgets = [
+                { label: '📄 Bills', spent: stats.categorySpending.bills, budget: currentP.budgets.bills || 0, color: '#3B82F6' },
+                { label: '🍔 Food',  spent: stats.categorySpending.food,  budget: currentP.budgets.food  || 0, color: '#10B981' },
+                { label: '🎉 Wants', spent: stats.categorySpending.wants, budget: currentP.budgets.wants || 0, color: '#8B5CF6' },
+            ];
+
+            const barsHtml = budgets.map(b => {
+                const pct = b.budget > 0 ? Math.min((b.spent / b.budget) * 100, 100) : 0;
+                const over = b.spent > b.budget && b.budget > 0;
+                const fillColor = over ? '#EF4444' : b.color;
+                const remaining = b.budget - b.spent;
+                const remainingText = over
+                    ? `<span style="color:var(--danger)">Over by £${formatCurrency(b.spent - b.budget)}</span>`
+                    : `<span style="color:var(--success)">£${formatCurrency(remaining)} left</span>`;
+                return `
+                    <div class="msummary-bar-row">
+                        <div class="msummary-bar-header">
+                            <span class="msummary-bar-name">${b.label}</span>
+                            <span class="msummary-bar-amounts">£${formatCurrency(b.spent)} / £${formatCurrency(b.budget)}</span>
+                        </div>
+                        <div class="msummary-bar-track">
+                            <div class="msummary-bar-fill" style="width:${pct}%;background:${fillColor};"></div>
+                        </div>
+                        <div class="msummary-bar-remaining">${remainingText}</div>
+                    </div>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="msummary-stat-grid">
+                    <div class="msummary-stat">
+                        <div class="msummary-stat-label">⏰ Days Left</div>
+                        <div class="msummary-stat-value" style="color:${daysLeft <= 3 ? 'var(--danger)' : daysLeft <= 7 ? 'var(--warning)' : 'var(--text-dark)'};">${daysLeft}</div>
+                        <div class="msummary-stat-sub">days remaining</div>
+                    </div>
+                    <div class="msummary-stat">
+                        <div class="msummary-stat-label">💵 Left to Spend</div>
+                        <div class="msummary-stat-value" style="color:${moneyLeft < 0 ? 'var(--danger)' : 'var(--success)'};">£${formatCurrency(Math.abs(moneyLeft))}</div>
+                        <div class="msummary-stat-sub">${moneyLeft < 0 ? 'over salary' : 'of £' + formatCurrency(currentP.salary || 0)}</div>
+                    </div>
+                    <div class="msummary-stat" style="grid-column:1/-1;">
+                        <div class="msummary-stat-label">💎 Savings Rate</div>
+                        <div class="msummary-stat-value" style="color:${savingsRate < 0 ? 'var(--danger)' : savingsRate < 10 ? 'var(--warning)' : 'var(--success)'};">${savingsRate.toFixed(1)}%</div>
+                        <div class="msummary-stat-sub">£${formatCurrency(moneyLeft)} saved so far</div>
+                    </div>
+                </div>
+
+                <div class="msummary-section-title">Budget Progress</div>
+                <div class="msummary-budget-block">${barsHtml}</div>
+
+                <div class="msummary-networth-block">
+                    <div class="msummary-networth-label">🎯 Predicted Net Worth (if on budget)</div>
+                    <div class="msummary-networth-value" style="color:${predictedNetWorth < 0 ? 'var(--danger)' : 'var(--success)'};">
+                        £${formatCurrency(predictedNetWorth)}
+                    </div>
+                    <div class="msummary-networth-sub">
+                        Current net worth £${formatCurrency(netWorth)} · £${formatCurrency(remainingBills + remainingFood + remainingWants)} budget still to spend
+                    </div>
+                </div>
+            `;
         }
 
         // Physical keyboard support for PIN entry on mobile
