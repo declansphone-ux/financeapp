@@ -968,6 +968,205 @@
             }
         }
 
+        /* ============================================
+           MOBILE OVERLAY STYLES
+           ============================================ */
+        #mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-darker);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        #mobile-overlay.active { display: flex; }
+
+        /* PIN Screen */
+        #mobile-pin-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 360px;
+        }
+        .mobile-app-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+        .mobile-app-subtitle {
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+        #pin-display {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            height: 1.5rem;
+            align-items: center;
+        }
+        .pin-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-blue);
+            background: transparent;
+            transition: background 0.15s ease;
+        }
+        .pin-dot.filled { background: var(--primary-blue); }
+        #pin-error {
+            color: var(--danger);
+            font-size: 0.9rem;
+            font-weight: 600;
+            height: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        #pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            width: 100%;
+        }
+        .pin-key {
+            background: var(--card-bg);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-lg);
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.15s ease, transform 0.1s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pin-key:active { background: var(--primary-blue); transform: scale(0.95); }
+        .pin-key.pin-del { font-size: 1.25rem; color: var(--dark-gray); }
+        .pin-key.pin-empty { visibility: hidden; }
+
+        /* Mobile Add Transaction Screen */
+        #mobile-add-screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        #mobile-add-screen.active { display: flex; }
+        .mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--medium-gray);
+            flex-shrink: 0;
+        }
+        .mobile-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+            color: var(--primary-blue);
+        }
+        .mobile-period-badge {
+            font-size: 0.75rem;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+        #mobile-loading-msg {
+            text-align: center;
+            color: var(--dark-gray);
+            padding: 2rem;
+            font-size: 1rem;
+        }
+        #mobile-form-fields { flex: 1; }
+        .mobile-form-group {
+            margin-bottom: 1rem;
+        }
+        .mobile-form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .mobile-form-group input,
+        .mobile-form-group select,
+        .mobile-form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        .mobile-form-group input:focus,
+        .mobile-form-group select:focus,
+        .mobile-form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+        .mobile-amount-input {
+            font-size: 2rem !important;
+            font-weight: 700 !important;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+        .mobile-save-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background 0.2s, transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-save-btn:active { transform: scale(0.98); }
+        .mobile-save-btn:disabled { opacity: 0.6; }
+        #mobile-success-msg {
+            display: none;
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid var(--success);
+            border-radius: var(--radius-lg);
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .mobile-secondary-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--card-bg);
+            color: var(--dark-gray);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         /* Smooth scrollbar styling */
         ::-webkit-scrollbar {
             width: 10px;
@@ -1230,6 +1429,103 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- ============================================
+         MOBILE OVERLAY (PIN + Add Transaction)
+         ============================================ -->
+    <div id="mobile-overlay">
+        <!-- PIN Entry Screen -->
+        <div id="mobile-pin-screen">
+            <div class="mobile-app-title">💰 Budget</div>
+            <div class="mobile-app-subtitle">Enter your PIN to continue</div>
+            <div id="pin-display">
+                <div class="pin-dot" id="pd0"></div>
+                <div class="pin-dot" id="pd1"></div>
+                <div class="pin-dot" id="pd2"></div>
+                <div class="pin-dot" id="pd3"></div>
+                <div class="pin-dot" id="pd4"></div>
+                <div class="pin-dot" id="pd5"></div>
+            </div>
+            <div id="pin-error"></div>
+            <div id="pin-keypad">
+                <button class="pin-key" onclick="mobilePinPress('1')">1</button>
+                <button class="pin-key" onclick="mobilePinPress('2')">2</button>
+                <button class="pin-key" onclick="mobilePinPress('3')">3</button>
+                <button class="pin-key" onclick="mobilePinPress('4')">4</button>
+                <button class="pin-key" onclick="mobilePinPress('5')">5</button>
+                <button class="pin-key" onclick="mobilePinPress('6')">6</button>
+                <button class="pin-key" onclick="mobilePinPress('7')">7</button>
+                <button class="pin-key" onclick="mobilePinPress('8')">8</button>
+                <button class="pin-key" onclick="mobilePinPress('9')">9</button>
+                <div class="pin-key pin-empty"></div>
+                <button class="pin-key" onclick="mobilePinPress('0')">0</button>
+                <button class="pin-key pin-del" onclick="mobilePinDelete()">⌫</button>
+            </div>
+        </div>
+
+        <!-- Add Transaction Screen (shown after PIN) -->
+        <div id="mobile-add-screen">
+            <div class="mobile-header">
+                <div>
+                    <h2>➕ Add Transaction</h2>
+                    <div class="mobile-period-badge" id="mobile-period-badge"></div>
+                </div>
+                <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileOpenFullApp()">Full App →</button>
+            </div>
+
+            <div id="mobile-loading-msg">⏳ Loading data...</div>
+
+            <div id="mobile-form-fields" style="display:none">
+                <div id="mobile-success-msg">✅ Transaction saved!</div>
+
+                <div class="mobile-form-group">
+                    <label>Amount (£)</label>
+                    <input type="number" id="m-amount" class="mobile-amount-input" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+                </div>
+
+                <div class="mobile-form-group">
+                    <label>Category</label>
+                    <select id="m-category" onchange="mobileUpdateSubcategories()">
+                        <option value="">Select category</option>
+                        <option value="Bills/Subscriptions">Bills/Subscriptions</option>
+                        <option value="One-off Needs">One-off Needs</option>
+                        <option value="Wants">Wants (Treats)</option>
+                        <option value="Food">Food</option>
+                        <option value="Unexpected">Unexpected</option>
+                        <option value="Income">Income</option>
+                    </select>
+                </div>
+
+                <div class="mobile-form-group">
+                    <label>Subcategory</label>
+                    <select id="m-subcategory">
+                        <option value="">Select subcategory</option>
+                    </select>
+                </div>
+
+                <div class="mobile-form-group">
+                    <label>Description</label>
+                    <input type="text" id="m-description" placeholder="What was this for?">
+                </div>
+
+                <div class="mobile-form-group">
+                    <label>Payment Method</label>
+                    <select id="m-payment">
+                        <option value="">Select method</option>
+                        <option value="Cash">Cash</option>
+                    </select>
+                </div>
+
+                <div class="mobile-form-group">
+                    <label>Date</label>
+                    <input type="date" id="m-date">
+                </div>
+
+                <button class="mobile-save-btn" id="mobile-save-btn" onclick="mobileSaveTransaction()">Save Transaction</button>
+                <button class="mobile-secondary-btn" onclick="mobileResetForm()">Clear Form</button>
+            </div>
+        </div>
     </div>
 
     <!-- New Period Modal -->
@@ -1559,71 +1855,267 @@
             }
         }
 
+        // ============================================
+        // SHARED: load data from API without a prompt
+        // ============================================
+        async function loadDataFromAPI() {
+            const response = await fetch(API_GET_URL);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const fullDataObject = await response.json();
+            periods = fullDataObject.periods || [];
+            if (fullDataObject.subcategories && Object.keys(fullDataObject.subcategories).length > 0) {
+                subcategories = fullDataObject.subcategories;
+            }
+            if (fullDataObject.bankAccounts && fullDataObject.bankAccounts.length > 0) {
+                bankAccounts = fullDataObject.bankAccounts;
+            }
+        }
+
         async function initializeDataFromDatabase() {
-    // ----------------------------------------------------
-    // 1. PASSWORD CHECK (NEW)
-    // ----------------------------------------------------
-    const enteredPassword = prompt("Enter the access password to load data:");
-    
-    if (enteredPassword !== ACCESS_PASSWORD) {
-        showMessage('Access denied. Incorrect password.', 'error');
-        console.error("Access attempt failed.");
-        document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">🚫 Access Denied. Please refresh and enter the correct password.</p>';
-        // Exit function early if password is wrong
-        return; 
-    }
-    showMessage('Access granted. Loading data...', 'info');
-
-    // ----------------------------------------------------
-    // 2. DATA LOAD (ORIGINAL LOGIC)
-    // ----------------------------------------------------
-    console.log("Attempting to load data from Netlify API...");
-    try {
-        const response = await fetch(API_GET_URL);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const enteredPassword = prompt("Enter the access password to load data:");
+            if (enteredPassword !== ACCESS_PASSWORD) {
+                showMessage('Access denied. Incorrect password.', 'error');
+                document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">🚫 Access Denied. Please refresh and enter the correct password.</p>';
+                return;
+            }
+            showMessage('Access granted. Loading data...', 'info');
+            try {
+                await loadDataFromAPI();
+                loadPeriods();
+                showMessage('Data successfully loaded from database. ✅', 'success');
+            } catch (error) {
+                console.error("Error loading initial finance data from API:", error);
+                showMessage('Failed to load data from database. Check console for details.', 'error');
+                document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">⚠️ Failed to load data from database. See console for details.</p>';
+            }
         }
 
-        // Expecting the combined object: { periods: [...], subcategories: {...}, bankAccounts: [...] }
-        const fullDataObject = await response.json();
-
-        // 1. SET the global 'periods' array
-        periods = fullDataObject.periods || [];
-
-        // 2. SET the global 'subcategories' object
-        // Use loaded data if available, otherwise keep the default defined in the HTML
-        if (fullDataObject.subcategories && Object.keys(fullDataObject.subcategories).length > 0) {
-            subcategories = fullDataObject.subcategories;
-        }
-
-        // 3. SET the global 'bankAccounts' array
-        // Use loaded data if available, otherwise keep the default defined in the HTML
-        if (fullDataObject.bankAccounts && fullDataObject.bankAccounts.length > 0) {
-            bankAccounts = fullDataObject.bankAccounts;
-        }
-
-        // 4. Refresh the UI using the now populated global data
-        loadPeriods(); 
-        
-        showMessage('Data successfully loaded from database. ✅', 'success');
-        console.log('Data successfully loaded from Neon DB via Netlify API. ✅');
-
-    } catch (error) {
-        console.error("Error loading initial finance data from API:", error);
-        // Display an alert and a UI error message
-        showMessage('Failed to load data from database. Check console for details.', 'error');
-        document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">⚠️ Failed to load data from database. See console for details.</p>';
-    }
-}
-        
-        
         // ============================================
-        // APP STARTUP (STEP 44)
+        // MOBILE DETECTION & LOGIC
         // ============================================
-        
-        // Replace the old loadPeriods() call with the new database initializer
-        initializeDataFromDatabase();
+        function isMobileDevice() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                   (navigator.maxTouchPoints > 1 && window.innerWidth <= 900);
+        }
+
+        let mobilePinEntry = '';
+        let mobileDataLoaded = false;
+        let mobileDataLoading = false;
+
+        function initMobileOverlay() {
+            document.getElementById('mobile-overlay').classList.add('active');
+            // Start loading data immediately in the background
+            mobileDataLoading = true;
+            loadDataFromAPI().then(() => {
+                mobileDataLoaded = true;
+                mobileDataLoading = false;
+                // If the add screen is already showing (PIN was entered), populate it now
+                if (document.getElementById('mobile-add-screen').classList.contains('active')) {
+                    mobileShowForm();
+                }
+            }).catch(err => {
+                mobileDataLoaded = false;
+                mobileDataLoading = false;
+                console.error('Mobile: failed to load data', err);
+                if (document.getElementById('mobile-add-screen').classList.contains('active')) {
+                    document.getElementById('mobile-loading-msg').textContent = '⚠️ Failed to load data. Please refresh.';
+                }
+            });
+        }
+
+        function mobilePinPress(digit) {
+            if (mobilePinEntry.length >= 6) return;
+            mobilePinEntry += digit;
+            mobileUpdatePinDisplay();
+            if (mobilePinEntry.length === 6) {
+                setTimeout(mobileCheckPin, 120);
+            }
+        }
+
+        function mobilePinDelete() {
+            mobilePinEntry = mobilePinEntry.slice(0, -1);
+            mobileUpdatePinDisplay();
+            document.getElementById('pin-error').textContent = '';
+        }
+
+        function mobileUpdatePinDisplay() {
+            for (let i = 0; i < 6; i++) {
+                const dot = document.getElementById('pd' + i);
+                dot.classList.toggle('filled', i < mobilePinEntry.length);
+            }
+        }
+
+        function mobileCheckPin() {
+            if (mobilePinEntry === ACCESS_PASSWORD) {
+                // Correct — switch to add screen
+                document.getElementById('mobile-pin-screen').style.display = 'none';
+                const addScreen = document.getElementById('mobile-add-screen');
+                addScreen.classList.add('active');
+                if (mobileDataLoaded) {
+                    mobileShowForm();
+                }
+                // else: the data loader callback will call mobileShowForm when ready
+            } else {
+                document.getElementById('pin-error').textContent = 'Incorrect PIN, try again';
+                mobilePinEntry = '';
+                mobileUpdatePinDisplay();
+                // Shake animation
+                const keypad = document.getElementById('pin-keypad');
+                keypad.style.transform = 'translateX(-8px)';
+                setTimeout(() => { keypad.style.transform = 'translateX(8px)'; }, 80);
+                setTimeout(() => { keypad.style.transform = 'translateX(0)'; }, 160);
+            }
+        }
+
+        function mobileShowForm() {
+            document.getElementById('mobile-loading-msg').style.display = 'none';
+            document.getElementById('mobile-form-fields').style.display = 'block';
+            // Set today's date
+            document.getElementById('m-date').value = formatDateForInput(new Date());
+            // Set period badge
+            const currentP = mobileGetCurrentPeriod();
+            if (currentP) {
+                document.getElementById('mobile-period-badge').textContent =
+                    formatDate(currentP.startDate) + ' – ' + formatDate(currentP.endDate);
+            }
+            // Populate payment methods
+            const paymentSel = document.getElementById('m-payment');
+            paymentSel.innerHTML = '<option value="">Select method</option>';
+            bankAccounts.forEach(acc => {
+                const opt = document.createElement('option');
+                opt.value = acc.name;
+                opt.textContent = acc.name;
+                paymentSel.appendChild(opt);
+            });
+            const cashOpt = document.createElement('option');
+            cashOpt.value = 'Cash';
+            cashOpt.textContent = 'Cash';
+            paymentSel.appendChild(cashOpt);
+        }
+
+        function mobileGetCurrentPeriod() {
+            if (!periods.length) return null;
+            const sorted = [...periods].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            for (const p of sorted) {
+                const end = new Date(p.endDate); end.setHours(0, 0, 0, 0);
+                if (Math.ceil((end - today) / 86400000) >= 0) return p;
+            }
+            return sorted[0]; // fallback to most recent
+        }
+
+        function mobileUpdateSubcategories() {
+            const cat = document.getElementById('m-category').value;
+            const sel = document.getElementById('m-subcategory');
+            sel.innerHTML = '<option value="">Select subcategory</option>';
+            const subs = subcategories[cat] || [];
+            subs.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s; opt.textContent = s;
+                sel.appendChild(opt);
+            });
+        }
+
+        function mobileSaveTransaction() {
+            const amount = parseFloat(document.getElementById('m-amount').value);
+            const category = document.getElementById('m-category').value;
+            const subcategory = document.getElementById('m-subcategory').value;
+            const description = document.getElementById('m-description').value.trim();
+            const paymentMethod = document.getElementById('m-payment').value;
+            const date = document.getElementById('m-date').value;
+
+            if (!amount || amount <= 0) { alert('Please enter a valid amount'); return; }
+            if (!category) { alert('Please select a category'); return; }
+            if (!subcategory) { alert('Please select a subcategory'); return; }
+            if (!description) { alert('Please enter a description'); return; }
+            if (!paymentMethod) { alert('Please select a payment method'); return; }
+            if (!date) { alert('Please select a date'); return; }
+
+            const currentP = mobileGetCurrentPeriod();
+            if (!currentP) { alert('No active period found. Please use the full app to create a period first.'); return; }
+
+            const expense = {
+                id: 'expense_' + Date.now(),
+                date: date,
+                amount: amount,
+                description: description,
+                category: category,
+                subcategory: subcategory,
+                paymentMethod: paymentMethod,
+                notes: '',
+                sharedAllocations: [],
+                myShare: amount
+            };
+
+            // Adjust account balance
+            const sb = currentP.startingBalances || {};
+            const account = bankAccounts.find(acc => acc.name === paymentMethod);
+            if (account) {
+                const key = account.key;
+                if (category === 'Income') {
+                    sb[key] = parseFloat(((sb[key] || 0) + amount).toFixed(2));
+                } else if (account.type === 'credit' || account.type === 'loan') {
+                    sb[key] = parseFloat(((sb[key] || 0) + amount).toFixed(2));
+                } else {
+                    sb[key] = parseFloat(((sb[key] || 0) - amount).toFixed(2));
+                }
+                currentP.startingBalances = sb;
+            }
+
+            currentP.expenses = currentP.expenses || [];
+            currentP.expenses.push(expense);
+
+            const idx = periods.findIndex(p => p.id === currentP.id);
+            if (idx !== -1) periods[idx] = currentP;
+
+            // Show success
+            const successEl = document.getElementById('mobile-success-msg');
+            successEl.style.display = 'block';
+            successEl.textContent = `✅ Saved: £${amount.toFixed(2)} – ${description}`;
+            setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+
+            // Reset form fields (keep date and payment method)
+            document.getElementById('m-amount').value = '';
+            document.getElementById('m-category').value = '';
+            document.getElementById('m-subcategory').innerHTML = '<option value="">Select subcategory</option>';
+            document.getElementById('m-description').value = '';
+
+            // Auto-save to cloud
+            saveAllDataToDatabase().catch(err => console.warn('Mobile: cloud save failed', err));
+        }
+
+        function mobileResetForm() {
+            document.getElementById('m-amount').value = '';
+            document.getElementById('m-category').value = '';
+            document.getElementById('m-subcategory').innerHTML = '<option value="">Select subcategory</option>';
+            document.getElementById('m-description').value = '';
+            document.getElementById('m-payment').value = '';
+            document.getElementById('m-date').value = formatDateForInput(new Date());
+        }
+
+        function mobileOpenFullApp() {
+            // Hide overlay and run desktop init
+            document.getElementById('mobile-overlay').classList.remove('active');
+            initializeDataFromDatabase();
+        }
+
+        // Physical keyboard support for PIN entry on mobile
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('mobile-overlay').classList.contains('active')) return;
+            if (!document.getElementById('mobile-pin-screen').style.display || document.getElementById('mobile-pin-screen').style.display !== 'none') {
+                if (e.key >= '0' && e.key <= '9') mobilePinPress(e.key);
+                else if (e.key === 'Backspace') mobilePinDelete();
+            }
+        });
+
+        // ============================================
+        // APP STARTUP
+        // ============================================
+        if (isMobileDevice()) {
+            initMobileOverlay();
+        } else {
+            initializeDataFromDatabase();
+        }
 
 
         
