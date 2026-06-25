@@ -2757,22 +2757,51 @@
             const sorted = _sortedAllPeriods();
             if (!sorted.length) return;
 
-            const labels = sorted.map(p => {
+            const today = new Date(); today.setHours(0,0,0,0);
+
+            function isPeriodActive(p) {
+                const end = new Date(p.endDate); end.setHours(0,0,0,0);
+                return end >= today;
+            }
+
+            // For active period: predicted NW = actual NW minus remaining budget
+            // For past period: actual NW from starting balances
+            function periodNW(p) {
+                const base = calculateNetWorth(p.startingBalances || {});
+                if (!isPeriodActive(p)) return base;
+                const stats = calculatePeriodStats(p);
+                const remaining = Math.max(0, (p.budgets.bills  || 0) - stats.categorySpending.bills)
+                                + Math.max(0, (p.budgets.food   || 0) - stats.categorySpending.food)
+                                + Math.max(0, (p.budgets.wants  || 0) - stats.categorySpending.wants);
+                return base - remaining;
+            }
+
+            function periodNWOwed(p) {
+                const nw = periodNW(p);
+                const owed = (p.owedPeople || []).reduce((s, x) => s + (x.amount || 0), 0);
+                return nw + owed;
+            }
+
+            const labels  = sorted.map(p => {
                 const s = new Date(p.startDate), e = new Date(p.endDate);
                 const sm = s.toLocaleDateString('en-GB', { month: 'short' });
                 const em = e.toLocaleDateString('en-GB', { month: 'short' });
                 return sm === em ? sm + ' ' + s.getFullYear().toString().slice(2) : sm + '-' + em;
             });
+            const active   = sorted.map(isPeriodActive);
+            const nwData   = sorted.map(periodNW);
+            const owedData = sorted.map(periodNWOwed);
 
-            const nwData   = sorted.map(p => calculateNetWorth(p.startingBalances || {}));
-            const owedData = sorted.map(p => {
-                const owed = (p.owedPeople || []).reduce((s, x) => s + (x.amount || 0), 0);
-                return calculateNetWorth(p.startingBalances || {}) + owed;
-            });
-
-            const primaryData = mobileNWMode === 'nw' ? nwData : owedData;
+            const primaryData  = mobileNWMode === 'nw' ? nwData : owedData;
             const primaryLabel = mobileNWMode === 'nw' ? 'Net Worth' : 'Net Worth + Owed';
             const primaryColor = mobileNWMode === 'nw' ? '#10B981' : '#3B82F6';
+
+            // Per-point styling: dashed/hollow for the predicted (active) point
+            const pointStyles  = active.map(a => a ? 'triangle' : 'circle');
+            const pointRadii   = active.map(a => a ? 6 : 4);
+            const borderDashes = active.map((a, i) =>
+                i > 0 && active[i - 1] ? [5, 4] : undefined
+            );
 
             if (mobileNWChart) { mobileNWChart.destroy(); mobileNWChart = null; }
             const ctx = document.getElementById('mobile-nw-chart');
@@ -2784,11 +2813,15 @@
                         label: primaryLabel,
                         data: primaryData,
                         borderColor: primaryColor,
-                        backgroundColor: primaryColor.replace(')', ', 0.15)').replace('rgb', 'rgba'),
+                        backgroundColor: primaryColor + '26',
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointStyle: pointStyles,
+                        pointRadius: pointRadii,
+                        pointHoverRadius: 8,
+                        segment: {
+                            borderDash: ctx2 => active[ctx2.p1DataIndex] ? [5, 4] : []
+                        }
                     }]
                 },
                 options: {
@@ -2796,7 +2829,14 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        tooltip: { callbacks: { label: c => '£' + formatCurrency(c.parsed.y) } }
+                        tooltip: {
+                            callbacks: {
+                                label: c => {
+                                    const suffix = active[c.dataIndex] ? ' (predicted)' : '';
+                                    return '£' + formatCurrency(c.parsed.y) + suffix;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: { ticks: { callback: v => '£' + formatCurrency(v) } }
@@ -2806,7 +2846,11 @@
 
             // Table (most-recent first)
             const rows = sorted.map((p, i) => {
-                const val   = primaryData[i];
+                const val       = primaryData[i];
+                const isPred    = active[i];
+                const labelCell = isPred
+                    ? `${labels[i]} <span style="font-size:0.7rem;color:var(--warning);font-weight:700;">est.</span>`
+                    : labels[i];
                 let changeTd = '<td>—</td><td>—</td>';
                 if (i > 0) {
                     const diff = val - primaryData[i - 1];
@@ -2816,8 +2860,8 @@
                     changeTd = `<td style="color:${col}">${sign}£${formatCurrency(Math.abs(diff))}</td>
                                 <td style="color:${col}">${sign}${pct.toFixed(1)}%</td>`;
                 }
-                return `<tr>
-                    <td>${labels[i]}</td>
+                return `<tr${isPred ? ' style="opacity:0.8;"' : ''}>
+                    <td>${labelCell}</td>
                     <td style="color:${val >= 0 ? 'var(--success)' : 'var(--danger)'}">£${formatCurrency(val)}</td>
                     ${changeTd}
                 </tr>`;
