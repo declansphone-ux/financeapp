@@ -982,6 +982,7 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
+            overflow: hidden;
         }
         #mobile-overlay.active { display: flex; }
 
@@ -1305,8 +1306,105 @@
             cursor: pointer;
         }
 
-        /* Mobile summary screen */
-        .msummary-stat-grid {
+        /* Mobile drill-down panels */
+        .mobile-drilldown {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-darker);
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow-y: auto;
+            z-index: 1;
+        }
+        .mobile-drilldown.active { display: flex; }
+        .mobile-drilldown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--medium-gray);
+            flex-shrink: 0;
+        }
+        .mobile-drilldown-header h3 {
+            font-size: 1.1rem;
+            margin: 0;
+            color: var(--primary-blue);
+        }
+        .mobile-chart-container {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .mobile-toggle-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .mobile-toggle-btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--radius-sm);
+            background: var(--card-bg);
+            color: var(--dark-gray);
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-toggle-btn.active {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        .mobile-drill-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .mobile-drill-table thead tr {
+            background: var(--primary-blue);
+        }
+        .mobile-drill-table th {
+            padding: 0.5rem 0.6rem;
+            text-align: left;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .mobile-drill-table th:not(:first-child) { text-align: right; }
+        .mobile-drill-table td {
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid var(--medium-gray);
+            color: var(--text-dark);
+        }
+        .mobile-drill-table td:not(:first-child) { text-align: right; }
+        .mobile-drill-table tbody tr:last-child td { border-bottom: none; }
+        .clickable-stat {
+            cursor: pointer;
+            transition: border-color 0.15s, transform 0.1s;
+            position: relative;
+        }
+        .clickable-stat:active { transform: scale(0.97); }
+        .clickable-stat::before {
+            content: '↗';
+            position: absolute;
+            top: 0.45rem;
+            right: 0.6rem;
+            font-size: 0.75rem;
+            color: var(--dark-gray);
+            opacity: 0.7;
+        }
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
@@ -1807,6 +1905,41 @@
 
                 <button class="mobile-save-btn" id="mobile-save-btn" onclick="mobileSaveTransaction()">Save Transaction</button>
                 <button class="mobile-secondary-btn" onclick="mobileResetForm()">Clear Form</button>
+            </div>
+        </div>
+        <!-- Net Worth drill-down panel -->
+        <div id="mobile-nw-panel" class="mobile-drilldown">
+            <div class="mobile-drilldown-header">
+                <h3>📈 Net Worth Over Time</h3>
+                <button class="mobile-secondary-btn" style="width:auto;padding:0.4rem 0.9rem;margin:0;" onclick="mobileCloseDrilldown('mobile-nw-panel')">← Back</button>
+            </div>
+            <div class="mobile-toggle-row">
+                <button class="mobile-toggle-btn active" id="nw-toggle-nw" onclick="mobileNWToggle('nw')">Net Worth</button>
+                <button class="mobile-toggle-btn" id="nw-toggle-owed" onclick="mobileNWToggle('owed')">+ Owed to Me</button>
+            </div>
+            <div class="mobile-chart-container">
+                <canvas id="mobile-nw-chart"></canvas>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="mobile-drill-table" id="mobile-nw-table"></table>
+            </div>
+        </div>
+
+        <!-- Savings drill-down panel -->
+        <div id="mobile-savings-panel" class="mobile-drilldown">
+            <div class="mobile-drilldown-header">
+                <h3>💎 Savings Over Time</h3>
+                <button class="mobile-secondary-btn" style="width:auto;padding:0.4rem 0.9rem;margin:0;" onclick="mobileCloseDrilldown('mobile-savings-panel')">← Back</button>
+            </div>
+            <div class="mobile-toggle-row">
+                <button class="mobile-toggle-btn active" id="sav-toggle-pct" onclick="mobileSavingsToggle('pct')">% Rate</button>
+                <button class="mobile-toggle-btn" id="sav-toggle-gbp" onclick="mobileSavingsToggle('gbp')">£ Saved</button>
+            </div>
+            <div class="mobile-chart-container">
+                <canvas id="mobile-savings-chart"></canvas>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="mobile-drill-table" id="mobile-savings-table"></table>
             </div>
         </div>
     </div>
@@ -2585,6 +2718,227 @@
             document.getElementById('mobile-add-screen').classList.add('active');
         }
 
+        // ============================================
+        // MOBILE DRILL-DOWN PANELS
+        // ============================================
+        let mobileNWChart = null;
+        let mobileSavingsChart = null;
+        let mobileNWMode = 'nw';       // 'nw' | 'owed'
+        let mobileSavingsMode = 'pct'; // 'pct' | 'gbp'
+
+        function _sortedAllPeriods() {
+            return [...periods].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        }
+
+        function mobileOpenDrilldown(type) {
+            const summaryEl = document.getElementById('mobile-summary-screen');
+            if (type === 'nw') {
+                document.getElementById('mobile-nw-panel').classList.add('active');
+                mobileRenderNWPanel();
+            } else {
+                document.getElementById('mobile-savings-panel').classList.add('active');
+                mobileRenderSavingsPanel();
+            }
+        }
+
+        function mobileCloseDrilldown(panelId) {
+            document.getElementById(panelId).classList.remove('active');
+        }
+
+        // ---- Net Worth panel ----
+        function mobileNWToggle(mode) {
+            mobileNWMode = mode;
+            document.getElementById('nw-toggle-nw').classList.toggle('active', mode === 'nw');
+            document.getElementById('nw-toggle-owed').classList.toggle('active', mode === 'owed');
+            mobileRenderNWPanel();
+        }
+
+        function mobileRenderNWPanel() {
+            const sorted = _sortedAllPeriods();
+            if (!sorted.length) return;
+
+            const labels = sorted.map(p => {
+                const s = new Date(p.startDate), e = new Date(p.endDate);
+                const sm = s.toLocaleDateString('en-GB', { month: 'short' });
+                const em = e.toLocaleDateString('en-GB', { month: 'short' });
+                return sm === em ? sm + ' ' + s.getFullYear().toString().slice(2) : sm + '-' + em;
+            });
+
+            const nwData   = sorted.map(p => calculateNetWorth(p.startingBalances || {}));
+            const owedData = sorted.map(p => {
+                const owed = (p.owedPeople || []).reduce((s, x) => s + (x.amount || 0), 0);
+                return calculateNetWorth(p.startingBalances || {}) + owed;
+            });
+
+            const primaryData = mobileNWMode === 'nw' ? nwData : owedData;
+            const primaryLabel = mobileNWMode === 'nw' ? 'Net Worth' : 'Net Worth + Owed';
+            const primaryColor = mobileNWMode === 'nw' ? '#10B981' : '#3B82F6';
+
+            if (mobileNWChart) { mobileNWChart.destroy(); mobileNWChart = null; }
+            const ctx = document.getElementById('mobile-nw-chart');
+            mobileNWChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: primaryLabel,
+                        data: primaryData,
+                        borderColor: primaryColor,
+                        backgroundColor: primaryColor.replace(')', ', 0.15)').replace('rgb', 'rgba'),
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: c => '£' + formatCurrency(c.parsed.y) } }
+                    },
+                    scales: {
+                        y: { ticks: { callback: v => '£' + formatCurrency(v) } }
+                    }
+                }
+            });
+
+            // Table (most-recent first)
+            const rows = sorted.map((p, i) => {
+                const val   = primaryData[i];
+                let changeTd = '<td>—</td><td>—</td>';
+                if (i > 0) {
+                    const diff = val - primaryData[i - 1];
+                    const pct  = primaryData[i - 1] !== 0 ? (diff / Math.abs(primaryData[i - 1])) * 100 : 0;
+                    const col  = diff >= 0 ? 'var(--success)' : 'var(--danger)';
+                    const sign = diff >= 0 ? '+' : '';
+                    changeTd = `<td style="color:${col}">${sign}£${formatCurrency(Math.abs(diff))}</td>
+                                <td style="color:${col}">${sign}${pct.toFixed(1)}%</td>`;
+                }
+                return `<tr>
+                    <td>${labels[i]}</td>
+                    <td style="color:${val >= 0 ? 'var(--success)' : 'var(--danger)'}">£${formatCurrency(val)}</td>
+                    ${changeTd}
+                </tr>`;
+            }).reverse().join('');
+
+            document.getElementById('mobile-nw-table').innerHTML = `
+                <thead><tr>
+                    <th>Period</th>
+                    <th>${mobileNWMode === 'nw' ? 'Net Worth' : 'NW + Owed'}</th>
+                    <th>Change £</th>
+                    <th>Change %</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>`;
+        }
+
+        // ---- Savings panel ----
+        function mobileSavingsToggle(mode) {
+            mobileSavingsMode = mode;
+            document.getElementById('sav-toggle-pct').classList.toggle('active', mode === 'pct');
+            document.getElementById('sav-toggle-gbp').classList.toggle('active', mode === 'gbp');
+            mobileRenderSavingsPanel();
+        }
+
+        function mobileRenderSavingsPanel() {
+            const sorted = _sortedAllPeriods();
+            if (!sorted.length) return;
+
+            const labels = sorted.map(p => {
+                const s = new Date(p.startDate);
+                return s.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+            });
+
+            const statsArr = sorted.map(p => calculatePeriodStats(p));
+            const pctData  = statsArr.map(s => parseFloat(s.savingsRate.toFixed(2)));
+            const gbpData  = sorted.map((p, i) => {
+                const saved = (p.salary || 0) - statsArr[i].totalSpent;
+                return parseFloat(saved.toFixed(2));
+            });
+
+            const isPct = mobileSavingsMode === 'pct';
+            const primaryData  = isPct ? pctData : gbpData;
+            const barColor = sorted.map(p => {
+                const v = isPct
+                    ? calculatePeriodStats(p).savingsRate
+                    : (p.salary || 0) - calculatePeriodStats(p).totalSpent;
+                return v >= 0 ? '#10B981' : '#EF4444';
+            });
+
+            if (mobileSavingsChart) { mobileSavingsChart.destroy(); mobileSavingsChart = null; }
+            const ctx = document.getElementById('mobile-savings-chart');
+            mobileSavingsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: isPct ? 'Savings Rate' : '£ Saved',
+                        data: primaryData,
+                        backgroundColor: barColor,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: c => isPct ? c.parsed.y.toFixed(1) + '%' : '£' + formatCurrency(c.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: v => isPct ? v + '%' : '£' + formatCurrency(v)
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Table (most-recent first)
+            const rows = sorted.map((p, i) => {
+                const pct = pctData[i];
+                const gbp = gbpData[i];
+                let changeTd = '<td>—</td><td>—</td>';
+                if (i > 0) {
+                    const prevPct = pctData[i - 1], prevGbp = gbpData[i - 1];
+                    const diffPct = pct - prevPct, diffGbp = gbp - prevGbp;
+                    const col = isPct ? (diffPct >= 0 ? 'var(--success)' : 'var(--danger)')
+                                      : (diffGbp >= 0 ? 'var(--success)' : 'var(--danger)');
+                    const sign = isPct ? (diffPct >= 0 ? '+' : '') : (diffGbp >= 0 ? '+' : '');
+                    const val  = isPct ? sign + diffPct.toFixed(1) + 'pp'
+                                       : sign + '£' + formatCurrency(Math.abs(diffGbp));
+                    const val2 = isPct ? '' : (diffPct >= 0 ? '+' : '') + diffPct.toFixed(1) + 'pp';
+                    changeTd = `<td style="color:${col}">${val}</td>`;
+                    if (!isPct) changeTd += `<td style="color:${diffPct >= 0 ? 'var(--success)' : 'var(--danger)'}">${val2}</td>`;
+                    else changeTd += '<td></td>';
+                }
+                const pctCol = pct >= 0 ? 'var(--success)' : 'var(--danger)';
+                const gbpCol = gbp >= 0 ? 'var(--success)' : 'var(--danger)';
+                return `<tr>
+                    <td>${labels[i]}</td>
+                    <td style="color:${gbpCol}">£${formatCurrency(gbp)}</td>
+                    <td style="color:${pctCol}">${pct.toFixed(1)}%</td>
+                    ${changeTd}
+                </tr>`;
+            }).reverse().join('');
+
+            document.getElementById('mobile-savings-table').innerHTML = `
+                <thead><tr>
+                    <th>Period</th>
+                    <th>£ Saved</th>
+                    <th>Rate</th>
+                    <th>${isPct ? 'Δ Rate' : 'Δ £'}</th>
+                    <th>${isPct ? '' : 'Δ Rate'}</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>`;
+        }
+
         function mobileRenderSummary() {
             const currentP = mobileGetCurrentPeriod();
             const container = document.getElementById('mobile-summary-content');
@@ -2652,7 +3006,7 @@
                         <div class="msummary-stat-value" style="color:${moneyLeft < 0 ? 'var(--danger)' : 'var(--success)'};">£${formatCurrency(Math.abs(moneyLeft))}</div>
                         <div class="msummary-stat-sub">${moneyLeft < 0 ? 'over salary' : 'of £' + formatCurrency(currentP.salary || 0)}</div>
                     </div>
-                    <div class="msummary-stat" style="grid-column:1/-1;">
+                    <div class="msummary-stat clickable-stat" onclick="mobileOpenDrilldown('savings')" style="grid-column:1/-1; border-color:rgba(16,185,129,0.4);">
                         <div class="msummary-stat-label">💎 Savings Rate</div>
                         <div class="msummary-stat-value" style="color:${savingsRate < 0 ? 'var(--danger)' : savingsRate < 10 ? 'var(--warning)' : 'var(--success)'};">${savingsRate.toFixed(1)}%</div>
                         <div class="msummary-stat-sub">£${formatCurrency(moneyLeft)} saved so far</div>
@@ -2662,7 +3016,7 @@
                 <div class="msummary-section-title">Budget Progress</div>
                 <div class="msummary-budget-block">${barsHtml}</div>
 
-                <div class="msummary-networth-block">
+                <div class="msummary-networth-block clickable-stat" onclick="mobileOpenDrilldown('nw')" style="cursor:pointer;">
                     <div class="msummary-networth-label">🎯 Predicted Net Worth (if on budget)</div>
                     <div class="msummary-networth-value" style="color:${predictedNetWorth < 0 ? 'var(--danger)' : 'var(--success)'};">
                         £${formatCurrency(predictedNetWorth)}
