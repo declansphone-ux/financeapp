@@ -1086,6 +1086,7 @@
             will-change: transform;
         }
         .pin-key:active { background: var(--m-surface2); transform: scale(0.9); }
+        .pin-key.pressed { background: var(--m-surface2) !important; transform: scale(0.9) !important; }
         .pin-key.pin-del { font-size: 1.2rem; color: var(--m-muted); background: transparent; border-color: transparent; }
         .pin-key.pin-del:active { background: var(--m-surface); }
         .pin-key.pin-empty { visibility: hidden; }
@@ -2380,6 +2381,12 @@
 
         function initMobileOverlay() {
             document.getElementById('mobile-overlay').classList.add('active');
+            // Instant visual feedback on PIN keys via touchstart (bypasses ~300ms :active delay)
+            document.querySelectorAll('.pin-key').forEach(btn => {
+                btn.addEventListener('touchstart', () => btn.classList.add('pressed'), { passive: true });
+                btn.addEventListener('touchend', () => btn.classList.remove('pressed'), { passive: true });
+                btn.addEventListener('touchcancel', () => btn.classList.remove('pressed'), { passive: true });
+            });
             // Start loading data immediately in the background
             mobileDataLoading = true;
             loadDataFromAPI().then(() => {
