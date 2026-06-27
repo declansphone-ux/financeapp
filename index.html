@@ -1006,64 +1006,75 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 360px;
+            max-width: 320px;
         }
         .mobile-app-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary-blue);
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.03em;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.01em;
+            opacity: 0.9;
         }
         .mobile-app-subtitle {
             color: var(--dark-gray);
-            font-size: 0.95rem;
+            font-size: 0.8rem;
             margin-bottom: 2.5rem;
+            font-weight: 500;
         }
         #pin-display {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-            height: 1.5rem;
+            gap: 1.25rem;
+            margin-bottom: 0.6rem;
             align-items: center;
         }
         .pin-dot {
-            width: 14px; height: 14px;
+            width: 16px; height: 16px;
             border-radius: 50%;
-            border: 2px solid var(--primary-blue);
+            border: 2px solid rgba(96, 165, 250, 0.4);
             background: transparent;
-            transition: background 0.15s ease;
+            transition: background 0.1s ease, transform 0.1s ease, border-color 0.1s ease;
         }
-        .pin-dot.filled { background: var(--primary-blue); }
+        .pin-dot.filled {
+            background: #60A5FA;
+            border-color: #60A5FA;
+            transform: scale(1.15);
+        }
         #pin-error {
-            color: var(--danger);
-            font-size: 0.9rem;
+            color: #F87171;
+            font-size: 0.8rem;
             font-weight: 600;
-            height: 1.25rem;
-            margin-bottom: 1.5rem;
+            height: 1.1rem;
+            margin-bottom: 2rem;
+            letter-spacing: 0.02em;
         }
         #pin-keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
+            gap: 0.65rem;
             width: 100%;
         }
         .pin-key {
-            background: var(--card-bg);
-            border: 1px solid var(--medium-gray);
-            border-radius: var(--radius-lg);
+            background: rgba(255,255,255,0.06);
+            border: none;
+            border-radius: 50%;
+            aspect-ratio: 1;
             color: var(--text-dark);
-            font-size: 1.5rem;
-            font-weight: 600;
-            padding: 1rem;
+            font-size: 1.6rem;
+            font-weight: 400;
             cursor: pointer;
             text-align: center;
-            transition: background 0.15s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.08s ease, transform 0.08s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            will-change: transform;
         }
-        .pin-key:active { background: var(--primary-blue); transform: scale(0.95); }
-        .pin-key.pin-del { font-size: 1.25rem; color: var(--dark-gray); }
+        .pin-key:active { background: rgba(96, 165, 250, 0.25); transform: scale(0.91); }
+        .pin-key.pin-del { font-size: 1.3rem; color: var(--dark-gray); background: transparent; }
+        .pin-key.pin-del:active { background: rgba(255,255,255,0.06); }
         .pin-key.pin-empty { visibility: hidden; }
 
         /* Mobile Add Transaction Screen */
@@ -1081,19 +1092,22 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--medium-gray);
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
             flex-shrink: 0;
         }
         .mobile-header h2 {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
+            font-weight: 700;
             margin: 0;
-            color: var(--primary-blue);
+            color: var(--text-dark);
+            letter-spacing: -0.01em;
         }
         .mobile-period-badge {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--dark-gray);
             font-weight: 500;
+            margin-top: 0.15rem;
         }
         #mobile-loading-msg {
             text-align: center;
@@ -1170,17 +1184,19 @@
         .mobile-secondary-btn {
             width: 100%;
             padding: 0.75rem;
-            background: var(--card-bg);
+            background: rgba(255,255,255,0.05);
             color: var(--dark-gray);
-            border: 1px solid var(--medium-gray);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: var(--radius-md);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             margin-top: 0.5rem;
             text-align: center;
             -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s;
         }
+        .mobile-secondary-btn:active { background: rgba(255,255,255,0.1); }
 
         /* Split section */
         #mobile-split-section {
@@ -1328,6 +1344,7 @@
             background: var(--bg-darker);
             flex-direction: column;
             padding: 1.5rem;
+            padding-top: max(1.5rem, env(safe-area-inset-top));
             overflow-y: auto;
             z-index: 1;
         }
@@ -1419,6 +1436,7 @@
             color: var(--dark-gray);
             opacity: 0.7;
         }
+        .msummary-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
@@ -1800,8 +1818,8 @@
     <div id="mobile-overlay">
         <!-- PIN Entry Screen -->
         <div id="mobile-pin-screen">
-            <div class="mobile-app-title">💰 Budget</div>
-            <div class="mobile-app-subtitle">Enter your PIN to continue</div>
+            <div class="mobile-app-title">Budget Tracker</div>
+            <div class="mobile-app-subtitle">Enter your PIN</div>
             <div id="pin-display">
                 <div class="pin-dot" id="pd0"></div>
                 <div class="pin-dot" id="pd1"></div>
@@ -1831,7 +1849,7 @@
         <div id="mobile-summary-screen" style="display:none; flex-direction:column; width:100%; max-width:480px; height:100%; overflow-y:auto;">
             <div class="mobile-header">
                 <div>
-                    <h2>📊 Period Summary</h2>
+                    <h2>Period Summary</h2>
                     <div class="mobile-period-badge" id="mobile-summary-period-badge"></div>
                 </div>
                 <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileCloseSummary()">← Add</button>
@@ -1843,7 +1861,7 @@
         <div id="mobile-add-screen">
             <div class="mobile-header">
                 <div>
-                    <h2>➕ Add Transaction</h2>
+                    <h2>Add Transaction</h2>
                     <div class="mobile-period-badge" id="mobile-period-badge"></div>
                 </div>
                 <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileOpenSummary()">View Summary →</button>
@@ -2361,10 +2379,11 @@
 
         function mobilePinPress(digit) {
             if (mobilePinEntry.length >= 6) return;
+            if (navigator.vibrate) navigator.vibrate(6);
             mobilePinEntry += digit;
             mobileUpdatePinDisplay();
             if (mobilePinEntry.length === 6) {
-                setTimeout(mobileCheckPin, 120);
+                setTimeout(mobileCheckPin, 50);
             }
         }
 
