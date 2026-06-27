@@ -1,18 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1E3A8A"/>
-      <stop offset="100%" stop-color="#60A5FA"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#0f1f15"/>
+      <stop offset="100%" stop-color="#0A0A0C"/>
+    </radialGradient>
   </defs>
   <rect width="192" height="192" rx="42" fill="url(#bg)"/>
-  <rect width="192" height="96" rx="42" fill="url(#glow)"/>
-  <rect x="0" y="48" width="192" height="48" fill="url(#glow)"/>
-  <text x="96" y="115" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-weight="900" font-size="95" fill="white" letter-spacing="-3">£</text>
-  <polyline points="24,170 56,142 88,156 124,120 168,84" stroke="#34D399" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="168" cy="84" r="15" fill="#34D399"/>
+  <text x="96" y="126" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="108" fill="#10B981">£</text>
 </svg>
