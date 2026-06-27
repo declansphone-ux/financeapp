@@ -2,8 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>Budget Tracker</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1E3A8A">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Budget">
+    <link rel="apple-touch-icon" href="/icons/icon-192.svg">
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231E3A8A'/%3E%3Cstop offset='100%25' stop-color='%2360A5FA'/%3E%3C/linearGradient%3E%3ClinearGradient id='glow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='0.15'/%3E%3Cstop offset='100%25' stop-color='%23ffffff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='url(%23bg)'/%3E%3Crect width='32' height='16' rx='7' fill='url(%23glow)'/%3E%3Crect x='0' y='9' width='32' height='7' fill='url(%23glow)'/%3E%3Ctext x='16' y='19' text-anchor='middle' font-family='system-ui%2C-apple-system%2Csans-serif' font-weight='900' font-size='15' fill='white' letter-spacing='-0.5'%3E%C2%A3%3C/text%3E%3Cpolyline points='4%2C29 9%2C24 14%2C26.5 20%2C20 28%2C14' stroke='%2334D399' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='28' cy='14' r='2.5' fill='%2334D399'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231E3A8A'/%3E%3Cstop offset='100%25' stop-color='%2360A5FA'/%3E%3C/linearGradient%3E%3ClinearGradient id='glow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='0.18'/%3E%3Cstop offset='100%25' stop-color='%23ffffff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23bg)'/%3E%3Crect width='180' height='90' rx='40' fill='url(%23glow)'/%3E%3Crect x='0' y='45' width='180' height='45' fill='url(%23glow)'/%3E%3Ctext x='90' y='108' text-anchor='middle' font-family='system-ui%2C-apple-system%2Csans-serif' font-weight='900' font-size='88' fill='white' letter-spacing='-3'%3E%C2%A3%3C/text%3E%3Cpolyline points='22%2C162 52%2C135 82%2C148 117%2C114 158%2C80' stroke='%2334D399' stroke-width='14' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='158' cy='80' r='14' fill='%2334D399'/%3E%3C/svg%3E">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -984,6 +994,8 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
+            padding-top: max(1.5rem, env(safe-area-inset-top));
+            padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
             overflow: hidden;
         }
         #mobile-overlay.active { display: flex; }
@@ -2312,8 +2324,14 @@
         // MOBILE DETECTION & LOGIC
         // ============================================
         function isMobileDevice() {
-            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-                   (navigator.maxTouchPoints > 1 && window.innerWidth <= 900);
+            // Standalone = installed as PWA (home screen) — always use mobile UI
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                              || navigator.standalone === true;
+            if (isStandalone) return true;
+            // Touch device with mobile UA
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) return true;
+            // Touch device on a narrow screen (fallback)
+            return navigator.maxTouchPoints > 1 && window.innerWidth <= 900;
         }
 
         let mobilePinEntry = '';
