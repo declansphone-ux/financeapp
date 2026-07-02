@@ -1353,6 +1353,76 @@
             cursor: pointer;
         }
 
+        /* Account balances + recent transactions */
+        .m-mini-section-title {
+            font-size: 0.67rem;
+            font-weight: 500;
+            color: var(--m-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.55rem;
+        }
+        .m-balance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.85rem;
+            background: var(--m-surface);
+            border: 1px solid var(--m-border);
+            border-radius: 8px;
+            margin-bottom: 0.4rem;
+        }
+        .m-balance-name {
+            font-size: 0.85rem;
+            color: var(--m-text);
+            font-weight: 500;
+        }
+        .m-balance-type {
+            font-size: 0.65rem;
+            color: var(--m-muted);
+            margin-top: 0.05rem;
+        }
+        .m-balance-amount {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .m-balance-amount.debit  { color: var(--m-text); }
+        .m-balance-amount.credit { color: var(--m-danger); }
+        .m-txn-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.85rem;
+            background: var(--m-surface);
+            border: 1px solid var(--m-border);
+            border-radius: 8px;
+            margin-bottom: 0.4rem;
+        }
+        .m-txn-desc {
+            font-size: 0.85rem;
+            color: var(--m-text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 55%;
+        }
+        .m-txn-bank {
+            font-size: 0.65rem;
+            color: var(--m-muted);
+            margin-top: 0.05rem;
+        }
+        .m-txn-amount {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .m-txn-amount.expense { color: var(--m-text); }
+        .m-txn-amount.income  { color: var(--m-accent); }
+
         /* Mobile drill-down panels */
         .mobile-drilldown {
             display: none;
@@ -1960,6 +2030,18 @@
 
                 <button class="mobile-save-btn" id="mobile-save-btn" onclick="mobileSaveTransaction()">Save Transaction</button>
                 <button class="mobile-secondary-btn" onclick="mobileResetForm()">Clear Form</button>
+
+                <!-- Account balances -->
+                <div id="mobile-balances-section" style="margin-top:1.5rem;">
+                    <div class="m-mini-section-title">Account Balances</div>
+                    <div id="mobile-balances-list"></div>
+                </div>
+
+                <!-- Recent transactions -->
+                <div id="mobile-recent-section" style="margin-top:1.25rem; margin-bottom:1rem;">
+                    <div class="m-mini-section-title">Recent Transactions</div>
+                    <div id="mobile-recent-list"></div>
+                </div>
             </div>
         </div>
         <!-- Net Worth drill-down panel -->
@@ -2475,6 +2557,58 @@
             mobileRenderSplitPeople();
             // Recalc whenever amount changes
             document.getElementById('m-amount').addEventListener('input', mobileRecalcSplit);
+            // Render account balances and recent transactions
+            mobileRenderBalances();
+            mobileRenderRecentTxns();
+        }
+
+        function mobileRenderBalances() {
+            const currentP = mobileGetCurrentPeriod();
+            const sb = (currentP && currentP.startingBalances) ? currentP.startingBalances : {};
+            const el = document.getElementById('mobile-balances-list');
+            if (!bankAccounts.length) { el.innerHTML = ''; return; }
+            el.innerHTML = bankAccounts.map(acc => {
+                const bal = sb[acc.key] || 0;
+                const isCredit = acc.type === 'credit' || acc.type === 'loan';
+                const typeLabel = isCredit ? (acc.type === 'loan' ? 'Loan' : 'Credit') : 'Debit';
+                return `<div class="m-balance-row">
+                    <div>
+                        <div class="m-balance-name">${acc.name}</div>
+                        <div class="m-balance-type">${typeLabel}</div>
+                    </div>
+                    <div class="m-balance-amount ${isCredit ? 'credit' : 'debit'}">
+                        ${isCredit ? '-' : ''}£${Math.abs(bal).toLocaleString('en-GB', {minimumFractionDigits:2,maximumFractionDigits:2})}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function mobileRenderRecentTxns() {
+            const el = document.getElementById('mobile-recent-list');
+            // Collect all expenses across all periods, sorted newest first
+            const all = [];
+            getPeriods().forEach(p => {
+                (p.expenses || []).forEach(e => all.push(e));
+            });
+            all.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recent = all.slice(0, 5);
+            if (!recent.length) { el.innerHTML = '<div style="color:var(--m-muted);font-size:0.82rem;padding:0.5rem 0;">No transactions yet</div>'; return; }
+            el.innerHTML = recent.map(e => {
+                const isIncome = e.category === 'Income';
+                const displayAmt = (e.myShare !== undefined && e.myShare !== null) ? e.myShare : e.amount;
+                const desc = e.description || e.subcategory || e.category || '—';
+                const bank = e.paymentMethod || '—';
+                const date = formatDate(e.date);
+                return `<div class="m-txn-row">
+                    <div style="min-width:0;">
+                        <div class="m-txn-desc" title="${desc}">${desc}</div>
+                        <div class="m-txn-bank">${bank} · ${date}</div>
+                    </div>
+                    <div class="m-txn-amount ${isIncome ? 'income' : 'expense'}">
+                        ${isIncome ? '+' : '-'}£${Math.abs(displayAmt).toLocaleString('en-GB', {minimumFractionDigits:2,maximumFractionDigits:2})}
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         // ============================================
@@ -2760,6 +2894,9 @@
             document.getElementById('split-summary').style.display = 'none';
 
             saveAllDataToDatabase().catch(err => console.warn('Mobile: cloud save failed', err));
+            // Refresh balances and recent list
+            mobileRenderBalances();
+            mobileRenderRecentTxns();
         }
 
         function mobileResetForm() {
