@@ -54,6 +54,65 @@
                 --card-bg-light: #1C1C1F;
             }
 
+        /* ============================================
+           LIGHT THEME OVERRIDES
+           ============================================ */
+        [data-theme="light"] {
+            --primary-blue: #059669;
+            --light-blue: #d1fae5;
+            --dark-blue: #065f46;
+            --accent-blue: #047857;
+            --white: #ffffff;
+            --light-gray: #F1F5F9;
+            --medium-gray: #E2E8F0;
+            --dark-gray: #64748B;
+            --text-dark: #0F172A;
+            --success: #059669;
+            --warning: #D97706;
+            --danger: #DC2626;
+            --bg-dark: #F8FAFC;
+            --bg-darker: #F1F5F9;
+            --card-bg: #FFFFFF;
+            --card-bg-light: #F8FAFC;
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.10);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.12);
+            --shadow-xl: 0 20px 30px rgba(0,0,0,0.15);
+        }
+
+        [data-theme="light"] header {
+            background: rgba(248,250,252,0.90);
+            border-bottom-color: #E2E8F0;
+        }
+
+        [data-theme="light"] .nav-tab:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        [data-theme="light"] .nav-tab.active {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        [data-theme="light"] .summary-card.networth-card {
+            background: rgba(5,150,105,0.08);
+            border-color: rgba(5,150,105,0.25);
+        }
+
+        /* Mobile light tokens */
+        [data-theme="light"] #mobile-overlay {
+            --m-bg:       #F8FAFC;
+            --m-surface:  #FFFFFF;
+            --m-surface2: #F1F5F9;
+            --m-border:   rgba(0,0,0,0.09);
+            --m-text:     #0F172A;
+            --m-muted:    #64748B;
+            --m-accent:   #059669;
+            --m-accent-dim: rgba(5,150,105,0.12);
+            --m-danger:   #DC2626;
+            --m-warn:     #D97706;
+        }
+
         * { margin:0; padding:0; box-sizing:border-box; }
         
         body {
@@ -1822,6 +1881,7 @@
                     </nav>
                     <div class="header-actions">
                         <button class="header-save-btn" id="btn-save-cloud">Save</button>
+                        <button class="header-icon-btn" id="btn-theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">🌙</button>
                         <button class="header-icon-btn" id="tab-settings" title="Settings">⚙</button>
                     </div>
                 </div>
@@ -2131,7 +2191,10 @@
                     <h2>Add Transaction</h2>
                     <div class="mobile-period-badge" id="mobile-period-badge"></div>
                 </div>
-                <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileOpenSummary()">View Summary →</button>
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <button id="btn-mobile-theme" onclick="toggleTheme()" style="background:var(--m-surface);border:1px solid var(--m-border);border-radius:8px;width:34px;height:34px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Toggle theme">🌙</button>
+                    <button class="mobile-secondary-btn" style="width:auto;padding:0.5rem 1rem;" onclick="mobileOpenSummary()">Summary →</button>
+                </div>
             </div>
 
             <div id="mobile-loading-msg">Loading data...</div>
@@ -2496,12 +2559,41 @@
 
     <script>
         // ============================================
+        // THEME
+        // ============================================
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const isDark = theme === 'dark';
+            const icon = isDark ? '🌙' : '☀️';
+            const desktopBtn = document.getElementById('btn-theme-toggle');
+            const mobileBtn = document.getElementById('btn-mobile-theme');
+            if (desktopBtn) desktopBtn.textContent = icon;
+            if (mobileBtn) mobileBtn.textContent = icon;
+            // Adjust Chart.js defaults for theme
+            Chart.defaults.color = isDark ? '#F9FAFB' : '#374151';
+            Chart.defaults.borderColor = isDark ? '#4B5563' : '#E5E7EB';
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        // Apply saved theme immediately (before any render)
+        (function() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
+
+        // ============================================
         // GLOBAL STATE
         // ============================================
         let currentPeriodId = null;
         let editingExpenseId = null;
-        Chart.defaults.color = '#F9FAFB'; // Light text color for all charts
-        Chart.defaults.borderColor = '#4B5563'; // Grid line color
+        // Chart defaults set after theme init below
+        Chart.defaults.color = '#F9FAFB';
+        Chart.defaults.borderColor = '#4B5563';
                 // Global in-memory storage for the periods data
         let periods = []; 
         
@@ -6425,7 +6517,11 @@ function renderPeriodComparisonTable(periods) {
         // ============================================
         document.addEventListener('DOMContentLoaded', function(){
             loadSubcategories(); // Load custom subcategories on startup
-            
+
+            // Apply full theme (button icons + chart defaults) after DOM ready
+            applyTheme(localStorage.getItem('theme') || 'dark');
+            document.getElementById('btn-theme-toggle').addEventListener('click', toggleTheme);
+
             document.getElementById('tab-home').addEventListener('click', () => showSection('home'));
             document.getElementById('tab-summary').addEventListener('click', () => showSection('summary'));
             document.getElementById('tab-settings').addEventListener('click', () => showSection('settings'));
