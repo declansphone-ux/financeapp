@@ -183,7 +183,7 @@
         
         .btn-success { 
             background:var(--success); 
-            color:var(--white);
+            color:#fff;
         }
         
         .btn-success:hover {
@@ -192,7 +192,7 @@
         
         .btn-danger { 
             background:var(--danger); 
-            color:var(--white);
+            color:#fff;
         }
         
         .btn-danger:hover {
@@ -687,12 +687,12 @@
 
         .period-days-badge.active {
             background: linear-gradient(135deg, var(--warning) 0%, #F97316 100%);
-            color: var(--white);
+            color: #fff;
         }
 
         .period-days-badge.complete {
             background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-            color: var(--white);
+            color: #fff;
         }
 
         .period-summary-top {
@@ -798,7 +798,7 @@
             background: linear-gradient(135deg, #10B981 0%, #059669 100%);
             padding: var(--spacing-md);
             border-radius: var(--radius-md);
-            color: var(--white);
+            color: #fff;
             text-align: center;
         }
 
@@ -885,7 +885,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--white);
+            color: #fff;
             font-weight: 700;
             font-size: 0.85rem;
         }
@@ -983,6 +983,96 @@
                 font-size: 1.75rem;
             }
         }
+
+        /* ============================================
+           DESKTOP PIN OVERLAY
+           ============================================ */
+        #desktop-pin-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #090909;
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+        }
+        #desktop-pin-overlay.active { display: flex; }
+        #desktop-pin-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 340px;
+        }
+        #dpin-logo {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #10B981;
+            line-height: 1;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.03em;
+        }
+        #dpin-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #F4F4F5;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.01em;
+        }
+        #dpin-subtitle {
+            font-size: 0.8rem;
+            color: #71717A;
+            margin-bottom: 2.5rem;
+        }
+        #dpin-dots {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .dpin-dot {
+            width: 13px; height: 13px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.2);
+            background: transparent;
+            transition: background 0.09s, transform 0.09s, border-color 0.09s;
+        }
+        .dpin-dot.filled {
+            background: #10B981;
+            border-color: #10B981;
+            transform: scale(1.2);
+        }
+        #dpin-error {
+            color: #F87171;
+            font-size: 0.75rem;
+            font-weight: 500;
+            height: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        #dpin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 84px);
+            gap: 0.65rem;
+        }
+        .dpin-key {
+            width: 84px; height: 84px;
+            background: #161618;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 50%;
+            color: #F4F4F5;
+            font-size: 1.6rem;
+            font-weight: 300;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.08s, transform 0.08s;
+            user-select: none;
+        }
+        .dpin-key:hover { background: #1E1E21; }
+        .dpin-key:active, .dpin-key.pressed { background: #252528; transform: scale(0.93); }
+        .dpin-key.dpin-del { font-size: 1.3rem; color: #71717A; background: transparent; border-color: transparent; }
+        .dpin-key.dpin-del:hover { background: #161618; }
+        .dpin-key.dpin-empty { visibility: hidden; }
 
         /* ============================================
            MOBILE OVERLAY STYLES
@@ -1732,7 +1822,7 @@
             <!-- BUDGET PROGRESS & PIE CHART ROW -->
             <div style="display:grid; grid-template-columns:2fr 1fr; gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
                 <!-- BUDGET PROGRESS BARS -->
-                <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+                <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
                     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Budget Progress</h3>
                     <div id="budget-progress-bars">
                         <!-- filled dynamically -->
@@ -1740,7 +1830,7 @@
                 </div>
 
                 <!-- CATEGORY BREAKDOWN PIE CHART -->
-                <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
+                <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray);">
                     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending Breakdown</h3>
                     <div style="height:300px; position:relative;">
                         <canvas id="period-detail-pie-chart"></canvas>
@@ -1912,6 +2002,38 @@
     <!-- ============================================
          MOBILE OVERLAY (PIN + Add Transaction)
          ============================================ -->
+    <!-- Desktop PIN Overlay -->
+    <div id="desktop-pin-overlay">
+        <div id="desktop-pin-box">
+            <div id="dpin-logo">£</div>
+            <div id="dpin-title">Budget Tracker</div>
+            <div id="dpin-subtitle">Enter your PIN to continue</div>
+            <div id="dpin-dots">
+                <div class="dpin-dot" id="dpd0"></div>
+                <div class="dpin-dot" id="dpd1"></div>
+                <div class="dpin-dot" id="dpd2"></div>
+                <div class="dpin-dot" id="dpd3"></div>
+                <div class="dpin-dot" id="dpd4"></div>
+                <div class="dpin-dot" id="dpd5"></div>
+            </div>
+            <div id="dpin-error"></div>
+            <div id="dpin-keypad">
+                <button class="dpin-key" data-digit="1">1</button>
+                <button class="dpin-key" data-digit="2">2</button>
+                <button class="dpin-key" data-digit="3">3</button>
+                <button class="dpin-key" data-digit="4">4</button>
+                <button class="dpin-key" data-digit="5">5</button>
+                <button class="dpin-key" data-digit="6">6</button>
+                <button class="dpin-key" data-digit="7">7</button>
+                <button class="dpin-key" data-digit="8">8</button>
+                <button class="dpin-key" data-digit="9">9</button>
+                <div class="dpin-key dpin-empty"></div>
+                <button class="dpin-key" data-digit="0">0</button>
+                <button class="dpin-key dpin-del" id="dpin-del">⌫</button>
+            </div>
+        </div>
+    </div>
+
     <div id="mobile-overlay">
         <!-- PIN Entry Screen -->
         <div id="mobile-pin-screen">
@@ -2473,23 +2595,78 @@
             }
         }
 
+        // ============================================
+        // DESKTOP PIN OVERLAY
+        // ============================================
+        let desktopPinEntry = '';
+
+        function initDesktopPin() {
+            const overlay = document.getElementById('desktop-pin-overlay');
+            overlay.classList.add('active');
+            // Keypad click handlers
+            document.querySelectorAll('.dpin-key[data-digit]').forEach(btn => {
+                btn.addEventListener('click', () => desktopPinPress(btn.dataset.digit));
+                btn.addEventListener('mousedown', () => btn.classList.add('pressed'));
+                btn.addEventListener('mouseup',   () => btn.classList.remove('pressed'));
+                btn.addEventListener('mouseleave', () => btn.classList.remove('pressed'));
+            });
+            document.getElementById('dpin-del').addEventListener('click', desktopPinDelete);
+            // Keyboard support
+            document.addEventListener('keydown', desktopPinKeydown);
+        }
+
+        function desktopPinKeydown(e) {
+            if (!document.getElementById('desktop-pin-overlay').classList.contains('active')) return;
+            if (e.key >= '0' && e.key <= '9') desktopPinPress(e.key);
+            else if (e.key === 'Backspace') desktopPinDelete();
+        }
+
+        function desktopPinPress(digit) {
+            if (desktopPinEntry.length >= 6) return;
+            desktopPinEntry += digit;
+            desktopUpdateDots();
+            if (desktopPinEntry.length === 6) setTimeout(desktopCheckPin, 50);
+        }
+
+        function desktopPinDelete() {
+            desktopPinEntry = desktopPinEntry.slice(0, -1);
+            desktopUpdateDots();
+            document.getElementById('dpin-error').textContent = '';
+        }
+
+        function desktopUpdateDots() {
+            for (let i = 0; i < 6; i++) {
+                document.getElementById('dpd' + i).classList.toggle('filled', i < desktopPinEntry.length);
+            }
+        }
+
+        async function desktopCheckPin() {
+            if (desktopPinEntry === ACCESS_PASSWORD) {
+                document.removeEventListener('keydown', desktopPinKeydown);
+                document.getElementById('desktop-pin-overlay').classList.remove('active');
+                showMessage('Loading data...', 'info');
+                try {
+                    await loadDataFromAPI();
+                    loadPeriods();
+                    showMessage('Data loaded. ✅', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showMessage('Failed to load data from database.', 'error');
+                }
+            } else {
+                document.getElementById('dpin-error').textContent = 'Incorrect PIN';
+                desktopPinEntry = '';
+                desktopUpdateDots();
+                // Shake
+                const kp = document.getElementById('dpin-keypad');
+                kp.style.transform = 'translateX(-8px)';
+                setTimeout(() => { kp.style.transform = 'translateX(8px)'; }, 80);
+                setTimeout(() => { kp.style.transform = ''; }, 160);
+            }
+        }
+
         async function initializeDataFromDatabase() {
-            const enteredPassword = prompt("Enter the access password to load data:");
-            if (enteredPassword !== ACCESS_PASSWORD) {
-                showMessage('Access denied. Incorrect password.', 'error');
-                document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">🚫 Access Denied. Please refresh and enter the correct password.</p>';
-                return;
-            }
-            showMessage('Access granted. Loading data...', 'info');
-            try {
-                await loadDataFromAPI();
-                loadPeriods();
-                showMessage('Data successfully loaded from database. ✅', 'success');
-            } catch (error) {
-                console.error("Error loading initial finance data from API:", error);
-                showMessage('Failed to load data from database. Check console for details.', 'error');
-                document.getElementById('periods-container').innerHTML = '<p style="text-align:center;color:var(--danger);padding:var(--spacing-xl);">⚠️ Failed to load data from database. See console for details.</p>';
-            }
+            initDesktopPin();
         }
 
         // ============================================
@@ -3119,7 +3296,7 @@
                     <td style="color:${val >= 0 ? 'var(--success)' : 'var(--danger)'}">£${formatCurrency(val)}</td>
                     ${changeTd}
                 </tr>`;
-            }).reverse().join('');
+            }).join('');
 
             document.getElementById('mobile-nw-table').innerHTML = `
                 <thead><tr>
@@ -3224,7 +3401,7 @@
                     <td style="color:${pctCol}">${pct.toFixed(1)}%</td>
                     ${changeTd}
                 </tr>`;
-            }).reverse().join('');
+            }).join('');
 
             document.getElementById('mobile-savings-table').innerHTML = `
                 <thead><tr>
@@ -3948,7 +4125,7 @@
             el.innerHTML = `
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-md);">
                     <div>
-                        <h3 style="margin:0;color:var(--white);font-size:1.5rem;">💳 Balances & Debts</h3>
+                        <h3 style="margin:0;color:var(--text-dark);font-size:1.3rem;">💳 Balances & Debts</h3>
                         <div class="small-muted" style="color:rgba(255,255,255,0.9)">All accounts shown (positive = balance, credit card = owed)</div>
                     </div>
                     <div style="text-align:right;">
@@ -4500,7 +4677,7 @@
     
     container.innerHTML = `
     <!-- Filter Controls -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+    <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
         <div style="display:flex; gap:var(--spacing-md); align-items:end; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px; position:relative;">
                 <label style="display:block; font-weight:600; color:var(--dark-blue); margin-bottom:0.5rem;">📅 Filter by Period</label>
@@ -4551,7 +4728,7 @@
 <!-- Charts Section - Fixed Grid with overflow handling -->
 <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--spacing-lg); margin-bottom:var(--spacing-lg);">
     <!-- Category Breakdown Pie Chart -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray); overflow:hidden;">
+    <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border: 1px solid var(--medium-gray); overflow:hidden;">
         <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🥧 Spending by Category</h3>
         <div style="height:300px; position:relative;">
             <canvas id="category-pie-chart"></canvas>
@@ -4590,9 +4767,9 @@
 </div>
 
 <!-- Period Comparison Table -->
-<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
-    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Period Comparison</h3>
-    <div class="table-container">
+<div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">Period Comparison <span style="font-size:0.75rem;font-weight:400;color:var(--dark-gray);">last 8 periods</span></h3>
+    <div class="table-container" style="max-height:320px; overflow-y:auto;">
         <table id="period-comparison-table">
             <thead>
                 <tr>
@@ -4613,17 +4790,17 @@
 </div>
 
 <!-- Net Worth Progression -->
-<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
-    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📈 Net Worth Progression</h3>
+<div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
+    <h3 style="color:var(--text-dark); margin-bottom:var(--spacing-md);">Net Worth Progression</h3>
     <div style="display:flex; gap:var(--spacing-md);">
         <div style="flex: 0 0 50%; height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
                 <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
                     <tr>
-                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Net Worth</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW Change</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">NW + Owed</th>
+                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:1px solid var(--medium-gray); color:var(--dark-gray);">Period</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:1px solid var(--medium-gray); color:var(--dark-gray);">Net Worth</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:1px solid var(--medium-gray); color:var(--dark-gray);">NW Change</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:1px solid var(--medium-gray); color:var(--dark-gray);">NW + Owed</th>
                     </tr>
                 </thead>
                 <tbody id="networth-table-body">
@@ -4638,7 +4815,7 @@
 </div>
 
 <!-- Savings Rate Over Time -->
-<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
+<div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">Savings Rate Over Time</h3>
     <div style="display:flex; gap:var(--spacing-md);">
         <div style="flex: 0 0 66.666%; height:300px; position:relative;">
@@ -4648,8 +4825,8 @@
             <table style="width:100%; border-collapse:collapse;">
                 <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
                     <tr>
-                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
-                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Savings Rate</th>
+                        <th style="padding:var(--spacing-sm); text-align:left; border-bottom:1px solid var(--medium-gray); color:var(--dark-gray);">Period</th>
+                        <th style="padding:var(--spacing-sm); text-align:right; border-bottom:1px solid var(--medium-gray); color:var(--dark-gray);">Savings Rate</th>
                     </tr>
                 </thead>
                 <tbody id="savings-rate-table-body">
@@ -4661,7 +4838,7 @@
 </div>
 
 <!-- Daily Spending Chart -->
-<div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
+<div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
     <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">📊 Daily Spending Trends</h3>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--spacing-md); flex-wrap:wrap; gap:var(--spacing-sm);">
         <div style="display:flex; gap:var(--spacing-xs); flex-wrap:wrap; align-items:center;">
@@ -4727,7 +4904,7 @@
 </div>
     
     <!-- Subcategory Breakdown -->
-    <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
+    <div style="background:var(--card-bg); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray);">
         <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">🏷️ Spending by Subcategory</h3>
         <div id="subcategory-breakdown"></div>
     </div>
@@ -4961,12 +5138,12 @@ function renderSummaryData(periods) {
     // Render summary cards
         document.getElementById('summary-stats-cards').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">💰 Total Salary</h3><div class="value">£${formatCurrency(totalSalary)}</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📊 Total Spent</h3><div class="value">£${formatCurrency(totalSpent)}</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">💎 Total Saved</h3><div class="value">£${formatCurrency(totalSaved)}</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📈 Savings Rate</h3><div class="value">${savingsRate.toFixed(1)}%</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📅 Avg Daily</h3><div class="value">£${formatCurrency(avgDailySpend)}</div></div>
-                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--white);">📅 No Spend Days</h3><div class="value">${calculateNoSpendDays(periods)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--dark-gray);">💰 Total Salary</h3><div class="value">£${formatCurrency(totalSalary)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--dark-gray);">📊 Total Spent</h3><div class="value">£${formatCurrency(totalSpent)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--dark-gray);">💎 Total Saved</h3><div class="value">£${formatCurrency(totalSaved)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--dark-gray);">📈 Savings Rate</h3><div class="value">${savingsRate.toFixed(1)}%</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--dark-gray);">📅 Avg Daily</h3><div class="value">£${formatCurrency(avgDailySpend)}</div></div>
+                <div class="summary-card" style="text-align:center;"><h3 style="color:var(--dark-gray);">📅 No Spend Days</h3><div class="value">${calculateNoSpendDays(periods)}</div></div>
             </div>
         `;
     
@@ -5262,17 +5439,22 @@ function renderNetWorthChart(periods) {
             label: 'Net Worth',
             data: netWorthData,
             borderColor: '#10B981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            backgroundColor: 'rgba(16, 185, 129, 0.08)',
             tension: 0.4,
-            fill: true
+            fill: true,
+            borderWidth: 2,
+            pointBackgroundColor: '#10B981'
         },
         {
-            label: 'Net Worth + Owed',
+            label: 'NW + Owed',
             data: netWorthOwedData,
-            borderColor: '#10B981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderColor: '#818CF8',
+            backgroundColor: 'rgba(129, 140, 248, 0.08)',
             tension: 0.4,
-            fill: true
+            fill: true,
+            borderWidth: 2,
+            borderDash: [4, 3],
+            pointBackgroundColor: '#818CF8'
         }
     ];
 
@@ -5341,7 +5523,7 @@ function renderNetWorthChart(periods) {
             <td style="padding:var(--spacing-sm); text-align:right; color:${netWorthOwedData[i] >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorthOwedData[i])}</td>
         </tr>
         `;
-    }).reverse().join('');
+    }).join('');
 }
 
 function renderSavingsRateChart(periods) {
@@ -5773,7 +5955,8 @@ function showDailySpendingDetails(date) {
 function renderPeriodComparisonTable(periods) {
     const tbody = document.getElementById('period-comparison-tbody');
 
-    tbody.innerHTML = periods.map(period => {
+    const recent = periods.slice().reverse().slice(0, 8);
+    tbody.innerHTML = recent.map(period => {
         const stats = calculatePeriodStats(period);
         const saved = (period.salary || 0) - stats.totalSpent;
         const sb = period.startingBalances || {};
@@ -5798,7 +5981,7 @@ function renderPeriodComparisonTable(periods) {
                 <td><strong style="color:${netWorth >= 0 ? 'var(--success)' : 'var(--danger)'};">£${formatCurrency(netWorth)}</strong></td>
             </tr>
         `;
-    }).reverse().join('');
+    }).join('');
 }
         // ============================================
         // SUBCATEGORY MANAGEMENT
