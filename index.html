@@ -23,16 +23,16 @@
            ============================================ */
 
             :root {
-                --primary-blue: #60A5FA;
-                --light-blue: #1E3A8A;
-                --dark-blue: #93C5FD;
-                --accent-blue: #3B82F6;
-                --white: #1F2937;
-                --light-gray: #374151;
-                --medium-gray: #4B5563;
-                --dark-gray: #D1D5DB; /* Changed from #9CA3AF for better contrast */
-                --text-dark: #F9FAFB;
-                --success: #34D399;
+                --primary-blue: #10B981;
+                --light-blue: #052e16;
+                --dark-blue: #6EE7B7;
+                --accent-blue: #059669;
+                --white: #111113;
+                --light-gray: #1A1A1D;
+                --medium-gray: #27272A;
+                --dark-gray: #A1A1AA;
+                --text-dark: #F4F4F5;
+                --success: #10B981;
                 --warning: #FBBF24;
                 --danger: #F87171;
                 --spacing-xs: 0.5rem;
@@ -43,22 +43,22 @@
                 --radius-sm: 6px;
                 --radius-md: 10px;
                 --radius-lg: 16px;
-                --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
-                --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
-                --shadow-md: 0 4px 8px rgba(0,0,0,0.5);
-                --shadow-lg: 0 10px 20px rgba(0,0,0,0.6);
-                --shadow-xl: 0 20px 30px rgba(0,0,0,0.7);
-                --bg-dark: #111827;
-                --bg-darker: #0F172A;
-                --card-bg: #1F2937;
-                --card-bg-light: #374151;
+                --shadow-xs: 0 1px 2px rgba(0,0,0,0.4);
+                --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
+                --shadow-md: 0 4px 8px rgba(0,0,0,0.6);
+                --shadow-lg: 0 10px 20px rgba(0,0,0,0.7);
+                --shadow-xl: 0 20px 30px rgba(0,0,0,0.8);
+                --bg-dark: #0C0C0E;
+                --bg-darker: #090909;
+                --card-bg: #111113;
+                --card-bg-light: #1C1C1F;
             }
 
         * { margin:0; padding:0; box-sizing:border-box; }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            background: var(--bg-darker);
             min-height:100vh; 
             color:var(--text-dark); 
             line-height:1.6;
@@ -71,11 +71,11 @@
         }
         
         header { 
-            background: linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            background: var(--card-bg);
             padding: var(--spacing-sm) 0; /* Reduced from var(--spacing-lg) */
             box-shadow: 0 2px 8px rgba(0,0,0,0.6);
             margin-bottom: var(--spacing-lg);
-            border-bottom: 2px solid var(--medium-gray);
+            border-bottom: 1px solid var(--medium-gray);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -129,16 +129,16 @@
         }
         
         .nav-tab:hover { 
-            background:var(--light-blue); 
+            background:var(--light-gray); 
             transform:translateY(-1px);
-            border-color: var(--accent-blue);
+            border-color: var(--medium-gray);
         }
         
         .nav-tab.active { 
             background:var(--primary-blue); 
-            color:var(--white); 
+            color:#fff; 
             box-shadow:var(--shadow-sm);
-            border-color: var(--dark-blue);
+            border-color: var(--accent-blue);
         }
 
         .content-section { 
@@ -174,11 +174,11 @@
         
         .btn-primary { 
             background:var(--primary-blue); 
-            color:var(--white);
+            color:#fff;
         }
         
         .btn-primary:hover { 
-            background:var(--dark-blue);
+            background:var(--accent-blue);
         }
         
         .btn-success { 
@@ -205,8 +205,8 @@
         }
         
         .btn-secondary:hover {
-            background:var(--dark-gray);
-            color:var(--white);
+            background:var(--medium-gray);
+            color:var(--text-dark);
         }
         
         .btn-sm { 
@@ -231,12 +231,12 @@
         }
         
         .summary-card {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            background: var(--light-gray);
             padding: var(--spacing-lg);
             border-radius: var(--radius-lg);
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--medium-gray);
             transition: transform .25s ease, box-shadow .25s ease;
         }
         
@@ -246,23 +246,27 @@
         }
 
         .summary-card.networth-card {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            background: rgba(16,185,129,0.12);
+            border-color: rgba(16,185,129,0.3);
         }
+        .summary-card.networth-card .value { color: #10B981; }
+        .summary-card.networth-card h3 { color: #10B981; opacity: 1; }
         
         .summary-card h3 { 
             font-size:.95rem; 
             font-weight:600; 
-            opacity:.95; 
+            opacity:.8; 
             margin-bottom:var(--spacing-xs);
             text-transform:uppercase;
             letter-spacing:0.05em;
-            color: var(--white);
+            color: var(--dark-gray);
         }
         
         .summary-card .value { 
             font-size:1.875rem; 
             font-weight:700;
             margin-bottom:var(--spacing-xs);
+            color: var(--text-dark);
         }
 
         /* Wide Cards */
@@ -272,12 +276,12 @@
         }
         
         .wide-card {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
-            color: var(--white);
+            background: var(--light-gray);
+            color: var(--text-dark);
             padding: var(--spacing-lg);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--medium-gray);
         }
         
         .balances-grid { 
@@ -288,23 +292,22 @@
         }
         
         .balance-item { 
-            background: rgba(255,255,255,0.12); 
+            background: var(--card-bg); 
             padding:var(--spacing-md); 
             border-radius:var(--radius-md); 
             min-width:180px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid var(--medium-gray);
             transition: all .25s ease;
         }
         
         .balance-item:hover {
-            background: rgba(255,255,255,0.18);
+            background: var(--light-gray);
             transform: translateY(-2px);
         }
 
         /* Owed Card */
         .owed-card { 
-            background:var(--white); 
+            background:var(--light-gray); 
             padding:var(--spacing-lg); 
             border-radius:var(--radius-lg); 
             box-shadow:var(--shadow-md); 
@@ -380,12 +383,13 @@
         table { 
             width:100%; 
             border-collapse:collapse; 
-            background:var(--white);
+            background:var(--card-bg);
         }
         
         thead { 
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
-            color:var(--white);
+            background: var(--light-gray);
+            color:var(--dark-gray);
+            border-bottom: 1px solid var(--medium-gray);
         }
         
         th { 
@@ -407,7 +411,7 @@
         }
         
         tbody tr:hover { 
-            background:var(--light-blue);
+            background:var(--light-gray);
         }
         
         tbody tr:last-child td {
@@ -473,14 +477,14 @@
             border-radius:var(--radius-md); 
             font-size:1rem; 
             transition:border-color .2s ease, box-shadow .2s ease;
-            background: var(--white);
-            color: var(--text-dark);  /* Add this line */
+            background: var(--light-gray);
+            color: var(--text-dark);
         }
         
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
         }
         
         .form-row { 
@@ -509,7 +513,7 @@
         }
         
         .modal-content { 
-            background:var(--white); 
+            background:var(--card-bg); 
             padding:var(--spacing-xl); 
             border-radius:var(--radius-lg); 
             box-shadow:var(--shadow-xl); 
@@ -596,10 +600,10 @@
         }
         
         .period-card.current-period {
-            background: linear-gradient(135deg, rgba(31, 41, 55, 0.95) 0%, rgba(55, 65, 81, 0.95) 100%); /* Much darker, matching theme */
-            border: 3px solid var(--primary-blue);
+            background: var(--card-bg);
+            border: 2px solid var(--primary-blue);
             padding: var(--spacing-xl);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
         }
         
         .period-card.current-period h3 {
@@ -635,7 +639,7 @@
         }
 
         .period-card {
-            background:var(--white); 
+            background:var(--card-bg); 
             padding:var(--spacing-lg); 
             border-radius:var(--radius-lg); 
             box-shadow:var(--shadow-md); 
@@ -699,7 +703,7 @@
         }
 
         .period-stat-box {
-            background: linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%);
+            background: var(--light-gray);
             padding: var(--spacing-md);
             border-radius: var(--radius-md);
             border: 1px solid var(--medium-gray);
@@ -774,7 +778,7 @@
         }
 
         .period-progress-bar.bills {
-            background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
+            background: linear-gradient(90deg, #0EA5E9 0%, #38BDF8 100%);
         }
 
         .period-progress-bar.food {
@@ -831,7 +835,7 @@
 
         /* Settings page styling */
         .settings-card {
-            background:var(--light-gray); 
+            background:var(--card-bg); 
             padding:var(--spacing-lg); 
             border-radius:var(--radius-lg);
             border: 1px solid var(--medium-gray);
@@ -924,7 +928,7 @@
             display: inline-flex;
             align-items: center;
             padding: 0.375rem 0.75rem;
-            background: var(--light-blue);
+            background: rgba(16,185,129,0.12);
             border-radius: var(--radius-sm);
             font-size: 0.9rem;
             font-weight: 600;
@@ -2082,6 +2086,51 @@
     </div>
 
     <!-- New Period Modal -->
+    <!-- Edit Current Period Modal -->
+    <div id="edit-period-modal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <div class="modal-header">
+                <h2>Edit Current Period</h2>
+                <button class="close-modal" onclick="closeModal('edit-period-modal')">&times;</button>
+            </div>
+            <form id="edit-period-form" onsubmit="saveEditedPeriod(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="edit-period-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="edit-period-end" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Monthly Salary / Income (£)</label>
+                    <input type="number" id="edit-period-salary" step="0.01" required>
+                </div>
+                <h3 style="margin: var(--spacing-md) 0 var(--spacing-sm); font-size:1rem; color:var(--dark-blue);">Budget Targets</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bills Budget (£)</label>
+                        <input type="number" id="edit-budget-bills" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Food Budget (£)</label>
+                        <input type="number" id="edit-budget-food" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Wants Budget (£)</label>
+                        <input type="number" id="edit-budget-wants" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div style="display:flex; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('edit-period-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="new-period-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2999,7 +3048,7 @@
 
             const primaryData  = mobileNWMode === 'nw' ? nwData : owedData;
             const primaryLabel = mobileNWMode === 'nw' ? 'Net Worth' : 'Net Worth + Owed';
-            const primaryColor = mobileNWMode === 'nw' ? '#10B981' : '#3B82F6';
+            const primaryColor = mobileNWMode === 'nw' ? '#10B981' : '#6366F1';
 
             // Per-point styling: dashed/hollow for the predicted (active) point
             const pointStyles  = active.map(a => a ? 'triangle' : 'circle');
@@ -3217,9 +3266,9 @@
 
             // Build budget bars
             const budgets = [
-                { label: '📄 Bills', spent: stats.categorySpending.bills, budget: currentP.budgets.bills || 0, color: '#3B82F6' },
-                { label: '🍔 Food',  spent: stats.categorySpending.food,  budget: currentP.budgets.food  || 0, color: '#10B981' },
-                { label: '🎉 Wants', spent: stats.categorySpending.wants, budget: currentP.budgets.wants || 0, color: '#8B5CF6' },
+                { label: 'Bills', spent: stats.categorySpending.bills, budget: currentP.budgets.bills || 0, color: '#0EA5E9' },
+                { label: 'Food',  spent: stats.categorySpending.food,  budget: currentP.budgets.food  || 0, color: '#10B981' },
+                { label: 'Wants', spent: stats.categorySpending.wants, budget: currentP.budgets.wants || 0, color: '#8B5CF6' },
             ];
 
             const barsHtml = budgets.map(b => {
@@ -3251,12 +3300,12 @@
                         <div class="msummary-stat-sub">days remaining</div>
                     </div>
                     <div class="msummary-stat">
-                        <div class="msummary-stat-label">💵 Left to Spend</div>
+                        <div class="msummary-stat-label">Left to Spend</div>
                         <div class="msummary-stat-value" style="color:${moneyLeft < 0 ? 'var(--danger)' : 'var(--success)'};">£${formatCurrency(Math.abs(moneyLeft))}</div>
                         <div class="msummary-stat-sub">${moneyLeft < 0 ? 'over salary' : 'of £' + formatCurrency(currentP.salary || 0)}</div>
                     </div>
                     <div class="msummary-stat clickable-stat" onclick="mobileOpenDrilldown('savings')" style="grid-column:1/-1; border-color:rgba(16,185,129,0.4);">
-                        <div class="msummary-stat-label">💎 Savings Rate</div>
+                        <div class="msummary-stat-label">Savings Rate</div>
                         <div class="msummary-stat-value" style="color:${savingsRate < 0 ? 'var(--danger)' : savingsRate < 10 ? 'var(--warning)' : 'var(--success)'};">${savingsRate.toFixed(1)}%</div>
                         <div class="msummary-stat-sub">£${formatCurrency(moneyLeft)} saved so far</div>
                     </div>
@@ -3342,7 +3391,7 @@
     document.getElementById('home-balances-card').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--spacing-md);">
             <div>
-                <h3 style="margin:0;color:#3B82F6;font-size:1.5rem;">💳 Current Balances & Debts</h3>
+                <h3 style="margin:0;font-size:1.3rem;">Current Balances & Debts</h3>
                 <div class="small-muted" style="color:rgba(255,255,255,0.9)">All accounts shown (positive = balance, credit card = owed)</div>
             </div>
             <div style="text-align:right;">
@@ -3430,41 +3479,44 @@
         html += `
             <div class="period-card current-period" data-period-id="${period.id}">
                 <!-- Compact Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); padding-bottom: var(--spacing-md); border-bottom: 2px solid rgba(96, 165, 250, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--medium-gray);">
                     <div>
-                        <h3 style="margin: 0; font-size: 1.3rem;">📅 Current Period</h3>
-                        <div style="font-size: 0.9rem; color: var(--dark-gray); margin-top: 0.25rem;">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</div>
+                        <h3 style="margin: 0; font-size: 1.3rem;">Current Period</h3>
+                        <div style="font-size: 0.9rem; color: var(--dark-gray); margin-top: 0.25rem;">${formatDate(period.startDate)} – ${formatDate(period.endDate)}</div>
                     </div>
-                    ${daysBadge}
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        ${daysBadge}
+                        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openEditPeriodModal('${period.id}')" style="font-size:0.8rem;padding:0.4rem 0.85rem;">Edit Period</button>
+                    </div>
                 </div>
                 
                 <!-- Main Grid: Stats + Chart -->
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-md);">
                     <!-- Left: Key Stats -->
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm);">
-                        <div style="background: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(96, 165, 250, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💰 Spent</div>
+                        <div style="background: var(--light-gray); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--medium-gray); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">Spent</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${formatCurrency(stats.totalSpent)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${formatCurrency(period.budgets.total||0)}</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${spentDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${spentDiff > 0 ? '+' : ''}£${formatCurrency(spentDiff)} (${spentDiffPercent > 0 ? '+' : ''}${spentDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
                         <div style="background: linear-gradient(135deg, ${remaining >= 0 ? 'rgba(52, 211, 153, 0.15)' : 'rgba(248, 113, 113, 0.15)'} 0%, ${remaining >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'} 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid ${remaining >= 0 ? 'rgba(52, 211, 153, 0.3)' : 'rgba(248, 113, 113, 0.3)'}; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💵 Left</div>
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">Left</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; margin-top: 0.25rem;">£${formatCurrency(remaining)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">of £${formatCurrency(period.salary||0)}</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${leftDiff > 0 ? 'var(--success)' : 'var(--danger)'};">${leftDiff > 0 ? '+' : ''}£${formatCurrency(leftDiff)} (${leftDiffPercent > 0 ? '+' : ''}${leftDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
-                        <div style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(167, 139, 250, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">📊 Daily Avg</div>
+                        <div style="background: var(--light-gray); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--medium-gray); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">Daily Avg</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-top: 0.25rem;">£${formatCurrency(dailyAverage)}</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">per day</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${dailyDiff > 0 ? 'var(--danger)' : 'var(--success)'};">${dailyDiff > 0 ? '+' : ''}£${formatCurrency(dailyDiff)} (${dailyDiffPercent > 0 ? '+' : ''}${dailyDiffPercent.toFixed(1)}%)</div>` : ''}
                         </div>
                         
-                        <div style="background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(52, 211, 153, 0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">💎 Savings</div>
+                        <div style="background: rgba(16,185,129,0.1); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(16,185,129,0.25); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                            <div style="font-size: 1.2rem; color: var(--dark-gray); font-weight: 600; text-transform: uppercase;">Savings</div>
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">${savingsRate.toFixed(1)}%</div>
                             <div style="font-size: 1.2rem; color: var(--dark-gray); margin-top: 0.125rem;">${daysPassed} days</div>
                             ${prevPeriodStats ? `<div style="font-size: 1.2rem; margin-top: 0.25rem; color: ${savingsDiff > 0 ? 'var(--success)' : 'var(--danger)'};">${savingsDiff > 0 ? '+' : ''}${savingsDiff.toFixed(1)}%</div>` : ''}
@@ -3472,7 +3524,7 @@
                     </div>
                     
                     <!-- Right: Pie Chart -->
-                    <div style="background: transparent; padding: var(--spacing-sm); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="background: transparent; padding: var(--spacing-sm); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid var(--medium-gray);">
                         <canvas id="pie-${period.id}" width="120" height="120"></canvas>
                     </div>
                 </div>
@@ -3481,17 +3533,17 @@
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-sm);">
                     <div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">📄 Bills</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">Bills</span>
                             <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.bills.toFixed(0)} <span style="color: ${billsOver ? 'var(--danger)' : 'var(--success)'};">(£${Math.max(0, (period.budgets.bills || 0) - stats.categorySpending.bills).toFixed(0)})</span></span>
                         </div>
                         <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
-                            <div style="height: 100%; background: ${billsOver ? 'linear-gradient(90deg, #EF4444 0%, #F87171 100%)' : 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)'}; width: ${billsPercent}%; transition: width 0.4s ease;"></div>
+                            <div style="height: 100%; background: ${billsOver ? 'linear-gradient(90deg, #EF4444 0%, #F87171 100%)' : 'linear-gradient(90deg, #0EA5E9 0%, #38BDF8 100%)'}; width: ${billsPercent}%; transition: width 0.4s ease;"></div>
                         </div>
                     </div>
                     
                     <div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">🍔 Food</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">Food</span>
                             <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.food.toFixed(0)} <span style="color: ${foodOver ? 'var(--danger)' : 'var(--success)'};">(£${Math.max(0, (period.budgets.food || 0) - stats.categorySpending.food).toFixed(0)})</span></span>
                         </div>
                         <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
@@ -3501,7 +3553,7 @@
                     
                     <div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">🎉 Wants</span>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">Wants</span>
                             <span style="font-size: 0.75rem; font-weight: 600; color: var(--dark-gray);">£${stats.categorySpending.wants.toFixed(0)} <span style="color: ${wantsOver ? 'var(--danger)' : 'var(--success)'};">(£${Math.max(0, (period.budgets.wants || 0) - stats.categorySpending.wants).toFixed(0)})</span></span>
                         </div>
                         <div style="width: 100%; height: 8px; background: var(--light-gray); border-radius: 4px; overflow: hidden;">
@@ -3541,7 +3593,7 @@
                     <div class="period-progress-section" style="margin-bottom: var(--spacing-sm);">
                         <div class="period-progress-item">
                             <div class="period-progress-header">
-                                <span class="period-progress-label">📄 Bills</span>
+                                <span class="period-progress-label">Bills</span>
                                 <span class="period-progress-amount">£${formatCurrency(stats.categorySpending.bills)}</span>
                             </div>
                             <div class="period-progress-bar-container">
@@ -3551,7 +3603,7 @@
                         
                         <div class="period-progress-item">
                             <div class="period-progress-header">
-                                <span class="period-progress-label">🍔 Food</span>
+                                <span class="period-progress-label">Food</span>
                                 <span class="period-progress-amount">£${formatCurrency(stats.categorySpending.food)}</span>
                             </div>
                             <div class="period-progress-bar-container">
@@ -3561,7 +3613,7 @@
                         
                         <div class="period-progress-item">
                             <div class="period-progress-header">
-                                <span class="period-progress-label">🎉 Wants</span>
+                                <span class="period-progress-label">Wants</span>
                                 <span class="period-progress-amount">£${formatCurrency(stats.categorySpending.wants)}</span>
                             </div>
                             <div class="period-progress-bar-container">
@@ -3608,7 +3660,7 @@
                             other,
                             savings
                         ],
-                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#22C55E'],
+                        backgroundColor: ['#0EA5E9', '#10B981', '#8B5CF6', '#F59E0B', '#22C55E'],
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -3682,6 +3734,40 @@
             closeModal('new-period-modal');
             loadPeriods();
             alert('Period created successfully! ✅');
+        }
+
+        function openEditPeriodModal(periodId) {
+            const period = getPeriod(periodId);
+            if (!period) return;
+            document.getElementById('edit-period-start').value  = period.startDate;
+            document.getElementById('edit-period-end').value    = period.endDate;
+            document.getElementById('edit-period-salary').value = period.salary || '';
+            document.getElementById('edit-budget-bills').value  = period.budgets?.bills  || '';
+            document.getElementById('edit-budget-food').value   = period.budgets?.food   || '';
+            document.getElementById('edit-budget-wants').value  = period.budgets?.wants  || '';
+            document.getElementById('edit-period-form').dataset.periodId = periodId;
+            openModal('edit-period-modal');
+        }
+
+        function saveEditedPeriod(e) {
+            e.preventDefault();
+            const periodId = document.getElementById('edit-period-form').dataset.periodId;
+            const periods  = getPeriods();
+            const idx      = periods.findIndex(p => p.id === periodId);
+            if (idx === -1) return;
+            const p       = periods[idx];
+            const salary  = parseFloat(document.getElementById('edit-period-salary').value) || 0;
+            const bills   = parseFloat(document.getElementById('edit-budget-bills').value)  || 0;
+            const food    = parseFloat(document.getElementById('edit-budget-food').value)   || 0;
+            const wants   = parseFloat(document.getElementById('edit-budget-wants').value)  || 0;
+            p.startDate   = document.getElementById('edit-period-start').value;
+            p.endDate     = document.getElementById('edit-period-end').value;
+            p.salary      = salary;
+            p.budgets     = { bills, food, wants, total: bills + food + wants };
+            savePeriods(periods);
+            saveAllDataToDatabase().catch(err => console.warn('Save failed', err));
+            closeModal('edit-period-modal');
+            loadPeriods();
         }
 
         function viewPeriod(periodId) {
@@ -4478,7 +4564,7 @@
         <div style="display:flex; gap:var(--spacing-sm); margin-bottom:var(--spacing-md); flex-wrap:wrap;">
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-weekly-bills" checked> 
-                <span style="color:#60A5FA; font-weight:600;">📄 Bills</span>
+                <span style="color:#38BDF8; font-weight:600;">Bills</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-weekly-wants" checked> 
@@ -4486,7 +4572,7 @@
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-weekly-food" checked> 
-                <span style="color:#34D399; font-weight:600;">🍔 Food</span>
+                <span style="color:#34D399; font-weight:600;">Food</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-weekly-needs"> 
@@ -4532,7 +4618,7 @@
     <div style="display:flex; gap:var(--spacing-md);">
         <div style="flex: 0 0 50%; height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
-                <thead style="position:sticky; top:0; background:#3B82F6; z-index:1;">
+                <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
                     <tr>
                         <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Net Worth</th>
@@ -4553,14 +4639,14 @@
 
 <!-- Savings Rate Over Time -->
 <div style="background:var(--white); padding:var(--spacing-lg); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); margin-bottom:var(--spacing-lg); border: 1px solid var(--medium-gray); overflow:hidden;">
-    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">💎 Savings Rate Over Time</h3>
+    <h3 style="color:var(--dark-blue); margin-bottom:var(--spacing-md);">Savings Rate Over Time</h3>
     <div style="display:flex; gap:var(--spacing-md);">
         <div style="flex: 0 0 66.666%; height:300px; position:relative;">
             <canvas id="savings-rate-chart"></canvas>
         </div>
         <div style="flex: 0 0 calc(33.333% - var(--spacing-md)); height:300px; overflow-y:auto; border:1px solid var(--medium-gray); border-radius:var(--radius-md);">
             <table style="width:100%; border-collapse:collapse;">
-                <thead style="position:sticky; top:0; background:#3B82F6; z-index:1;">
+                <thead style="position:sticky; top:0; background:var(--light-gray); z-index:1;">
                     <tr>
                         <th style="padding:var(--spacing-sm); text-align:left; border-bottom:2px solid var(--medium-gray); color:white;">Period</th>
                         <th style="padding:var(--spacing-sm); text-align:right; border-bottom:2px solid var(--medium-gray); color:white;">Savings Rate</th>
@@ -4587,7 +4673,7 @@
         <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap;">
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-bills-summary" checked> 
-                <span style="color:#3B82F6; font-weight:600;">📄 Bills</span>
+                <span style="color:#38BDF8; font-weight:600;">Bills</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-wants-summary" checked> 
@@ -4595,7 +4681,7 @@
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-food-summary" checked> 
-                <span style="color:#10B981; font-weight:600;">🍔 Food</span>
+                <span style="color:#10B981; font-weight:600;">Food</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                 <input type="checkbox" id="toggle-needs-summary"> 
@@ -4915,7 +5001,7 @@ function renderCategoryPieChart(categoryTotals) {
                     categoryTotals.unexpected,
                     categoryTotals.savings
                 ],
-                backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#22C55E'],
+                backgroundColor: ['#0EA5E9', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#22C55E'],
                 borderWidth: 2,
                 borderColor: '#fff'
             }]
@@ -4960,7 +5046,7 @@ function renderPeriodDetailPieChart(period) {
                     stats.categorySpending.unexpected,
                     savings
                 ],
-                backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#22C55E'],
+                backgroundColor: ['#0EA5E9', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#22C55E'],
                 borderWidth: 2,
                 borderColor: '#fff'
             }]
@@ -4990,7 +5076,7 @@ function renderPaymentPieChart(paymentTotals) {
     
     const labels = Object.keys(paymentTotals);
     const data = Object.values(paymentTotals);
-    const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#6366F1'];
+    const colors = ['#0EA5E9', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#6366F1'];
     
     paymentPieChart = new Chart(ctx, {
         type: 'doughnut',
@@ -5068,7 +5154,7 @@ function renderWeeklySpendingChart(periods) {
         datasets.push({
             label: 'Bills',
             data: labels.map(week => weeklyData[week].bills),
-            backgroundColor: '#60A5FA'
+            backgroundColor: '#10B981'
         });
     }
     
@@ -5183,8 +5269,8 @@ function renderNetWorthChart(periods) {
         {
             label: 'Net Worth + Owed',
             data: netWorthOwedData,
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4,
             fill: true
         }
@@ -5275,7 +5361,7 @@ function renderSavingsRateChart(periods) {
             datasets: [{
                 label: 'Savings Rate (%)',
                 data: savingsData,
-                backgroundColor: '#3B82F6',
+                backgroundColor: '#10B981',
                 borderColor: '#1E40AF',
                 borderWidth: 1
             }]
@@ -5374,8 +5460,8 @@ function renderDailySpendingChart(periods) {
         datasets.push({
             label: 'Bills/Subscriptions',
             data: isCumulative ? makeCumulative(billsData) : billsData,
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4,
             fill: true
         });
@@ -6307,8 +6393,8 @@ function renderSpendingChart() {
         datasets.push({
             label: 'Bills/Subscriptions',
             data: isCumulative ? makeCumulative(billsData) : billsData,
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4,
             fill: true
         });
