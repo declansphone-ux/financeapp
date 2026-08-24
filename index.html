@@ -2290,6 +2290,7 @@
             <div class="mobile-toggle-row">
                 <button class="mobile-toggle-btn active" id="nw-toggle-nw" onclick="mobileNWToggle('nw')">Net Worth</button>
                 <button class="mobile-toggle-btn" id="nw-toggle-owed" onclick="mobileNWToggle('owed')">+ Owed to Me</button>
+                <button class="mobile-toggle-btn" id="nw-toggle-split" onclick="mobileNWToggle('split')">Split %</button>
             </div>
             <div class="mobile-chart-container">
                 <canvas id="mobile-nw-chart"></canvas>
@@ -3294,7 +3295,7 @@
         // ============================================
         let mobileNWChart = null;
         let mobileSavingsChart = null;
-        let mobileNWMode = 'nw';       // 'nw' | 'owed'
+        let mobileNWMode = 'nw';       // 'nw' | 'owed' | 'split'
         let mobileSavingsMode = 'pct'; // 'pct' | 'gbp'
 
         function _sortedAllPeriods() {
@@ -3321,6 +3322,7 @@
             mobileNWMode = mode;
             document.getElementById('nw-toggle-nw').classList.toggle('active', mode === 'nw');
             document.getElementById('nw-toggle-owed').classList.toggle('active', mode === 'owed');
+            document.getElementById('nw-toggle-split').classList.toggle('active', mode === 'split');
             mobileRenderNWPanel();
         }
 
@@ -3363,89 +3365,182 @@
             const nwData   = sorted.map(periodNW);
             const owedData = sorted.map(periodNWOwed);
 
-            const primaryData  = mobileNWMode === 'nw' ? nwData : owedData;
-            const primaryLabel = mobileNWMode === 'nw' ? 'Net Worth' : 'Net Worth + Owed';
-            const primaryColor = mobileNWMode === 'nw' ? '#10B981' : '#6366F1';
+            if (mobileNWMode === 'split') {
+                // ---- Split % mode: stacked bar showing own NW vs owed each month ----
+                const owedAmounts = sorted.map(p =>
+                    (p.owedPeople || []).reduce((s, x) => s + (x.amount || 0), 0)
+                );
+                const splitData = sorted.map((p, i) => {
+                    const own   = Math.max(0, nwData[i]);
+                    const owed  = Math.max(0, owedAmounts[i]);
+                    const total = own + owed;
+                    if (total === 0) return { ownPct: 0, owedPct: 0, own, owed, total };
+                    return {
+                        ownPct:  (own  / total) * 100,
+                        owedPct: (owed / total) * 100,
+                        own, owed, total
+                    };
+                });
 
-            // Per-point styling: dashed/hollow for the predicted (active) point
-            const pointStyles  = active.map(a => a ? 'triangle' : 'circle');
-            const pointRadii   = active.map(a => a ? 6 : 4);
-            const borderDashes = active.map((a, i) =>
-                i > 0 && active[i - 1] ? [5, 4] : undefined
-            );
-
-            if (mobileNWChart) { mobileNWChart.destroy(); mobileNWChart = null; }
-            const ctx = document.getElementById('mobile-nw-chart');
-            mobileNWChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: primaryLabel,
-                        data: primaryData,
-                        borderColor: primaryColor,
-                        backgroundColor: primaryColor + '26',
-                        tension: 0.4,
-                        fill: true,
-                        pointStyle: pointStyles,
-                        pointRadius: pointRadii,
-                        pointHoverRadius: 8,
-                        segment: {
-                            borderDash: ctx2 => active[ctx2.p1DataIndex] ? [5, 4] : []
-                        }
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: c => {
-                                    const suffix = active[c.dataIndex] ? ' (predicted)' : '';
-                                    return '£' + formatCurrency(c.parsed.y) + suffix;
+                if (mobileNWChart) { mobileNWChart.destroy(); mobileNWChart = null; }
+                const ctx = document.getElementById('mobile-nw-chart');
+                mobileNWChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Own NW',
+                                data: splitData.map(d => parseFloat(d.ownPct.toFixed(1))),
+                                backgroundColor: '#10B981CC',
+                                borderColor: '#10B981',
+                                borderWidth: 1,
+                                borderRadius: 3
+                            },
+                            {
+                                label: 'Owed to Me',
+                                data: splitData.map(d => parseFloat(d.owedPct.toFixed(1))),
+                                backgroundColor: '#6366F1CC',
+                                borderColor: '#6366F1',
+                                borderWidth: 1,
+                                borderRadius: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: c => {
+                                        const d = splitData[c.dataIndex];
+                                        const isOwed = c.datasetIndex === 1;
+                                        const val = isOwed ? d.owed : d.own;
+                                        const pct = isOwed ? d.owedPct : d.ownPct;
+                                        const suffix = active[c.dataIndex] ? ' (est.)' : '';
+                                        return ` ${c.dataset.label}: ${pct.toFixed(1)}%  (£${formatCurrency(val)})${suffix}`;
+                                    }
                                 }
                             }
+                        },
+                        scales: {
+                            x: { stacked: true },
+                            y: {
+                                stacked: true,
+                                min: 0, max: 100,
+                                ticks: { callback: v => v + '%' }
+                            }
                         }
-                    },
-                    scales: {
-                        y: { ticks: { callback: v => '£' + formatCurrency(v) } }
                     }
-                }
-            });
+                });
 
-            // Table (most-recent first)
-            const rows = sorted.map((p, i) => {
-                const val       = primaryData[i];
-                const isPred    = active[i];
-                const labelCell = isPred
-                    ? `${labels[i]} <span style="font-size:0.7rem;color:var(--warning);font-weight:700;">est.</span>`
-                    : labels[i];
-                let changeTd = '<td>—</td><td>—</td>';
-                if (i > 0) {
-                    const diff = val - primaryData[i - 1];
-                    const pct  = primaryData[i - 1] !== 0 ? (diff / Math.abs(primaryData[i - 1])) * 100 : 0;
-                    const col  = diff >= 0 ? 'var(--success)' : 'var(--danger)';
-                    const sign = diff >= 0 ? '+' : '';
-                    changeTd = `<td style="color:${col}">${sign}£${formatCurrency(Math.abs(diff))}</td>
-                                <td style="color:${col}">${sign}${pct.toFixed(1)}%</td>`;
-                }
-                return `<tr${isPred ? ' style="opacity:0.8;"' : ''}>
-                    <td>${labelCell}</td>
-                    <td style="color:${val >= 0 ? 'var(--success)' : 'var(--danger)'}">£${formatCurrency(val)}</td>
-                    ${changeTd}
-                </tr>`;
-            }).join('');
+                // Split table
+                const splitRows = sorted.map((p, i) => {
+                    const d = splitData[i];
+                    const isPred = active[i];
+                    const lbl = isPred
+                        ? `${labels[i]} <span style="font-size:0.7rem;color:var(--warning);font-weight:700;">est.</span>`
+                        : labels[i];
+                    return `<tr${isPred ? ' style="opacity:0.8;"' : ''}>
+                        <td>${lbl}</td>
+                        <td>£${formatCurrency(d.total)}</td>
+                        <td style="color:#10B981">${d.ownPct.toFixed(1)}%<br><span style="font-size:0.72rem;color:var(--m-muted)">£${formatCurrency(d.own)}</span></td>
+                        <td style="color:#6366F1">${d.owedPct.toFixed(1)}%<br><span style="font-size:0.72rem;color:var(--m-muted)">£${formatCurrency(d.owed)}</span></td>
+                    </tr>`;
+                }).reverse().join('');
 
-            document.getElementById('mobile-nw-table').innerHTML = `
-                <thead><tr>
-                    <th>Period</th>
-                    <th>${mobileNWMode === 'nw' ? 'Net Worth' : 'NW + Owed'}</th>
-                    <th>Change £</th>
-                    <th>Change %</th>
-                </tr></thead>
-                <tbody>${rows}</tbody>`;
+                document.getElementById('mobile-nw-table').innerHTML = `
+                    <thead><tr>
+                        <th>Period</th>
+                        <th>Total</th>
+                        <th style="color:#10B981">Own NW</th>
+                        <th style="color:#6366F1">Owed</th>
+                    </tr></thead>
+                    <tbody>${splitRows}</tbody>`;
+            } else {
+                const primaryData  = mobileNWMode === 'nw' ? nwData : owedData;
+                const primaryLabel = mobileNWMode === 'nw' ? 'Net Worth' : 'Net Worth + Owed';
+                const primaryColor = mobileNWMode === 'nw' ? '#10B981' : '#6366F1';
+
+                // Per-point styling: dashed/hollow for the predicted (active) point
+                const pointStyles  = active.map(a => a ? 'triangle' : 'circle');
+                const pointRadii   = active.map(a => a ? 6 : 4);
+
+                if (mobileNWChart) { mobileNWChart.destroy(); mobileNWChart = null; }
+                const ctx = document.getElementById('mobile-nw-chart');
+                mobileNWChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: primaryLabel,
+                            data: primaryData,
+                            borderColor: primaryColor,
+                            backgroundColor: primaryColor + '26',
+                            tension: 0.4,
+                            fill: true,
+                            pointStyle: pointStyles,
+                            pointRadius: pointRadii,
+                            pointHoverRadius: 8,
+                            segment: {
+                                borderDash: ctx2 => active[ctx2.p1DataIndex] ? [5, 4] : []
+                            }
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: c => {
+                                        const suffix = active[c.dataIndex] ? ' (predicted)' : '';
+                                        return '£' + formatCurrency(c.parsed.y) + suffix;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { ticks: { callback: v => '£' + formatCurrency(v) } }
+                        }
+                    }
+                });
+
+                // Table (most-recent first)
+                const rows = sorted.map((p, i) => {
+                    const val       = primaryData[i];
+                    const isPred    = active[i];
+                    const labelCell = isPred
+                        ? `${labels[i]} <span style="font-size:0.7rem;color:var(--warning);font-weight:700;">est.</span>`
+                        : labels[i];
+                    let changeTd = '<td>—</td><td>—</td>';
+                    if (i > 0) {
+                        const diff = val - primaryData[i - 1];
+                        const pct  = primaryData[i - 1] !== 0 ? (diff / Math.abs(primaryData[i - 1])) * 100 : 0;
+                        const col  = diff >= 0 ? 'var(--success)' : 'var(--danger)';
+                        const sign = diff >= 0 ? '+' : '';
+                        changeTd = `<td style="color:${col}">${sign}£${formatCurrency(Math.abs(diff))}</td>
+                                    <td style="color:${col}">${sign}${pct.toFixed(1)}%</td>`;
+                    }
+                    return `<tr${isPred ? ' style="opacity:0.8;"' : ''}>
+                        <td>${labelCell}</td>
+                        <td style="color:${val >= 0 ? 'var(--success)' : 'var(--danger)'}">£${formatCurrency(val)}</td>
+                        ${changeTd}
+                    </tr>`;
+                }).join('');
+
+                document.getElementById('mobile-nw-table').innerHTML = `
+                    <thead><tr>
+                        <th>Period</th>
+                        <th>${mobileNWMode === 'nw' ? 'Net Worth' : 'NW + Owed'}</th>
+                        <th>Change £</th>
+                        <th>Change %</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>`;
+            }
         }
 
         // ---- Savings panel ----
