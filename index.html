@@ -527,6 +527,82 @@
         .sg-lime    { background: radial-gradient(90% 60% at 10% 0%, #a3e635 0%, transparent 60%), radial-gradient(80% 70% at 100% 100%, #14b8a6 0%, transparent 60%), #0b1a06; }
 
         /* ============================================
+           MILESTONES
+           ============================================ */
+        .ms-hero { display: flex; align-items: center; gap: 1.5rem; background: radial-gradient(90% 120% at 0% 0%, rgba(250,204,21,0.14), transparent 60%), var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem 1.5rem; box-shadow: var(--shadow); }
+        .ms-hero-count { font-family: var(--font-display); font-size: 3.2rem; font-weight: 800; letter-spacing: -0.05em; line-height: 0.9; display: flex; flex-direction: column; align-items: center; min-width: 90px; }
+        .ms-hero-count small { font-family: var(--font); font-size: 0.72rem; font-weight: 600; color: var(--muted); letter-spacing: 0; margin-top: 0.35rem; }
+        .ms-hero-title { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+        .ms-section-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; margin: 2rem 0 0.8rem; display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+        .ms-section-title span { font-family: var(--font); font-size: 0.8rem; color: var(--muted); font-weight: 500; letter-spacing: 0; }
+        .b-bar { height: 5px; border-radius: 5px; background: var(--surface-3); overflow: hidden; }
+        .b-bar i { display: block; height: 100%; border-radius: 5px; background: var(--accent); transition: width 0.9s var(--ease); }
+        .b-d { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+        .ms-next-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.75rem; }
+        .ms-next-grid .ms-next { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow); }
+        .ms-next { display: flex; gap: 0.8rem; align-items: center; padding: 0.55rem 0; }
+        .ms-next-ic { width: 40px; height: 40px; border-radius: 12px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .ms-next-top { display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.4rem; }
+        .ms-next-top .t { font-weight: 650; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ms-next-top .p { font-weight: 700; font-size: 0.82rem; font-variant-numeric: tabular-nums; color: var(--text-2); }
+        .record-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.75rem; }
+        .record { display: flex; gap: 0.9rem; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow); position: relative; animation: fadeUp 0.45s var(--ease) both; min-width: 0; }
+        .record.clickable { cursor: pointer; transition: transform 0.2s var(--ease), border-color 0.2s; }
+        .record.clickable:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+        .record-ic { width: 44px; height: 44px; border-radius: 14px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .record.warn .record-ic { background: var(--warn-soft); }
+        .record .k { font-size: 0.74rem; color: var(--muted); font-weight: 600; }
+        .record .v { font-family: var(--font-display); font-weight: 750; font-size: 1.35rem; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .record .s { font-size: 0.74rem; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .record-go { position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.2rem; }
+        .ms-group { margin-bottom: 1.4rem; }
+        .ms-group-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; font-weight: 650; font-size: 0.9rem; }
+        .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.7rem; }
+        .badge { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 0.8rem 0.9rem; text-align: center; position: relative; min-width: 0; }
+        .b-ic { width: 58px; height: 58px; border-radius: 50%; margin: 0 auto 0.6rem; padding: 3px; background: var(--surface-3); }
+        .b-ic span { width: 100%; height: 100%; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--surface); display: flex; align-items: center; justify-content: center; font-size: 1.55rem; }
+        .b-ic.sm { width: 38px; height: 38px; margin: 0; padding: 2px; flex-shrink: 0; }
+        .b-ic.sm span { font-size: 1rem; border-width: 1.5px; }
+        .badge.locked .b-ic span { filter: grayscale(1); opacity: 0.45; }
+        .badge.locked .b-t { color: var(--text-2); }
+        .badge .b-t { font-weight: 650; font-size: 0.84rem; line-height: 1.25; }
+        .badge .b-bar { margin-top: 0.55rem; }
+        .b-new { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #f59e0b, #ec4899); color: #fff; font-size: 0.6rem; font-weight: 800; padding: 0.12rem 0.4rem; border-radius: 999px; letter-spacing: 0.04em; }
+        .ms-teaser { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.5rem; align-items: start; }
+        .ms-teaser.compact { grid-template-columns: 1fr; gap: 0.6rem; }
+        .ms-recent { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .ms-recent-item { display: flex; align-items: center; gap: 0.6rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.6rem 0.7rem; min-width: 0; }
+        .ms-recent-item .t { font-weight: 650; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ms-recent-item .b-d { margin-top: 0; }
+        .ms-teaser.compact .ms-recent { grid-template-columns: repeat(3, 1fr); }
+        .ms-teaser.compact .ms-recent-item { flex-direction: column; text-align: center; gap: 0.35rem; padding: 0.6rem 0.4rem; }
+        .ms-teaser.compact .ms-recent-item .t { white-space: normal; font-size: 0.74rem; line-height: 1.2; }
+        .ms-watch .insight::after { width: 3px; }
+        .m-seg { display: flex; margin-bottom: 1rem; }
+        .m-seg .seg { width: 100%; }
+        .m-seg .seg button { flex: 1; padding: 0.5rem; font-size: 0.82rem; }
+        #m-milestones .ms-hero { padding: 1.1rem; gap: 1rem; }
+        #m-milestones .ms-hero-count { font-size: 2.5rem; min-width: 64px; }
+        #m-milestones .ms-section-title { font-size: 1.05rem; margin-top: 1.5rem; }
+        #m-milestones .badge-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+        #m-milestones .badge { padding: 0.8rem 0.4rem 0.7rem; }
+        #m-milestones .b-ic { width: 48px; height: 48px; }
+        #m-milestones .b-ic span { font-size: 1.25rem; }
+        #m-milestones .badge .b-t { font-size: 0.74rem; }
+        #m-milestones .badge .b-d { font-size: 0.64rem; }
+        #m-milestones .record-grid, #m-milestones .ms-next-grid, #m-milestones .insights-grid { grid-template-columns: 1fr; }
+        #m-milestones .insight { box-shadow: none; }
+        @media (max-width: 720px) { .ms-teaser { grid-template-columns: 1fr; } }
+
+        /* Confetti + medal for milestone stories */
+        .slide > .confetti { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .confetti i { position: absolute; top: -6%; height: 14px; border-radius: 2px; opacity: 0.95; animation: confFall var(--t) linear var(--d) infinite; }
+        @keyframes confFall { from { transform: translateY(0) rotate(0); } to { transform: translateY(115vh) rotate(var(--r)); } }
+        .s-medal { width: 150px; height: 150px; border-radius: 50%; padding: 6px; margin: 0.5rem 0 1.4rem; animation: medalPop 0.8s var(--ease) both 0.2s; box-shadow: 0 20px 60px -10px rgba(0,0,0,0.5); }
+        .s-medal span { width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.35); border: 3px solid rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; font-size: 4.2rem; backdrop-filter: blur(6px); }
+        @keyframes medalPop { from { transform: scale(0.3) rotate(-20deg); opacity: 0; } 60% { transform: scale(1.08) rotate(4deg); opacity: 1; } to { transform: none; opacity: 1; } }
+
+        /* ============================================
            STORY VIEWER
            ============================================ */
         #story-viewer { position: fixed; inset: 0; z-index: 10050; display: none; align-items: center; justify-content: center; }
@@ -1052,6 +1128,7 @@
             <nav class="nav-tabs">
                 <button class="nav-tab active" id="tab-home">Home</button>
                 <button class="nav-tab" id="tab-recaps">Recaps</button>
+                <button class="nav-tab" id="tab-milestones">Milestones</button>
                 <button class="nav-tab" id="tab-summary">Summary</button>
             </nav>
             <div class="header-actions">
@@ -1088,6 +1165,7 @@
                     </div>
                     <div class="insights-grid" id="home-insights"></div>
                 </div>
+                <div class="card span-12" id="home-milestones"></div>
                 <div class="card span-8" id="home-heatmap"></div>
                 <div class="card span-4" id="home-categories"></div>
                 <div class="card span-12" id="home-balances-card"></div>
@@ -1110,6 +1188,18 @@
                 <span class="card-sub">Tap any card to play. Use ← → or click the sides to skip, space to pause.</span>
             </div>
             <div class="recap-grid" id="recaps-grid"></div>
+        </section>
+
+        <!-- ================= MILESTONES ================= -->
+        <section id="milestones" class="content-section">
+            <div class="page-head">
+                <div>
+                    <div class="eyebrow">How far you've come</div>
+                    <h2>Milestones</h2>
+                </div>
+                <span class="card-sub">Badges unlock automatically from your data. Records and watch-outs update as you go.</span>
+            </div>
+            <div id="milestones-content"></div>
         </section>
 
         <!-- ================= PERIOD DETAIL ================= -->
@@ -1372,8 +1462,13 @@
 
                 <!-- Recaps -->
                 <section class="m-screen" id="m-recaps">
-                    <div class="m-topbar"><div><div class="m-eyebrow">Your money, story style</div><div class="m-title">Recaps</div></div></div>
+                    <div class="m-topbar"><div><div class="m-eyebrow">Stories, badges and records</div><div class="m-title">Recaps</div></div></div>
+                    <div class="m-seg"><div class="seg" id="m-recap-seg">
+                        <button class="active" data-mview="stories" onclick="mobileSetRecapView('stories')">Stories</button>
+                        <button data-mview="milestones" onclick="mobileSetRecapView('milestones')">🏆 Milestones</button>
+                    </div></div>
                     <div class="m-recap-grid" id="m-recaps-grid"></div>
+                    <div id="m-milestones" style="display:none"></div>
                 </section>
             </main>
 
@@ -1994,6 +2089,7 @@
                 if (!active) return;
                 if (active.id === 'home') loadPeriods();
                 else if (active.id === 'recaps') renderRecapsPage();
+                else if (active.id === 'milestones') renderMilestonesPage();
                 else if (active.id === 'summary') loadFullSummary();
                 else if (active.id === 'period-detail' && currentPeriodId) viewPeriod(currentPeriodId);
             } catch (e) { console.warn('Theme re-render failed', e); }
@@ -2315,6 +2411,412 @@
         }
 
         // ============================================
+        // MILESTONES, RECORDS & WATCH-OUTS
+        // ============================================
+        const MS_GROUPS = {
+            saving:   { label: 'Saving', ring: 'conic-gradient(from 200deg, #34d399, #10b981, #0ea5e9, #34d399)' },
+            networth: { label: 'Net worth', ring: 'conic-gradient(from 200deg, #60a5fa, #6366f1, #22d3ee, #60a5fa)' },
+            habits:   { label: 'Habits', ring: 'conic-gradient(from 200deg, #f59e0b, #ec4899, #f97316, #f59e0b)' },
+            tracking: { label: 'Tracking', ring: 'conic-gradient(from 200deg, #a78bfa, #ec4899, #8b5cf6, #a78bfa)' }
+        };
+        function kMoney(t) { return t >= 1000 ? `£${(t / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })}k` : `£${t}`; }
+
+        // Walk a tier list against a series of {value, date} checkpoints (value only ever increases in the walk)
+        function tierMilestones(opts) {
+            const out = [];
+            opts.tiers.forEach(t => {
+                const hit = opts.series.find(pt => pt.value >= t);
+                out.push({
+                    id: `${opts.id}-${t}`, group: opts.group, icon: opts.icon,
+                    title: opts.title(t), desc: opts.desc(t),
+                    unlocked: !!hit, date: hit ? hit.date : null,
+                    progress: hit ? 1 : clamp((opts.current || 0) / t, 0, 0.999),
+                    progressLabel: hit ? '' : opts.progressLabel(opts.current || 0, t),
+                    tier: t
+                });
+            });
+            return out;
+        }
+
+        let _msCache = { key: '', data: null };
+        function computeMilestones() {
+            const all = getPeriods();
+            const cacheKey = `${all.length}:${sum(all, p => (p.expenses || []).length)}:${sum(all, p => sum(p.expenses || [], e => (e.amount || 0) + (e.myShare || 0)))}:${ymd(todayLocal())}:${sum(all, p => periodNetWorth(p) + (p.salary || 0))}:${all.map(p => p.startDate + p.endDate).join()}`;
+            if (_msCache.key === cacheKey) return _msCache.data;
+            const asc = periodsAsc();
+            const done = asc.filter(isPeriodComplete);
+            const today = todayLocal();
+            const list = [];
+
+            // Saving: cumulative kept across completed periods
+            let cum = 0;
+            const savedSeries = done.map(p => { cum += (p.salary || 0) - calculatePeriodStats(p).totalSpent; return { value: cum, date: p.endDate }; });
+            // Only count a threshold as reached once the running total gets there (it can dip after a bad period)
+            let runMax = -Infinity;
+            const savedMax = savedSeries.map(s => { runMax = Math.max(runMax, s.value); return { value: runMax, date: s.date }; });
+            list.push(...tierMilestones({ id: 'saved', group: 'saving', icon: '💰', series: savedMax, current: cum,
+                tiers: [500, 1000, 2500, 5000, 7500, 10000, 15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000],
+                title: t => `Saved ${kMoney(t)}`, desc: t => `Kept ${money0(t)} across finished periods`,
+                progressLabel: (c, t) => `${money0(c)} of ${money0(t)}` }));
+
+            // Savings rate: best single period
+            const rates = done.map(p => ({ value: calculatePeriodStats(p).savingsRate, date: p.endDate }));
+            let bestRate = -Infinity;
+            const rateMax = rates.map(r => { bestRate = Math.max(bestRate, r.value); return { value: bestRate, date: r.date }; });
+            list.push(...tierMilestones({ id: 'rate', group: 'saving', icon: '🎯', series: rateMax, current: Math.max(0, bestRate),
+                tiers: [10, 20, 30, 40, 50, 60],
+                title: t => `${t}% saver`, desc: t => `A period saving ${t}% or more of income`,
+                progressLabel: (c, t) => `Best so far ${pct(c, 0)}` }));
+
+            // Streak of periods saving 20%+
+            let run = 0, bestRun = 0;
+            const streakSeries = done.map(p => { run = calculatePeriodStats(p).savingsRate >= 20 ? run + 1 : 0; bestRun = Math.max(bestRun, run); return { value: bestRun, date: p.endDate }; });
+            list.push(...tierMilestones({ id: 'streak', group: 'saving', icon: '🔥', series: streakSeries, current: run,
+                tiers: [3, 6, 12, 24],
+                title: t => `${t} in a row`, desc: t => `${t} periods in a row saving 20%+`,
+                progressLabel: (c, t) => `Current run ${c} of ${t}` }));
+
+            // Net worth
+            let nwMax = -Infinity;
+            const nwSeries = asc.map(p => { nwMax = Math.max(nwMax, periodNetWorth(p)); return { value: nwMax, date: isPeriodComplete(p) ? p.endDate : ymd(today) }; });
+            const nwNow = asc.length ? periodNetWorth(asc[asc.length - 1]) : 0;
+            list.push(...tierMilestones({ id: 'nw', group: 'networth', icon: '📈', series: nwSeries, current: nwNow,
+                tiers: [1000, 5000, 10000, 15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000, 150000, 200000, 250000],
+                title: t => `Net worth ${kMoney(t)}`, desc: t => `Net worth reached ${money0(t)}`,
+                progressLabel: (c, t) => `${money0(c)} of ${money0(t)}` }));
+
+            // Credit cards cleared
+            const debts = asc.map(p => ({ debt: calculateTotalCredit(p.startingBalances || {}), date: isPeriodComplete(p) ? p.endDate : ymd(today) }));
+            if (debts.length) {
+                const peak = Math.max(...debts.map(d => d.debt), 0);
+                const cleared = debts.find(d => d.debt <= 0.5);
+                const nowDebt = debts[debts.length - 1].debt;
+                list.push({ id: 'debt-clear', group: 'networth', icon: '🧾', title: 'Debt-free moment', desc: 'Every credit card and loan at £0',
+                    unlocked: !!cleared, date: cleared ? cleared.date : null,
+                    progress: cleared ? 1 : peak > 0 ? clamp(1 - nowDebt / peak, 0, 0.999) : 0,
+                    progressLabel: cleared ? '' : `${money0(nowDebt)} left to clear` });
+                if (peak > 0) {
+                    const halfHit = debts.find((d, i) => d.debt <= peak / 2 && debts.slice(0, i + 1).some(x => x.debt >= peak - 0.01));
+                    list.push({ id: 'debt-half', group: 'networth', icon: '✂️', title: 'Debt halved', desc: `Debt down to half its peak (${money0(peak)})`,
+                        unlocked: !!halfHit, date: halfHit ? halfHit.date : null,
+                        progress: halfHit ? 1 : clamp((peak - nowDebt) / (peak / 2), 0, 0.999),
+                        progressLabel: halfHit ? '' : `${money0(nowDebt)} now` });
+                }
+            }
+
+            // Budgets: periods with every budget hit
+            let budgetHits = 0;
+            const budgetSeries = done.map(p => {
+                const st = calculatePeriodStats(p), b = p.budgets || {};
+                const checks = [['bills', st.categorySpending.bills], ['food', st.categorySpending.food], ['wants', st.categorySpending.wants]].filter(([k]) => (b[k] || 0) > 0);
+                if (checks.length && checks.every(([k, s]) => s <= b[k])) budgetHits++;
+                return { value: budgetHits, date: p.endDate };
+            });
+            list.push(...tierMilestones({ id: 'budget', group: 'habits', icon: '🏅', series: budgetSeries, current: budgetHits,
+                tiers: [1, 3, 6, 12, 24],
+                title: t => t === 1 ? 'Budget boss' : `Budget boss ×${t}`, desc: t => t === 1 ? 'Every budget hit in one period' : `${t} periods with every budget hit`,
+                progressLabel: (c, t) => `${c} of ${t} periods` }));
+
+            // No-spend days (no food or treats), counted day by day up to yesterday
+            const set = everydayDaysSet(allExpensesFlat());
+            const nsStreakSeries = [], nsTotalSeries = [];
+            let nsRun = 0, nsBest = 0, nsTotal = 0;
+            if (asc.length) {
+                for (let d = parseYMD(asc[0].startDate); d < today; d = addDays(d, 1)) {
+                    if (set.has(ymd(d))) nsRun = 0; else { nsRun++; nsTotal++; }
+                    nsBest = Math.max(nsBest, nsRun);
+                    nsStreakSeries.push({ value: nsBest, date: ymd(d) });
+                    nsTotalSeries.push({ value: nsTotal, date: ymd(d) });
+                }
+            }
+            list.push(...tierMilestones({ id: 'nsrun', group: 'habits', icon: '🧘', series: nsStreakSeries, current: nsBest,
+                tiers: [3, 5, 7, 10, 14, 21],
+                title: t => `${t}-day no-spend run`, desc: t => `${t} days in a row with no food or treats spending`,
+                progressLabel: (c, t) => `Best so far ${c} days` }));
+            list.push(...tierMilestones({ id: 'nstotal', group: 'habits', icon: '🌿', series: nsTotalSeries, current: nsTotal,
+                tiers: [30, 100, 200, 365, 500],
+                title: t => `${t} no-spend days`, desc: t => `${t} days in total without food or treats spending`,
+                progressLabel: (c, t) => `${c} of ${t}` }));
+
+            // Tracking
+            const txDates = allExpensesFlat().map(e => String(e.date).slice(0, 10)).sort();
+            list.push(...tierMilestones({ id: 'txn', group: 'tracking', icon: '🧾', series: txDates.map((d, i) => ({ value: i + 1, date: d })), current: txDates.length,
+                tiers: [100, 250, 500, 1000, 2000, 5000],
+                title: t => `${t.toLocaleString('en-GB')} logged`, desc: t => `${t.toLocaleString('en-GB')} transactions tracked`,
+                progressLabel: (c, t) => `${c.toLocaleString('en-GB')} of ${t.toLocaleString('en-GB')}` }));
+            list.push(...tierMilestones({ id: 'periods', group: 'tracking', icon: '🗓️', series: asc.map((p, i) => ({ value: i + 1, date: p.startDate })), current: asc.length,
+                tiers: [3, 6, 12, 24, 36],
+                title: t => t === 12 ? 'One year tracked' : t === 24 ? 'Two years tracked' : t === 36 ? 'Three years tracked' : `${t} periods tracked`,
+                desc: t => `${t} budget periods in the books`,
+                progressLabel: (c, t) => `${c} of ${t} periods` }));
+
+            _msCache = { key: cacheKey, data: list };
+            return list;
+        }
+
+        // What to show: every unlocked tier plus the next locked tier in each ladder
+        function visibleMilestones(list) {
+            const seenNext = new Set();
+            return list.filter(m => {
+                if (m.unlocked) return true;
+                const ladder = m.id.replace(/-\d+$/, '');
+                if (seenNext.has(ladder)) return false;
+                seenNext.add(ladder);
+                return true;
+            });
+        }
+        function upNextMilestones(list, n) {
+            return visibleMilestones(list).filter(m => !m.unlocked && m.progress > 0).sort((a, b) => b.progress - a.progress).slice(0, n || 3);
+        }
+        function recentUnlocked(list, n) {
+            return list.filter(m => m.unlocked).sort((a, b) => String(b.date).localeCompare(String(a.date)) || (b.tier || 0) - (a.tier || 0)).slice(0, n || 4);
+        }
+        function getAckedMilestones() { try { return new Set(JSON.parse(localStorage.getItem('milestonesAck') || '[]')); } catch (e) { return new Set(); } }
+        function ackMilestones(ids) { try { const s = getAckedMilestones(); ids.forEach(i => s.add(i)); localStorage.setItem('milestonesAck', JSON.stringify([...s])); } catch (e) {} }
+        function msDateLabel(d) { if (!d) return ''; const x = parseYMD(d); return `${MONTHS[x.getMonth()].slice(0, 3)} '${String(x.getFullYear()).slice(2)}`; }
+
+        // ---- Personal records ----
+        function computeRecords() {
+            const out = [];
+            const asc = periodsAsc();
+            const done = asc.filter(isPeriodComplete);
+            const exps = allExpensesFlat().filter(e => e.category !== 'Income');
+            const nonBill = exps.filter(e => e.category !== 'Bills/Subscriptions');
+
+            if (done.length) {
+                const best = done.map(p => ({ p, st: calculatePeriodStats(p) })).sort((a, b) => b.st.savingsRate - a.st.savingsRate)[0];
+                out.push({ icon: '🏆', k: 'Best savings period', v: pct(best.st.savingsRate), s: `${periodName(best.p)} '${String(periodMonthInfo(best.p).year).slice(2)} · kept ${money0((best.p.salary || 0) - best.st.totalSpent)}`, periodId: best.p.id });
+            }
+
+            const byDay = {};
+            nonBill.forEach(e => { const k = String(e.date).slice(0, 10); if (!byDay[k]) byDay[k] = { t: 0, n: 0 }; byDay[k].t += e._amt; byDay[k].n++; });
+            const topDay = Object.entries(byDay).sort((a, b) => b[1].t - a[1].t)[0];
+            if (topDay) {
+                const d = parseYMD(topDay[0]);
+                out.push({ icon: '💥', k: 'Biggest spend day', v: money(topDay[1].t), s: `${DOW_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} '${String(d.getFullYear()).slice(2)} · ${topDay[1].n} purchase${topDay[1].n === 1 ? '' : 's'} (excl. bills)`, day: topDay[0], tone: 'warn' });
+            }
+
+            const big = [...nonBill].sort((a, b) => b._amt - a._amt)[0];
+            // Skip if it would just repeat the biggest-day record (a one-purchase day)
+            const sameAsDay = big && topDay && topDay[1].n === 1 && String(big.date).slice(0, 10) === topDay[0];
+            if (big && !sameAsDay) out.push({ icon: txnEmoji(big), k: 'Biggest single buy', v: money(big._amt), s: `${escapeHtml(big.description)} · ${shortDate(big.date)} '${String(parseYMD(big.date).getFullYear()).slice(2)}`, day: String(big.date).slice(0, 10), tone: 'warn' });
+
+            const byWeek = {};
+            nonBill.forEach(e => { const d = parseYMD(e.date); const mon = ymd(addDays(d, -((d.getDay() + 6) % 7))); byWeek[mon] = (byWeek[mon] || 0) + e._amt; });
+            const topWeek = Object.entries(byWeek).sort((a, b) => b[1] - a[1])[0];
+            if (topWeek) out.push({ icon: '📆', k: 'Priciest week', v: money0(topWeek[1]), s: `Week of ${shortDate(topWeek[0])} '${topWeek[0].slice(2, 4)} (excl. bills)`, tone: 'warn' });
+
+            if (done.length >= 2) {
+                const light = done.map(p => ({ p, t: sum(spendExpenses(p.expenses || []).filter(e => e.category !== 'Bills/Subscriptions'), expenseAmount) }))
+                    .sort((a, b) => a.t - b.t)[0];
+                out.push({ icon: '🪶', k: 'Lightest period', v: money0(light.t), s: `${periodName(light.p)} '${String(periodMonthInfo(light.p).year).slice(2)} · everyday spending`, periodId: light.p.id });
+            }
+
+            const set = everydayDaysSet(exps);
+            if (asc.length) {
+                let run = 0, best = 0, bestEnd = null;
+                const today = todayLocal();
+                for (let d = parseYMD(asc[0].startDate); d < today; d = addDays(d, 1)) {
+                    if (set.has(ymd(d))) run = 0; else { run++; if (run > best) { best = run; bestEnd = new Date(d); } }
+                }
+                if (best > 0) out.push({ icon: '🧘', k: 'Longest no-spend run', v: `${best} day${best === 1 ? '' : 's'}`, s: `${shortDate(ymd(addDays(bestEnd, -best + 1)))} to ${shortDate(ymd(bestEnd))}` });
+            }
+
+            let visits = null;
+            asc.forEach(p => {
+                topBy(spendExpenses(p.expenses || []).filter(e => e.category !== 'Bills/Subscriptions'), e => normDesc(e.description), expenseAmount)
+                    .forEach(x => { if (!visits || x.count > visits.count) visits = { ...x, p }; });
+            });
+            if (visits && visits.count >= 3) out.push({ icon: '📍', k: 'Most visits in a period', v: `${escapeHtml(visits.label)} ×${visits.count}`, s: `${periodName(visits.p)} '${String(periodMonthInfo(visits.p).year).slice(2)} · ${money0(visits.total)}` });
+
+            if (asc.length) {
+                const nws = asc.map(p => ({ p, v: periodNetWorth(p) })).sort((a, b) => b.v - a.v)[0];
+                out.push({ icon: '🏔️', k: 'Net worth high', v: money0(nws.v), s: isPeriodComplete(nws.p) ? `End of ${periodName(nws.p)} '${String(periodMonthInfo(nws.p).year).slice(2)}` : 'Right now' });
+            }
+            return out;
+        }
+
+        // ---- Watch-outs: where the money still leaks ----
+        function computeWatchouts() {
+            const out = [];
+            const done = periodsAsc().filter(isPeriodComplete);
+            const recent12 = done.slice(-12);
+
+            [['Food', 'food'], ['Wants', 'wants'], ['Bills/Subscriptions', 'bills']].forEach(([cat, key]) => {
+                const withBudget = recent12.filter(p => (p.budgets || {})[key] > 0);
+                const over = withBudget.filter(p => calculatePeriodStats(p).categorySpending[key] > p.budgets[key]);
+                if (over.length >= 2) {
+                    const avgOver = sum(over, p => calculatePeriodStats(p).categorySpending[key] - p.budgets[key]) / over.length;
+                    out.push({ tone: over.length / withBudget.length >= 0.5 ? 'bad' : 'warn', icon: catMeta(cat).emoji,
+                        title: `${catMeta(cat).label} went over in ${over.length} of ${withBudget.length} periods`,
+                        body: `Usually by about <strong>${money0(avgOver)}</strong>. Latest: ${periodName(over[over.length - 1])}.` });
+                }
+            });
+
+            if (done.length >= 6) {
+                const recent = done.slice(-3), before = done.slice(-6, -3);
+                const subTotals = ps => { const t = {}; ps.forEach(p => spendExpenses(p.expenses || []).forEach(e => { if (e.category === 'Bills/Subscriptions') return; const k = e.subcategory || e.category; t[k] = (t[k] || 0) + expenseAmount(e); })); return t; };
+                const a = subTotals(recent), b = subTotals(before);
+                Object.keys(a).map(k => ({ k, now: a[k] / 3, was: (b[k] || 0) / 3 }))
+                    .filter(x => x.now >= 20 && x.was > 0 && (x.now - x.was) / x.was >= 0.25)
+                    .sort((x, y) => (y.now - y.was) - (x.now - x.was)).slice(0, 2)
+                    .forEach(x => out.push({ tone: 'warn', icon: SUBCAT_EMOJI[x.k] || '📈', title: `${escapeHtml(x.k)} is up ${Math.round((x.now - x.was) / x.was * 100)}%`,
+                        body: `<strong>${money0(x.now)}</strong> a period lately, vs ${money0(x.was)} the three before.` }));
+            }
+
+            const today = todayLocal(), since = addDays(today, -90);
+            const small = allExpensesFlat().filter(e => e.category !== 'Income' && e.category !== 'Bills/Subscriptions' && e._amt > 0 && e._amt < 10 && parseYMD(e.date) >= since && parseYMD(e.date) <= today);
+            if (small.length >= 10) {
+                const t = sum(small, e => e._amt);
+                const top = topBy(small, e => normDesc(e.description), e => e._amt).sort((x, y) => y.total - x.total)[0];
+                out.push({ tone: 'warn', icon: '🪙', title: `${money0(t)} on ${small.length} small buys`,
+                    body: `Purchases under £10 in the last 90 days, about <strong>${money0(t / 90 * 365)} a year</strong>.${top ? ` Most: ${escapeHtml(top.label)} (${money0(top.total)}).` : ''}` });
+            }
+
+            if (recent12.length >= 3) {
+                const un = recent12.map(p => calculatePeriodStats(p).categorySpending.unexpected);
+                const tot = sum(un), hit = un.filter(v => v > 0).length;
+                if (tot > 0) out.push({ tone: 'neutral', icon: '⚡', title: `Surprises cost ${money0(tot)}`,
+                    body: `Across the last ${recent12.length} periods (${hit} had one). Setting aside <strong>${money0(tot / recent12.length)}</strong> a period would cover it.` });
+            }
+
+            if (recent12.length >= 3) {
+                const spends = recent12.map(p => ({ p, t: calculatePeriodStats(p).totalSpent }));
+                const avg = sum(spends, s => s.t) / spends.length;
+                const worst = spends.sort((a, b) => b.t - a.t)[0];
+                if (worst.t - avg > avg * 0.08) out.push({ tone: 'neutral', icon: '🌧️', title: `${periodName(worst.p)} was your priciest period`,
+                    body: `${money0(worst.t)} spent, <strong>${money0(worst.t - avg)} more</strong> than your average.` });
+            }
+            return out;
+        }
+
+        // ---- Shared rendering ----
+        function badgeHtml(m, acked) {
+            const isNew = m.unlocked && acked && !acked.has(m.id);
+            return `<div class="badge ${m.unlocked ? '' : 'locked'}" title="${escapeHtml(m.desc)}">
+                ${isNew ? '<span class="b-new">NEW</span>' : ''}
+                <div class="b-ic" style="${m.unlocked ? `background:${MS_GROUPS[m.group].ring}` : ''}"><span>${m.icon}</span></div>
+                <div class="b-t">${escapeHtml(m.title)}</div>
+                <div class="b-d">${m.unlocked ? `Unlocked ${msDateLabel(m.date)}` : escapeHtml(m.progressLabel)}</div>
+                ${m.unlocked ? '' : `<div class="b-bar"><i style="width:${(m.progress * 100).toFixed(1)}%"></i></div>`}
+            </div>`;
+        }
+        function nextRowHtml(m) {
+            return `<div class="ms-next">
+                <div class="ms-next-ic">${m.icon}</div>
+                <div style="min-width:0;flex:1;">
+                    <div class="ms-next-top"><span class="t">${escapeHtml(m.title)}</span><span class="p">${Math.floor(m.progress * 100)}%</span></div>
+                    <div class="b-bar"><i style="width:${(m.progress * 100).toFixed(1)}%;background:${MS_GROUPS[m.group].ring}"></i></div>
+                    <div class="b-d">${escapeHtml(m.progressLabel)}</div>
+                </div>
+            </div>`;
+        }
+        function recordHtml(r, i) {
+            const click = r.day ? `data-rec-day="${r.day}"` : r.periodId ? `data-rec-period="${r.periodId}"` : '';
+            return `<div class="record ${click ? 'clickable' : ''} ${r.tone || ''}" ${click} style="animation-delay:${i * 0.04}s">
+                <div class="record-ic">${r.icon}</div>
+                <div style="min-width:0;"><div class="k">${r.k}</div><div class="v">${r.v}</div><div class="s">${r.s}</div></div>
+                ${click ? '<span class="record-go">›</span>' : ''}
+            </div>`;
+        }
+        function bindRecordClicks(root, onDay, onPeriod) {
+            root.querySelectorAll('[data-rec-day]').forEach(el => el.addEventListener('click', () => onDay(el.dataset.recDay)));
+            root.querySelectorAll('[data-rec-period]').forEach(el => el.addEventListener('click', () => onPeriod(el.dataset.recPeriod)));
+        }
+
+        // Full milestones view (used by desktop page and mobile tab)
+        function renderMilestonesInto(el, opts) {
+            opts = opts || {};
+            if (!el) return;
+            if (!getPeriods().length) { el.innerHTML = '<div class="empty-state"><div class="big">🏆</div>Milestones appear once you start tracking.</div>'; return; }
+            const list = computeMilestones();
+            const vis = visibleMilestones(list);
+            const unlocked = list.filter(m => m.unlocked);
+            const acked = getAckedMilestones();
+            const next = upNextMilestones(list, opts.compact ? 3 : 4);
+            const records = computeRecords();
+            const watch = computeWatchouts();
+            const latest = recentUnlocked(list, 1)[0];
+            const groups = Object.keys(MS_GROUPS).map(g => ({ g, items: vis.filter(m => m.group === g), total: list.filter(m => m.group === g).length, got: list.filter(m => m.group === g && m.unlocked).length }));
+
+            el.innerHTML = `
+                <div class="ms-hero">
+                    <div class="ms-hero-count"><span data-count="${unlocked.length}">${unlocked.length}</span><small>unlocked</small></div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="ms-hero-title">${latest ? `Latest: ${latest.icon} ${escapeHtml(latest.title)}` : 'Your first milestone is close'}</div>
+                        <div class="card-sub">${latest ? `Unlocked ${msDateLabel(latest.date)} · ` : ''}${list.length - unlocked.length} more to chase</div>
+                        <div class="b-bar" style="margin-top:.7rem;height:8px;"><i style="width:${(unlocked.length / list.length * 100).toFixed(1)}%"></i></div>
+                    </div>
+                </div>
+
+                ${next.length ? `<div class="ms-section-title">Up next</div><div class="ms-next-grid">${next.map(nextRowHtml).join('')}</div>` : ''}
+
+                ${records.length ? `<div class="ms-section-title">Personal records <span>How far you've come, and your wildest days</span></div>
+                    <div class="record-grid">${records.map(recordHtml).join('')}</div>` : ''}
+
+                ${watch.length ? `<div class="ms-section-title">Watch-outs <span>Where spending still leaks</span></div>
+                    <div class="insights-grid ms-watch">${watch.map(insightHtml).join('')}</div>` : ''}
+
+                <div class="ms-section-title">Badges</div>
+                ${groups.filter(g => g.items.length).map(g => `<div class="ms-group">
+                    <div class="ms-group-head"><span>${MS_GROUPS[g.g].label}</span><span class="card-sub">${g.got} of ${g.total}</span></div>
+                    <div class="badge-grid">${g.items.map(m => badgeHtml(m, acked)).join('')}</div>
+                </div>`).join('')}
+            `;
+            animateCounts(el);
+            bindRecordClicks(el, opts.onDay || showDayTransactions, opts.onPeriod || viewPeriod);
+        }
+
+        // Compact teaser for the home screens
+        function milestonesTeaserHtml(compact) {
+            const list = computeMilestones();
+            const next = upNextMilestones(list, compact ? 2 : 3);
+            const recent = recentUnlocked(list, compact ? 3 : 4);
+            const unlocked = list.filter(m => m.unlocked).length;
+            return `<div class="card-head" style="margin-bottom:.8rem;">
+                    <div><div class="card-title">🏆 Milestones</div><div class="card-sub">${unlocked} unlocked · ${list.length - unlocked} to go</div></div>
+                    <button class="btn btn-sm btn-secondary" data-ms-open>See all →</button>
+                </div>
+                <div class="ms-teaser ${compact ? 'compact' : ''}">
+                    <div>${next.length ? next.map(nextRowHtml).join('') : '<div class="card-sub">Everything unlocked. Legend.</div>'}</div>
+                    <div class="ms-recent">${recent.map(m => `<div class="ms-recent-item"><div class="b-ic sm" style="background:${MS_GROUPS[m.group].ring}"><span>${m.icon}</span></div>
+                        <div style="min-width:0"><div class="t">${escapeHtml(m.title)}</div><div class="b-d">${msDateLabel(m.date)}</div></div></div>`).join('')}</div>
+                </div>`;
+        }
+
+        // Celebration story for milestones not yet seen
+        function buildMilestoneStory() {
+            const list = computeMilestones();
+            const acked = getAckedMilestones();
+            const fresh = list.filter(m => m.unlocked && !acked.has(m.id)).sort((a, b) => String(b.date).localeCompare(String(a.date)) || (b.tier || 0) - (a.tier || 0));
+            if (!fresh.length) return null;
+            const firstTime = acked.size === 0;
+            const slides = [];
+            slides.push(S('sg-gold').fx(confettiHtml()).k(firstTime ? 'Your trophy cabinet' : 'New milestone').t(firstTime ? `${fresh.length} milestones<br>unlocked` : fresh.length === 1 ? `${fresh[0].icon} ${escapeHtml(fresh[0].title)}` : `${fresh.length} new<br>milestones`, 'xl')
+                .b(firstTime ? 'A look at how far you\'ve come since you started tracking.' : fresh.length === 1 ? escapeHtml(fresh[0].desc) + '.' : 'You\'ve been busy. Here they are.').sp().f('Tap to continue →').build());
+            fresh.slice(0, 5).forEach((m, i) => {
+                slides.push(S(['sg-emerald', 'sg-ocean', 'sg-violet', 'sg-rose', 'sg-lime'][i % 5]).fx(i === 0 ? confettiHtml() : '').k(`Unlocked ${msDateLabel(m.date)}`)
+                    .raw(`<div class="s-medal" style="background:${MS_GROUPS[m.group].ring}"><span>${m.icon}</span></div>`).t(escapeHtml(m.title)).b(escapeHtml(m.desc) + '.').build());
+            });
+            const next = upNextMilestones(list, 3);
+            if (next.length) slides.push(S('sg-midnight').k('Up next').t('So close').raw(sBars(next.map(m => ({ label: `${m.icon} ${escapeHtml(m.title)}`, value: m.progress * 100, abs: true, valueLabel: `${Math.floor(m.progress * 100)}%` })))).b(next.map(m => escapeHtml(m.progressLabel)).join(' · ')).build());
+            const rec = computeRecords().filter(r => r.tone === 'warn').slice(0, 3);
+            if (rec.length) slides.push(S('sg-sunset').k('Hall of fame (and shame)').t('Your wildest days').raw(sList(rec.map(r => ({ rank: r.icon, name: r.k, sub: r.s, value: r.v })))).build());
+            const idsHash = fresh.map(m => m.id).join('|');
+            let h = 0; for (const c of idsHash) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+            return { id: `ms-${h}`, kind: 'milestones', title: firstTime ? 'Your milestones' : 'New milestone', sub: `${fresh.length} unlocked`, theme: 'sg-gold',
+                ringTop: firstTime ? 'Wins' : 'New', ringMain: `🏆${fresh.length > 1 ? fresh.length : ''}`, label: 'Milestones', slides, newIds: fresh.map(m => m.id) };
+        }
+        function confettiHtml() {
+            const cols = ['#fde047', '#f472b6', '#34d399', '#60a5fa', '#fb923c', '#a78bfa', '#ffffff'];
+            let s = '<div class="confetti">';
+            for (let i = 0; i < 28; i++) {
+                s += `<i style="left:${(i * 37) % 100}%;background:${cols[i % cols.length]};--t:${(2.6 + (i % 5) * 0.5).toFixed(1)}s;--d:${((i * 0.17) % 2.2).toFixed(2)}s;--r:${(i % 2 ? 1 : -1) * (360 + i * 20)}deg;width:${6 + (i % 3) * 2}px"></i>`;
+            }
+            return s + '</div>';
+        }
+
+        // ============================================
         // SVG VISUALS (sparklines, pace chart, rings, heatmap)
         // ============================================
         function smoothPath(pts) {
@@ -2583,6 +3085,7 @@
                 b(html) { parts.push(`<div class="s-body s-anim" style="--d:${delay()}s">${html}</div>`); return api; },
                 e(emoji) { parts.push(`<div class="s-emoji s-anim" style="--d:${delay()}s">${emoji}</div>`); return api; },
                 raw(html) { parts.push(`<div class="s-anim" style="--d:${delay()}s">${html}</div>`); return api; },
+                fx(html) { parts.push(html); return api; },
                 sp() { parts.push('<div class="s-spacer"></div>'); return api; },
                 f(t) { parts.push(`<div class="s-foot s-anim" style="--d:${delay()}s">${t}</div>`); return api; },
                 build(extra) { return Object.assign({ theme, html: parts.join('') }, extra || {}); }
@@ -2594,7 +3097,7 @@
             const max = Math.max(...rows.map(r => r.value), 1);
             return `<div class="s-bars">${rows.map(r => `
                 <div class="s-bar-row"><span class="lbl">${r.label}</span><span class="val">${r.valueLabel || money0(r.value)}</span>
-                <div class="trk"><i data-w="${(r.value / max * 100).toFixed(1)}"></i></div></div>`).join('')}</div>`;
+                <div class="trk"><i data-w="${(r.abs ? clamp(r.value, 0, 100) : r.value / max * 100).toFixed(1)}"></i></div></div>`).join('')}</div>`;
         }
         function sList(rows) {
             return `<div class="s-list">${rows.map((r, i) => `
@@ -2912,6 +3415,8 @@
                 completedPeriodsDesc().slice(0, 4).forEach(p => out.push(buildWrappedStory(p)));
                 const y = buildYearStory();
                 if (y) out.splice(out.length ? 1 : 0, 0, y);
+                const ms = buildMilestoneStory();
+                if (ms) out.unshift(ms);
             } catch (e) { console.error('Story build failed', e); }
             return out;
         }
@@ -3012,7 +3517,7 @@
             const story = svCurrent();
             if (!story) return closeStories();
             const slide = story.slides[sv.idx];
-            if (sv.idx === 0) markStorySeen(story.id);
+            if (sv.idx === 0) { markStorySeen(story.id); if (story.newIds) ackMilestones(story.newIds); }
             document.getElementById('sv-title').textContent = story.title;
             document.getElementById('sv-sub').textContent = story.sub || '';
             document.getElementById('sv-progress').innerHTML = story.slides.map((_, i) => `<div class="sv-seg ${i < sv.idx ? 'done' : ''}"><i></i></div>`).join('');
@@ -3175,6 +3680,7 @@
             document.getElementById(sectionId).classList.add('active');
             if (sectionId === 'home') { document.getElementById('tab-home').classList.add('active'); loadPeriods(); }
             if (sectionId === 'recaps') { document.getElementById('tab-recaps').classList.add('active'); renderRecapsPage(); }
+            if (sectionId === 'milestones') { document.getElementById('tab-milestones').classList.add('active'); renderMilestonesPage(); }
             if (sectionId === 'summary') { document.getElementById('tab-summary').classList.add('active'); loadFullSummary(); }
             if (sectionId === 'settings') {
                 document.getElementById('tab-settings').classList.add('active');
@@ -3224,6 +3730,7 @@
             const ins = document.getElementById('home-insights');
             document.getElementById('home-insights-wrap').style.display = insights.length ? '' : 'none';
             ins.innerHTML = insights.slice(0, 6).map(insightHtml).join('');
+            renderHomeMilestones();
             renderHomeHeatmap();
             renderHomeCategories(active);
             renderHomeAccounts();
@@ -3350,6 +3857,15 @@
             const sparkEl = document.getElementById('home-nw-spark');
             renderSpark(sparkEl, asc.map(periodNetWorth), { h: Math.max(90, sparkEl.clientHeight || 90), labels: asc.map(p => `${periodName(p)} '${String(periodMonthInfo(p).year).slice(2)}`) });
             animateCounts(el);
+        }
+
+        function renderHomeMilestones() {
+            const el = document.getElementById('home-milestones');
+            el.innerHTML = milestonesTeaserHtml(false);
+            el.querySelectorAll('[data-ms-open]').forEach(b => b.addEventListener('click', () => showSection('milestones')));
+        }
+        function renderMilestonesPage() {
+            renderMilestonesInto(document.getElementById('milestones-content'), { onDay: showDayTransactions, onPeriod: viewPeriod });
         }
 
         function renderHomeHeatmap() {
@@ -5889,7 +6405,21 @@ function renderPeriodComparisonTable(periods) {
             const active = document.querySelector('#m-main .m-screen.active');
             if (active && active.id === 'm-trends') mobileRenderTrends();
             if (active && active.id === 'm-activity') mobileRenderActivity();
-            if (active && active.id === 'm-recaps') renderRecapGrid('m-recaps-grid');
+            if (active && active.id === 'm-recaps') mobileRenderRecaps();
+        }
+
+        let mobileRecapView = 'stories';
+        function mobileSetRecapView(v) {
+            mobileRecapView = v;
+            document.querySelectorAll('#m-recap-seg [data-mview]').forEach(b => b.classList.toggle('active', b.dataset.mview === v));
+            mobileRenderRecaps();
+        }
+        function mobileRenderRecaps() {
+            const stories = mobileRecapView === 'stories';
+            document.getElementById('m-recaps-grid').style.display = stories ? '' : 'none';
+            document.getElementById('m-milestones').style.display = stories ? 'none' : '';
+            if (stories) renderRecapGrid('m-recaps-grid');
+            else renderMilestonesInto(document.getElementById('m-milestones'), { compact: true, onDay: mobileShowDay, onPeriod: openPeriodRecap });
         }
 
         function mobileShowTab(id) {
@@ -5900,7 +6430,7 @@ function renderPeriodComparisonTable(periods) {
             if (id === 'm-home') mobileRenderHome();
             if (id === 'm-trends') mobileRenderTrends();
             if (id === 'm-activity') { mobilePopulateActivityPeriods(); mobileRenderActivity(); }
-            if (id === 'm-recaps') renderRecapGrid('m-recaps-grid');
+            if (id === 'm-recaps') mobileRenderRecaps();
         }
 
         // ============================================
@@ -5968,6 +6498,8 @@ function renderPeriodComparisonTable(periods) {
 
                 ${insights.length ? `<div class="m-section-title">Insights <span>${insights.length}</span></div><div class="m-insights">${insights.slice(0, 8).map(insightHtml).join('')}</div>` : ''}
 
+                <div class="m-card" id="m-ms-teaser">${milestonesTeaserHtml(true)}</div>
+
                 <div class="m-card" onclick="mobileShowTab('m-trends')" style="cursor:pointer;">
                     <div class="m-card-head"><div class="m-card-title">Net worth</div>${prevNW !== null ? `<span class="pill ${nw - prevNW >= 0 ? 'accent' : 'neg'}">${nw - prevNW >= 0 ? '▲' : '▼'} ${money0(Math.abs(nw - prevNW))}</span>` : ''}</div>
                     <div class="nw-value" style="margin-top:0;font-size:2rem;" data-count="${nw.toFixed(2)}" data-prefix="£">${money0(nw)}</div>
@@ -6002,6 +6534,7 @@ function renderPeriodComparisonTable(periods) {
                     document.getElementById('m-pace-note').innerHTML = d >= 0 ? `<span class="pos">${money0(d)} under</span>` : `<span class="neg">${money0(-d)} over</span>`;
                 }
             }
+            el.querySelectorAll('[data-ms-open]').forEach(b => b.addEventListener('click', () => { mobileRecapView = 'milestones'; mobileShowTab('m-recaps'); mobileSetRecapView('milestones'); }));
             renderSpark(document.getElementById('m-nw-spark'), asc.map(periodNetWorth), { h: 64, labels: asc.map(pp => periodShortName(pp)) });
             animateRings(el);
             animateCounts(el);
@@ -6919,6 +7452,7 @@ function renderPeriodComparisonTable(periods) {
 
             document.getElementById('tab-home').addEventListener('click', () => showSection('home'));
             document.getElementById('tab-recaps').addEventListener('click', () => showSection('recaps'));
+            document.getElementById('tab-milestones').addEventListener('click', () => showSection('milestones'));
             document.getElementById('tab-summary').addEventListener('click', () => showSection('summary'));
             document.getElementById('tab-settings').addEventListener('click', () => showSection('settings'));
 
